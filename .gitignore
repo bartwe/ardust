@@ -7,3 +7,5 @@
 *.orig
 build/*
 dist/*
+
+.idea/workspace.xml

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="resources">
+    <output-path>$PROJECT_DIR$/out/prodcution/ardust/resources</output-path>
+    <root id="root">
+      <element id="dir-copy" path="$PROJECT_DIR$/resources" />
+    </root>
+  </artifact>
+</component>
