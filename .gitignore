@@ -1,6 +1,9 @@
 *.class
-
-# Package Files #
 *.jar
 *.war
 *.ear
+*~
+*.bak
+*.orig
+build/*
+dist/*
