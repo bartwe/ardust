@@ -1,0 +1,37 @@
+Multiplayer Dwarf fortress
+
+
+hectic, lots of players, command and control, god game
+
+
+Clients submit their desired actions to the server. (for the next tick)
+Server does the things, sends out world updates. (no more then 5hz, actions likely take multiple ticks)
+
+Not much ai in the dwarfs. (And that there is, is run in the client)
+
+dwarf tiles are 32x32 probably using somethign like 24x30 of those
+
+world tiles are 32x16 for the top with a 32x32 below it for the side.
+
+World tiles are the same for all sides.
+
+Actions are either location dependent, like ftl,
+or a think you ask the dwarf todo at the spot he's standing.
+
+to start with
+
+ - render a bit of world
+ - render a dwarf
+ - get the server running.
+ - submit an action to move a dwarf
+
+
+optional things not for the starting day
+
+- modular dwarf graphics
+
+
+would be cool, but maybe not
+
+- directional dwarf graphics
+
