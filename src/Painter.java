@@ -13,6 +13,7 @@ import java.util.Hashtable;
 
 public class Painter {
 
+    private static final double TEXTURE_EPSILON = 0.0001; // way smaller than a pixel, saves us from some rounding artifacts
     private double screenWidth;
     private double screenHeight;
     private double textureWidth;
@@ -113,10 +114,10 @@ public class Painter {
         double screentopy = y * scale;
         double screenbottomy = (y + height) * scale;
 
-        double textureleftx = textureX / textureWidth;
-        double texturerightx = (textureX + width) / textureWidth;
-        double texturetopy = 1.0 - textureY / textureHeight;
-        double texturebottomy = 1.0 - (textureY + height) / textureHeight;
+        double textureleftx = textureX / textureWidth - TEXTURE_EPSILON;
+        double texturerightx = (textureX + width) / textureWidth + TEXTURE_EPSILON;
+        double texturetopy = 1.0 - (textureY / textureHeight - TEXTURE_EPSILON);
+        double texturebottomy = 1.0 - ((textureY + height) / textureHeight + TEXTURE_EPSILON);
 
         // is this order correct ?
 
