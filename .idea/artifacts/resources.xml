@@ -1,8 +1,9 @@
 <component name="ArtifactManager">
   <artifact build-on-make="true" name="resources">
-    <output-path>$PROJECT_DIR$/out/prodcution/ardust/resources</output-path>
+    <output-path>$PROJECT_DIR$/out/production/ardust/resources</output-path>
     <root id="root">
       <element id="dir-copy" path="$PROJECT_DIR$/resources" />
+      <element id="library" level="project" name="jar" />
     </root>
   </artifact>
 </component>
