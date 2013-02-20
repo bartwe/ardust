@@ -1,3 +1,5 @@
+import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -12,6 +14,7 @@ public class Game {
     private int height;
     private Thread sleeperThread;
     private boolean requestResetViewPort;
+    private Input input;
 
     public void startLWJGL(final Canvas display_parent) {
         this.display_parent = display_parent;
@@ -22,6 +25,7 @@ public class Game {
                     Display.setParent(display_parent);
                     Display.setTitle("ardust");
                     Display.create();
+                    input = new Input();
                     resetViewPort();
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -79,6 +83,7 @@ public class Game {
     void resetViewPort() {
         width = display_parent.getWidth();
         height = display_parent.getHeight();
+        input.setHeight(height);
         GL11.glViewport(0, 0, width, height);
         setupRenderMode();
     }
@@ -116,6 +121,8 @@ public class Game {
 
     private void gameLoop() {
         try {
+            long deadline = Sys.getTime();
+            long timerResolution = Sys.getTimerResolution();
             while (running) {
 
                 if (requestResetViewPort) {
@@ -123,6 +130,7 @@ public class Game {
                     resetViewPort();
                 }
 
+                input.tick();
                 //update
 
                 //soundmanager.tick();
@@ -134,12 +142,18 @@ public class Game {
 
                 GL11.glBegin(GL11.GL_TRIANGLES);
 
-                GL11.glColor4f(1f,0f,0f,1f);
-                GL11.glVertex2d(0,0);
-                GL11.glColor4f(0f,1f,0f,1f);
-                GL11.glVertex2d(width/2f,0);
-                GL11.glColor4f(0f,0f,1f,1f);
-                GL11.glVertex2d(0,height/2f);
+                if (input.isMouseButtonDown(0, false))
+                    GL11.glColor4f(1f, 1f, 1f, 1f);
+                else
+                    GL11.glColor4f(1f, 0f, 0f, 1f);
+                GL11.glVertex2d(0, 0);
+                if (input.isKeyDown(Keyboard.KEY_SPACE, false))
+                    GL11.glColor4f(0f, 0f, 0f, 1f);
+                else
+                    GL11.glColor4f(0f, 1f, 0f, 1f);
+                GL11.glVertex2d(input.getX(), 0);
+                GL11.glColor4f(0f, 0f, 1f, 1f);
+                GL11.glVertex2d(0, input.getY());
 
                 GL11.glEnd();
 
@@ -150,10 +164,25 @@ public class Game {
                 if (Display.isCloseRequested()) {
                     running = false;
                 }
+
+
                 // sync
+                long nextDeadline = Sys.getTime() + (timerResolution * 16) / 1000;
+                while (true) {
+                    long delta = deadline - Sys.getTime();
+                    if (delta < 5)
+                        break;
+                    Thread.sleep(1);
+                }
+                while (true) {
+                    long delta = deadline - Sys.getTime();
+                    if (delta < 2)
+                        break;
+                    Thread.sleep(0);
+                }
+                deadline = nextDeadline;
 
                 Display.processMessages();
-                processKeyboardAndMouse();
             }
         } catch (Exception e) {
             e.printStackTrace();
