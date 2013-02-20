@@ -15,9 +15,12 @@ public class Game {
     private Thread sleeperThread;
     private boolean requestResetViewPort;
     private Input input;
+    public GameMenu menu;
 
     public void startLWJGL(final Canvas display_parent) {
         this.display_parent = display_parent;
+        menu = new GameMenu();
+
         gameThread = new Thread() {
             public void run() {
                 running = true;
@@ -136,7 +139,7 @@ public class Game {
                 //soundmanager.tick();
 
                 //clear
-                GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT + GL11.GL_COLOR_BUFFER_BIT); // assuming we need one
+                /*GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT + GL11.GL_COLOR_BUFFER_BIT); // assuming we need one
 
                 //render
 
@@ -155,10 +158,10 @@ public class Game {
                 GL11.glColor4f(0f, 0f, 1f, 1f);
                 GL11.glVertex2d(0, input.getY());
 
-                GL11.glEnd();
+                GL11.glEnd();    */
 
                 //flip
-
+                menu.paint(display_parent.getGraphics());
                 Thread.yield();
                 Display.update(false);
                 if (Display.isCloseRequested()) {

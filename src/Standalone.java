@@ -36,6 +36,7 @@ public class Standalone {
             };
             display_parent.setSize(width, height);
             f.add(display_parent);
+            f.add(game.menu);
             display_parent.setFocusTraversalKeysEnabled(false);
             display_parent.setFocusable(true);
             display_parent.requestFocus();
