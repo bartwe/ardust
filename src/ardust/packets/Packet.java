@@ -1,7 +1,5 @@
 package ardust.packets;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -19,7 +17,9 @@ abstract public class Packet {
             return new WorldUpdatesPacket(buffer);
         if (packetId == ID_WINDOW_PACKET)
             return new WindowPacket(buffer);
-        throw new NotImplementedException();
+        if (packetId == ID_WORLD_REGION_PACKET)
+            return new WorldRegionPacket(buffer);
+        throw new RuntimeException("Unknown packet id: "+packetId);
     }
 
     public abstract void write(ByteBuffer buffer);
@@ -40,4 +40,5 @@ abstract public class Packet {
         buffer.putShort((short) nameBytes.length);
         buffer.put(nameBytes);
     }
+
 }

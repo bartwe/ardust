@@ -144,7 +144,6 @@ public class Painter {
 
     public void flush() {
         GL11.glEnd();
-
     }
 
     public void getSourceRectFromTileSheetIndex(int index, Rectangle result) {

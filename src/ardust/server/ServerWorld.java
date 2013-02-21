@@ -1,5 +1,6 @@
 package ardust.server;
 
+import ardust.shared.Constants;
 import ardust.shared.Tile;
 
 import java.io.File;
@@ -10,8 +11,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class ServerWorld {
-    private static final int WORLD_DEPTH = 16;
-    private static final int WORLD_LENGTH = 1024;
     byte[] world;
     Tile[] tiles;
     int[] updates = new int[1024];
@@ -20,7 +19,7 @@ public class ServerWorld {
     // z, lower is down
 
     ServerWorld() {
-        world = new byte[WORLD_LENGTH * WORLD_LENGTH * WORLD_DEPTH];
+        world = new byte[Constants.WORLD_LENGTH * Constants.WORLD_LENGTH * Constants.WORLD_DEPTH];
         tiles = new Tile[256];
         for (int i = 0; i < tiles.length; i++)
             tiles[i] = new Tile((byte) i);
@@ -40,7 +39,7 @@ public class ServerWorld {
                 }
             }
             int off = 0;
-            int rem = WORLD_LENGTH * WORLD_LENGTH * WORLD_DEPTH;
+            int rem = Constants.WORLD_LENGTH * Constants.WORLD_LENGTH * Constants.WORLD_DEPTH;
             while (rem > 0) {
                 int len = in.read(world, off, rem);
                 if (len == -1)
@@ -57,9 +56,9 @@ public class ServerWorld {
     private void generateWorld() {
         Random random = new Random();
 
-        for (int z = 0; z < zSize(); z++)
-            for (int y = 0; y < ySize(); y++)
-                for (int x = 0; x < xSize(); x++)
+        for (int z = 0; z < Constants.WORLD_DEPTH; z++)
+            for (int y = 0; y < Constants.WORLD_LENGTH; y++)
+                for (int x = 0; x < Constants.WORLD_LENGTH; x++)
                     write(x, y, z, tiles[random.nextInt(3)]);
         clearPendingUpdates();
     }
@@ -74,45 +73,33 @@ public class ServerWorld {
         }
     }
 
-    public int xSize() {
-        return WORLD_LENGTH;
-    }
-
-    public int ySize() {
-        return WORLD_LENGTH;
-    }
-
-    public int zSize() {
-        return WORLD_DEPTH;
-    }
-
     public Tile read(int x, int y, int z) {
-        if ((z < 0) || (z >= WORLD_DEPTH))
+        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
             return tiles[0];
         x = normalizeAxis(x);
         y = normalizeAxis(y);
 
-        return tiles[((int) world[x + (y + z * WORLD_LENGTH) * WORLD_LENGTH]) & 0xff];
+        return tiles[((int) world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH]) & 0xff];
     }
 
     public void write(int x, int y, int z, Tile tile) {
-        if ((z < 0) || (z >= WORLD_DEPTH)) {
+        if ((z < 0) || (z >= Constants.WORLD_DEPTH)) {
             // return;
             throw new RuntimeException("writing outside of the world ?");
         }
         x = normalizeAxis(x);
         y = normalizeAxis(y);
 
-        byte current = world[x + (y + z * WORLD_LENGTH) * WORLD_LENGTH];
+        byte current = world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
         byte value = tile.value();
         if (current != value) {
-            world[x + (y + z * WORLD_LENGTH) * WORLD_LENGTH] = tile.value();
+            world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH] = tile.value();
             appendUpdate(x, y, z);
         }
     }
 
     private void appendUpdate(int x, int y, int z) {
-        int l = x + (y + z * WORLD_LENGTH) * WORLD_LENGTH;
+        int l = x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH;
         if (updates.length == updatesIndex) {
             updates = Arrays.copyOf(updates, updates.length * 2);
         }
@@ -127,9 +114,9 @@ public class ServerWorld {
     private int normalizeAxis(int axis) {
         //sure, modulo should do the job too
         while (axis < 0)
-            axis += WORLD_LENGTH;
-        while (axis >= WORLD_LENGTH)
-            axis -= WORLD_LENGTH;
+            axis += Constants.WORLD_LENGTH;
+        while (axis >= Constants.WORLD_LENGTH)
+            axis -= Constants.WORLD_LENGTH;
         return axis;
     }
 
@@ -147,11 +134,11 @@ public class ServerWorld {
     }
 
     public byte readDirect(int x, int y, int z) {
-        if ((z < 0) || (z >= WORLD_DEPTH))
+        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
             return 0;
         x = normalizeAxis(x);
         y = normalizeAxis(y);
 
-        return world[x + (y + z * WORLD_LENGTH) * WORLD_LENGTH];
+        return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
     }
 }

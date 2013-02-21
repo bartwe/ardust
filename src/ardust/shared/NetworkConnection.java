@@ -143,8 +143,10 @@ public class NetworkConnection {
             while (true) {
                 if (!isValid())
                     break;
+                buffer.clear();
                 ensureBuffer(buffer, inStream, 2);
                 int size = buffer.getShort(0);
+
                 if ((size <= 0) || (size > 32000))
                     throw new RuntimeException("Invalid packet size.");
                 buffer.clear();
@@ -152,6 +154,7 @@ public class NetworkConnection {
                 int position = buffer.position();
                 if (position != size)
                     throw new RuntimeException("Bad receive buffer.");
+                buffer.flip();
                 Packet packet = Packet.read(buffer);
                 synchronized (this) {
                     inbound.addLast(packet);
@@ -160,7 +163,7 @@ public class NetworkConnection {
             }
         } catch (Exception e) {
             if (!stopped) {
-                if (!e.getMessage().equals("EOF"))
+                if (!"EOF".equals(e.getMessage()))
                     e.printStackTrace();
             }
             try {

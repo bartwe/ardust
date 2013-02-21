@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class WorldUpdatesPacket extends Packet {
-    int[] locations;
-    byte[] tiles;
+    public int[] locations;
+    public byte[] tiles;
 
     public WorldUpdatesPacket(ServerWorld world, int[] updates, int index, int length) {
         locations = Arrays.copyOfRange(updates, index, index + length);

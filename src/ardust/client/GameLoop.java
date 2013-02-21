@@ -134,6 +134,7 @@ public class GameLoop {
     private void start() {
         try {
             network = new NetworkConnection(new Socket("localhost", 53421));
+            network.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -3,6 +3,9 @@ package ardust.shared;
 public class Constants {
     public static final long MILLIS_PER_SERVER_TICK = 200;
 
+    public static final int WORLD_DEPTH = 16;
+    public static final int WORLD_LENGTH = 1024;
+
     // client get this radius of data around the screen center from the server
     public static final int RADIUS = 32;
     public static final int ZRADIUS = 2;
@@ -20,4 +23,6 @@ public class Constants {
     public static final int CURSOR_Y_IN_TILESHEET = 40;
     public static final int DEFAULT_CURSOR = 0;
     public static final int PANNING_CURSOR = 1;
+
+    public static final int DUMMY_Z = 5;
 }

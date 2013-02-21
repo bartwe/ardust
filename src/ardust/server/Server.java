@@ -1,9 +1,6 @@
 package ardust.server;
 
-import ardust.packets.HelloPacket;
-import ardust.packets.Packet;
-import ardust.packets.WindowPacket;
-import ardust.packets.WorldUpdatesPacket;
+import ardust.packets.*;
 import ardust.shared.Constants;
 
 import java.io.IOException;
@@ -113,7 +110,7 @@ public class Server {
             HelloPacket hp = (HelloPacket)packet;
             player.setName(hp.getName());
         }
-        if (packet instanceof WindowPacket) {
+        else if (packet instanceof WindowPacket) {
             WindowPacket wp = (WindowPacket)packet;
             int oldX = player.getX();
             int oldY = player.getY();
@@ -121,6 +118,8 @@ public class Server {
             player.setXYZ(wp.x, wp.y, wp.z);
             sendWorldRegion(player, oldX, oldY, oldZ, wp.x, wp.y, wp.z);
         }
+        else
+            throw new RuntimeException("Unknown packet: "+packet.packetId());
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {

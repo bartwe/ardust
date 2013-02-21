@@ -24,10 +24,6 @@ public class World {
         clientWorld = new ClientWorld();
     }
 
-    public void tick() {
-
-    }
-
     public static void globalTileToLocalCoord(int tileX, int tileY, Point viewportLocation, Point result) {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
@@ -43,7 +39,7 @@ public class World {
         Rectangle tileSheetFloorRect = new Rectangle();
         Rectangle tileSheetRect = new Rectangle();
         p.start();
-        int z = 1;
+        int z = Constants.DUMMY_Z;
         for (int x = tileRectX; x < tileRectX + tileRectWidth; x++) {
             for (int y = tileRectY; y < tileRectY + tileRectHeight; y++) {
 
@@ -65,5 +61,15 @@ public class World {
         }
         p.flush();
 
+    }
+
+    public static void screenCoordToWorldCoord(Point viewportLocation, Point result) {
+        int x = viewportLocation.x / Constants.TILE_BASE_WIDTH;
+        int y = viewportLocation.y / Constants.TILE_BASE_HEIGHT;
+        result.setLocation(x, y);
+    }
+
+    public void writeTiles(int[] locations, byte[] tiles) {
+        clientWorld.writeTiles(locations, tiles);
     }
 }

@@ -1,6 +1,6 @@
 package ardust.client;
 
-import ardust.packets.HelloPacket;
+import ardust.packets.*;
 import ardust.shared.Constants;
 import ardust.shared.NameGenerator;
 import ardust.shared.NetworkConnection;
@@ -32,7 +32,43 @@ public class GameCore {
     }
 
     public void tick() {
+        processNetwork();
 
+        mousePan();
+
+    }
+
+    Point temp = new Point(); //javawut
+
+    private void processNetwork() {
+        while (network.hasInboundPackets()) {
+            Packet packet = network.nextInboundPacket();
+            if (packet instanceof WorldRegionPacket) {
+                WorldRegionPacket wrp = (WorldRegionPacket)packet;
+                int entries = wrp.entries();
+                if (entries > 0) {
+                    int[] locations = new int[entries];
+                    byte[] tiles = new byte[entries];
+                    wrp.readUpdates(locations, tiles);
+                    world.writeTiles(locations, tiles);
+                }
+            }
+            else
+            if (packet instanceof WorldUpdatesPacket) {
+                WorldUpdatesPacket wup = (WorldUpdatesPacket)packet;
+                world.writeTiles(wup.locations, wup.tiles);
+            }
+            else
+                throw new RuntimeException("Unknown packet: "+ packet.packetId());
+        }
+
+        world.screenCoordToWorldCoord(GameLoop.getViewportLocation(), temp);
+        System.err.println(temp);
+        WindowPacket wp = new WindowPacket((int)temp.getX(), (int)temp.getY(), Constants.DUMMY_Z);
+        network.send(wp);
+    }
+
+    private void mousePan() {
         //Panning around on the map
         if (input.isMouseButtonDown(1, false)) {
             GameLoop.setCurrentMouseCursor(Constants.PANNING_CURSOR);
@@ -44,8 +80,6 @@ public class GameCore {
         }
         else
             GameLoop.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
-
-        world.tick();
 
     }
 
