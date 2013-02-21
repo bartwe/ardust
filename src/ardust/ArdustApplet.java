@@ -1,6 +1,7 @@
 package ardust;
 
 import ardust.client.GameLoop;
+import ardust.shared.Settings;
 
 import java.awt.*;
 
@@ -9,6 +10,8 @@ public class ArdustApplet extends java.applet.Applet {
     private GameLoop game;
 
     public ArdustApplet() {
+        Settings.applet = true;
+        Settings.hostname = "pluk.cuberealms.com";
         try {
             game = new GameLoop();
         } catch (Exception e) {
@@ -41,6 +44,7 @@ public class ArdustApplet extends java.applet.Applet {
                 public final void addNotify() {
                     super.addNotify();
                     game.startLWJGL(display_parent);
+                    game.setGameState(GameLoop.GameState.CLIENT_STATE);
                 }
 
                 public final void removeNotify() {
@@ -55,7 +59,6 @@ public class ArdustApplet extends java.applet.Applet {
             display_parent.setFocusable(true);
             display_parent.requestFocus();
             display_parent.setIgnoreRepaint(true);
-            add(game.getMenu(), 0);
             setVisible(true);
 
         } catch (Exception e) {

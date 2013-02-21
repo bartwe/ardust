@@ -6,7 +6,7 @@ import java.net.URL;
 public class Loader {
     public static InputStream getRequiredResourceAsStream(String ref) {
         try {
-            if (Constants.DEVELOPER) {
+            if (Constants.DEVELOPER && !Settings.applet) {
                 File file = new File(ref);
                 if (file.exists()) {
                     System.err.println("Resource loaded from local file: " + file.toURI());

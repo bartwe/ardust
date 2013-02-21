@@ -3,6 +3,7 @@ package ardust.client;
 import ardust.server.Server;
 import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
+import ardust.shared.Settings;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
@@ -69,7 +70,7 @@ public class GameLoop {
 
     private void setupCore() {
         try {
-            network = new NetworkConnection(new Socket("localhost", Constants.PORT));
+            network = new NetworkConnection(new Socket(Settings.hostname, Constants.PORT));
             network.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
