@@ -63,7 +63,6 @@ public class GameCore {
         }
 
         world.screenCoordToWorldCoord(GameLoop.getViewportLocation(), temp);
-        System.err.println(temp);
         WindowPacket wp = new WindowPacket((int)temp.getX(), (int)temp.getY(), Constants.DUMMY_Z);
         network.send(wp);
     }
