@@ -24,7 +24,11 @@ public class HelloPacket extends Packet {
     }
 
     @Override
-    byte packetId() {
+    public byte packetId() {
         return Packet.ID_HELLO_PACKET;
+    }
+
+    public String getName() {
+        return name;
     }
 }

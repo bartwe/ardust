@@ -9,14 +9,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.IOException;
 
 public class Standalone {
     static Canvas display_parent;
 
     public static void main(String[] args) {
         // lil local server
-        Server server = new Server();
+        final Server server = new Server();
         server.start();
 
         int width = 910;
@@ -64,6 +63,7 @@ public class Standalone {
 
                 public void windowClosing(WindowEvent e) {
                     game.stopLWJGL();
+                    server.stop();
                     System.exit(0);
                 }
 
@@ -85,12 +85,5 @@ public class Standalone {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        try {
-            System.out.print("Running local server.");
-            System.out.println(System.in.read());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        server.stop();
     }
 }

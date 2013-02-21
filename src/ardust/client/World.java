@@ -1,7 +1,8 @@
 package ardust.client;
 
+import ardust.shared.Constants;
+
 import java.awt.*;
-import java.util.Random;
 
 /* I chose to store the "terrainItems" (any stationary object that exists in the world... like stones, structures, etc.)  in a byte array to save on memory (the bytes would presumably
 correspond to an index in the tile sheet).
@@ -15,82 +16,49 @@ I dunno.. it's something to discuss.
 
 */
 public class World {
-    public static final int worldWidth = 64;
-    public static final int worldHeight = 64;
-    public static final byte emptySpot = 127;
     public static final int tilesBeyondViewportToRender = 1;
 
-    private byte[][] terrainItems = new byte[worldWidth][worldHeight];
+    ClientWorld clientWorld;
 
     public World() {
-        //Populate with random stuff for now
-        Random r = new Random();
-
-        for (int i = 0; i < worldWidth; i++) {
-            for (int j = 0; j < worldHeight; j++) {
-                terrainItems[i][j] = r.nextDouble() < .5 ? (byte) (r.nextInt(2) * 2 + 1) : emptySpot;
-            }
-        }
+        clientWorld = new ClientWorld();
     }
 
     public void tick() {
 
     }
 
-    public byte getTerrainItemAt(int x, int y) {
-        if (x >= 0 && x < worldWidth && y >= 0 && y < worldHeight)
-            return terrainItems[x][y];
-
-        return -1;
+    public static void globalTileToLocalCoord(int tileX, int tileY, Point viewportLocation, Point result) {
+        result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
-
-    public void setTerrainItemAt(int x, int y, byte whichItem) {
-        if (x >= 0 && x < worldWidth && y >= 0 && y < worldHeight)
-            terrainItems[x][y] = whichItem;
-    }
-
-    public static Point globalTileToLocalCoord(int tileX, int tileY, Point viewportLocation) {
-
-        return new Point(tileX * GameLoop.TILE_BASE_WIDTH - viewportLocation.x, tileY * GameLoop.TILE_BASE_HEIGHT - viewportLocation.y);
-    }
-
-    public static Point localPointToGlobalTile(int x, int y, Point viewportLocation) {
-        return new Point(viewportLocation.x + x, viewportLocation.y + y);
-    }
-
-    public boolean isGlobalPointOnMap(int x, int y) {
-        return (x >= 0 && x < worldWidth * GameLoop.TILE_BASE_WIDTH && y >= 0 && y < worldHeight * GameLoop.TILE_BASE_HEIGHT);
-    }
-
-    public boolean isLocalPointOnMap(int x, int y, Point viewportLocation) {
-        Point p = localPointToGlobalTile(x, y, viewportLocation);
-        return (p.x >= 0 && p.x < worldWidth && p.y >= 0 && p.y < worldHeight);
-    }
-
 
     public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight) {
 
-        int tileRectX = viewportLocation.x / GameLoop.TILE_BASE_WIDTH - tilesBeyondViewportToRender;
-        int tileRectY = viewportLocation.y / GameLoop.TILE_BASE_HEIGHT - tilesBeyondViewportToRender;
-        int tileRectWidth = screenWidth / GameLoop.TILE_BASE_WIDTH + 2 * tilesBeyondViewportToRender;
-        int tileRectHeight = screenHeight / GameLoop.TILE_BASE_HEIGHT + 2 * tilesBeyondViewportToRender;
+        int tileRectX = viewportLocation.x / Constants.TILE_BASE_WIDTH - tilesBeyondViewportToRender;
+        int tileRectY = viewportLocation.y / Constants.TILE_BASE_HEIGHT - tilesBeyondViewportToRender;
+        int tileRectWidth = screenWidth / Constants.TILE_BASE_WIDTH + 2 * tilesBeyondViewportToRender;
+        int tileRectHeight = screenHeight / Constants.TILE_BASE_HEIGHT + 2 * tilesBeyondViewportToRender;
 
+        Point toDrawCoord = new Point();
+        Rectangle tileSheetFloorRect = new Rectangle();
+        Rectangle tileSheetRect = new Rectangle();
         p.start();
+        int z = 1;
         for (int x = tileRectX; x < tileRectX + tileRectWidth; x++) {
             for (int y = tileRectY; y < tileRectY + tileRectHeight; y++) {
 
-                Point toDrawCoord = globalTileToLocalCoord(x, y, viewportLocation);
+                globalTileToLocalCoord(x, y, viewportLocation, toDrawCoord);
 
                 //Draw Floor
-                Rectangle tileSheetFloorRect = p.getSourceRectFromTileSheetIndex(0);
-                p.draw(toDrawCoord.x, toDrawCoord.y - (GameLoop.TILE_DRAW_HEIGHT - GameLoop.TILE_BASE_HEIGHT) + GameLoop.FLOOR_TILE_THICKNESS,
+                p.getSourceRectFromTileSheetIndex(0, tileSheetFloorRect);
+                p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT) + Constants.FLOOR_TILE_THICKNESS,
                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height);
 
                 //Draw Terrain Item
-                byte whatItem = getTerrainItemAt(x, y);
-                if (whatItem != emptySpot) {
-                    Rectangle tileSheetRect = p.getSourceRectFromTileSheetIndex(whatItem);
-                    p.draw(toDrawCoord.x, toDrawCoord.y - (GameLoop.TILE_DRAW_HEIGHT - GameLoop.TILE_BASE_HEIGHT),
+                byte whatItem = clientWorld.readDirect(x, y, z);
+                if (whatItem != 0) {
+                    p.getSourceRectFromTileSheetIndex(whatItem, tileSheetRect);
+                    p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT),
                             tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height);
                 }
             }
@@ -98,6 +66,4 @@ public class World {
         p.flush();
 
     }
-
-
 }

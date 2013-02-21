@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
@@ -14,25 +15,11 @@ import java.net.Socket;
 
 
 public class GameLoop {
-    private static final int PIXEL_SCALE = 3;
-    public static final int TILE_BASE_WIDTH = 32;
-    public static final int TILE_BASE_HEIGHT = 16; //the height of an in-game tile.
-    public static final int TILE_DRAW_HEIGHT = 40; //the actual height of the graphic assets
-    public static final int FLOOR_TILE_THICKNESS = 4;
-    public static final int MAP_PAN_MAX_SPEED = 2;
-    public static final int MAP_PAN_SENSITIVITY = 128; //distance to drag away from click to reach max panning speed
-
-    //mouse cursors
-    public static final int CURSOR_X_IN_TILESHEET = 64;
-    public static final int CURSOR_Y_IN_TILESHEET = 40;
-    public static final int DEFAULT_CURSOR = 0;
-    public static final int PANNING_CURSOR = 1;
-
     private static GameState gameState = GameState.MENU_STATE;
     private static int width;
     private static int height;
     private static Point viewportLocation = new Point();
-    private static int currentMouseCursor = DEFAULT_CURSOR;
+    private static int currentMouseCursor = Constants.DEFAULT_CURSOR;
     private Canvas display_parent;
     private Thread gameThread;
     private boolean running;
@@ -79,8 +66,8 @@ public class GameLoop {
     }
 
     public static Point getCurrentMouseCursorTileSheetPoint() {
-        return new Point(CURSOR_X_IN_TILESHEET + (currentMouseCursor * (TILE_BASE_WIDTH / 2) % TILE_BASE_WIDTH),
-                CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (TILE_BASE_WIDTH / 2) / TILE_BASE_WIDTH) * TILE_BASE_WIDTH);
+        return new Point(Constants.CURSOR_X_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) % Constants.TILE_BASE_WIDTH),
+                Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH);
     }
 
     public static void setCurrentMouseCursor(int which) {
@@ -152,7 +139,7 @@ public class GameLoop {
         }
         input = new Input();
         painter = new Painter();
-        painter.setScale(PIXEL_SCALE);
+        painter.setScale(Constants.PIXEL_SCALE);
         painter.init();
         core = new GameCore(network, input, painter);
         core.start();
@@ -268,8 +255,8 @@ public class GameLoop {
 
                 painter.start();
 
-                painter.draw(input.getX() / PIXEL_SCALE, input.getY() / PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
-                        getCurrentMouseCursorTileSheetPoint().y, TILE_BASE_WIDTH / 2, TILE_BASE_WIDTH / 2);
+                painter.draw(input.getX() / Constants.PIXEL_SCALE, input.getY() / Constants.PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
+                        getCurrentMouseCursorTileSheetPoint().y, Constants.TILE_BASE_WIDTH / 2, Constants.TILE_BASE_WIDTH / 2);
 
                 painter.flush();
 

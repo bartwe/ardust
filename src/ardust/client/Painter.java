@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.shared.Constants;
 import ardust.shared.Loader;
 import org.lwjgl.opengl.GL11;
 
@@ -146,10 +147,13 @@ public class Painter {
 
     }
 
-    public Rectangle getSourceRectFromTileSheetIndex(int index) {
-        if (textureWidth <= 0) return new Rectangle(0, 0, 0, 0);
-        return new Rectangle((index * GameLoop.TILE_BASE_WIDTH) % (int) (textureWidth),
-                ((index * GameLoop.TILE_BASE_WIDTH) / (int) (textureWidth)) * GameLoop.TILE_DRAW_HEIGHT,
-                GameLoop.TILE_BASE_WIDTH, GameLoop.TILE_DRAW_HEIGHT);
+    public void getSourceRectFromTileSheetIndex(int index, Rectangle result) {
+        if (textureWidth <= 0)
+            result.setBounds(0, 0, 0, 0);
+        else
+            result.setBounds((index * Constants.TILE_BASE_WIDTH) % (int) (textureWidth),
+                    ((index * Constants.TILE_BASE_WIDTH) / (int) (textureWidth)) * Constants.TILE_DRAW_HEIGHT,
+                    Constants.TILE_BASE_WIDTH,
+                    Constants.TILE_DRAW_HEIGHT);
     }
 }

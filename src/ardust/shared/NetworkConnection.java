@@ -172,4 +172,22 @@ public class NetworkConnection {
             }
         }
     }
+
+    public boolean hasInboundPackets() {
+        synchronized (this) {
+            return !inbound.isEmpty();
+        }
+    }
+
+    public Packet nextInboundPacket() {
+        while (true) {
+            inboundFlag.reset();
+            if (hasInboundPackets())
+                break;
+            inboundFlag.waitFor();
+        }
+        synchronized (this) {
+            return inbound.removeFirst();
+        }
+    }
 }

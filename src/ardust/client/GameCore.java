@@ -1,6 +1,7 @@
 package ardust.client;
 
 import ardust.packets.HelloPacket;
+import ardust.shared.Constants;
 import ardust.shared.NameGenerator;
 import ardust.shared.NetworkConnection;
 
@@ -34,12 +35,15 @@ public class GameCore {
 
         //Panning around on the map
         if (input.isMouseButtonDown(1, false)) {
-            int xPan = (int) Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(1).x) / (double) GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
-            int yPan = (int) Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double) GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
+            GameLoop.setCurrentMouseCursor(Constants.PANNING_CURSOR);
+            int xPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(1).x) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
+            int yPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
 
             GameLoop.setViewportLocation(new Point(GameLoop.getViewportLocation().x + xPan,
                     GameLoop.getViewportLocation().y + yPan));
         }
+        else
+            GameLoop.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
         world.tick();
 
