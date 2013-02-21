@@ -48,7 +48,7 @@ public class Server {
         System.err.println("Starting server");
         world = new ServerWorld();
         world.load();
-        networkServer = new NetworkServer(53421);
+        networkServer = new NetworkServer(Constants.PORT);
         workerThread = new Thread() {
             public void run() {
                 long deadline = System.currentTimeMillis();

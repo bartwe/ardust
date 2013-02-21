@@ -69,7 +69,7 @@ public class GameLoop {
 
     private void setupCore() {
         try {
-            network = new NetworkConnection(new Socket("localhost", 53421));
+            network = new NetworkConnection(new Socket("localhost", Constants.PORT));
             network.start();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,6 +1,9 @@
 package ardust.shared;
 
 public class Constants {
+    public static final boolean DEVELOPER = true;
+
+    public static final int PORT = 0xba57;
     public static final long MILLIS_PER_SERVER_TICK = 200;
 
     public static final int WORLD_DEPTH = 16;

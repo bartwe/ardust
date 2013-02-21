@@ -4,11 +4,9 @@ import java.io.*;
 import java.net.URL;
 
 public class Loader {
-    private static final boolean DEVELOPER = true;
-
     public static InputStream getRequiredResourceAsStream(String ref) {
         try {
-            if (DEVELOPER) {
+            if (Constants.DEVELOPER) {
                 File file = new File(ref);
                 if (file.exists()) {
                     System.err.println("Resource loaded from local file: " + file.toURI());
