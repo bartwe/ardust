@@ -1,6 +1,7 @@
 package ardust.client;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +36,7 @@ public class GameMenu extends JPanel implements ActionListener {
         button.setText(buttonName);
         button.addActionListener(this);
         button.setBackground(Color.GRAY);
-        button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4, false));
+        button.setBorder(new LineBorder(Color.BLACK, 4, false));
         button.setPreferredSize((new Dimension(100, 50)));
         return button;
     }
