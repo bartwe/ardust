@@ -14,6 +14,7 @@ public class NetworkServer {
     ServerSocket acceptSocket;
 
     Deque<NetworkConnection> newConnections = new ArrayDeque<NetworkConnection>();
+    private boolean stopped;
 
     NetworkServer(int port) {
         try {
@@ -38,6 +39,7 @@ public class NetworkServer {
     }
 
     public void stop() {
+        stopped = true;
         try {
             acceptSocket.close();
         } catch (IOException e) {
@@ -60,7 +62,20 @@ public class NetworkServer {
                 newConnections.addLast(connection);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!stopped)
+                e.printStackTrace();
+        }
+    }
+
+    public boolean hasNewConnection() {
+        synchronized (this) {
+            return !newConnections.isEmpty();
+        }
+    }
+
+    public NetworkConnection nextNewConnection() {
+        synchronized (this) {
+            return newConnections.removeFirst();
         }
     }
 }

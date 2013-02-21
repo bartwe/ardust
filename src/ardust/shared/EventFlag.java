@@ -21,12 +21,13 @@ public class EventFlag {
     public void waitFor() {
         synchronized (this) {
             while (true) {
-                if (!flag)
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                if (flag)
+                    return;
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

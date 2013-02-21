@@ -1,10 +1,11 @@
 package ardust.client;
 
-import ardust.Standalone;
+import ardust.server.Server;
+import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
+import ardust.shared.Settings;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -16,25 +17,11 @@ import java.net.Socket;
 
 
 public class GameLoop {
-    private static final int PIXEL_SCALE = 4;
-    public static final int TILE_BASE_WIDTH = 32;
-    public static final int TILE_BASE_HEIGHT = 16; //the height of an in-game tile.
-    public static final int TILE_DRAW_HEIGHT = 40; //the actual height of the graphic assets
-    public static final int FLOOR_TILE_THICKNESS = 4;
-    public static final int MAP_PAN_MAX_SPEED = 2;
-    public static final int MAP_PAN_SENSITIVITY = 128; //distance to drag away from click to reach max panning speed
-
-    //mouse cursors
-    public static final int CURSOR_X_IN_TILESHEET = 64;
-    public static final int CURSOR_Y_IN_TILESHEET = 40;
-    public static final int DEFAULT_CURSOR = 0;
-    public static final int PANNING_CURSOR = 1;
-
-    private static GameState gameState = GameState.MENU_STATE;
-    private static int width;
-    private static int height;
-    private static Point viewportLocation = new Point();
-    private static int currentMouseCursor = DEFAULT_CURSOR;
+    private GameState gameState = GameState.MENU_STATE;
+    private int width;
+    private int height;
+    private Point viewportLocation = new Point();
+    private int currentMouseCursor = Constants.DEFAULT_CURSOR;
     private Canvas display_parent;
     private Thread gameThread;
     private boolean running;
@@ -44,41 +31,85 @@ public class GameLoop {
     private Painter painter;
     private NetworkConnection network;
     private GameCore core;
-    private GameMenu menu = new GameMenu();
+    private GameMenu menu;
+    private Server server;
 
-    public enum GameState{
+    public GameLoop() {
+        menu = new GameMenu(this);
+    }
+
+    public void startServer() {
+        server = new Server();
+        server.start();
+        try {
+            Thread.sleep(200); // give it time to start.
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public void fail(String message) {
+        System.err.println("Failure: "+message);
+        setGameState(GameState.FAIL_STATE);
+    }
+
+    public enum GameState {
         MENU_STATE,
         CLIENT_STATE,
-        SERVER_STATE;
+        FAIL_STATE
     }
 
-    public static GameState getGameState() {return gameState;}
-    public static void setGameState(GameState newState) {gameState = newState;}
+    public GameState getGameState() {
+        return gameState;
+    }
 
-    public static Point getViewportLocation() {return viewportLocation;}
-    public static void setViewportLocation(Point p) {
+    public void setGameState(GameState newState) {
+        if (running)
+            if (newState == GameState.CLIENT_STATE)
+                setupCore();
+        gameState = newState;
+    }
+
+    private void setupCore() {
+        try {
+            network = new NetworkConnection(new Socket(Settings.hostname, Constants.PORT));
+            network.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        core = new GameCore(this, network, input, painter);
+        core.start();
+    }
+
+    public Point getViewportLocation() {
+        return viewportLocation;
+    }
+
+    public void setViewportLocation(Point p) {
         viewportLocation = p;
     }
-    public static void setViewportX(int x) {viewportLocation.x = x;}
-    public static void setViewportY(int y) {viewportLocation.y = y;}
 
-    public static int getWidth() {return width;}
 
-    public static int getHeight() {return height;}
-
-    public static int getCurrentMouseCursor() {return currentMouseCursor;}
-    public static Point getCurrentMouseCursorTileSheetPoint(){
-        return new Point(CURSOR_X_IN_TILESHEET + (currentMouseCursor * (TILE_BASE_WIDTH / 2) % TILE_BASE_WIDTH),
-                CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (TILE_BASE_WIDTH / 2) / TILE_BASE_WIDTH) * TILE_BASE_WIDTH);
+    public int getCurrentMouseCursor() {
+        return currentMouseCursor;
     }
-    public static void setCurrentMouseCursor(int which) {currentMouseCursor = which;}
 
-    public GameMenu getMenu() {return menu;}
+    public Point getCurrentMouseCursorTileSheetPoint() {
+        return new Point(Constants.CURSOR_X_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) % Constants.TILE_BASE_WIDTH),
+                Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH);
+    }
+
+    public void setCurrentMouseCursor(int which) {
+        currentMouseCursor = which;
+    }
+
+    public GameMenu getMenu() {
+        return menu;
+    }
 
     public void startLWJGL(final Canvas display_parent) {
         this.display_parent = display_parent;
 
-        start();
+        final GameLoop self = this;
 
         gameThread = new Thread() {
             public void run() {
@@ -88,10 +119,7 @@ public class GameLoop {
                     Display.setTitle("ardust");
                     Display.create();
                     Mouse.setNativeCursor(new org.lwjgl.input.Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null));
-                    painter = new Painter();
-                    painter.setScale(PIXEL_SCALE);
-                    painter.init();
-                    core.setPainter(painter);
+                    self.start();
                     resetViewPort();
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -101,8 +129,6 @@ public class GameLoop {
             }
         };
 
-
-
         gameThread.start();
 
         sleeperThread = new Thread("High precision sleep workaround") {
@@ -110,7 +136,6 @@ public class GameLoop {
                 try {
                     Thread.sleep(Integer.MAX_VALUE);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         };
@@ -134,19 +159,21 @@ public class GameLoop {
     }
 
     private void start() {
-        try {
-            network = new NetworkConnection(new Socket("localhost", 53421));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         input = new Input();
-        core = new GameCore(network, input, painter);
-        core.start();
+        painter = new Painter();
+        painter.setScale(Constants.PIXEL_SCALE);
+        painter.init();
+        if (gameState == GameState.CLIENT_STATE)
+            setupCore();
     }
 
     private void stop() {
-        core.stop();
-        network.stop();
+        if (server != null)
+            server.stop();
+        if (core != null)
+            core.stop();
+        if (network != null)
+            network.stop();
     }
 
     public void resized() {
@@ -158,7 +185,6 @@ public class GameLoop {
         height = display_parent.getParent().getHeight();
         display_parent.setSize(width, height);
         input.setHeight(height);
-        core.getWorld().constrainViewport();
         painter.setScreenDimensions(width, height);
         GL11.glViewport(0, 0, width, height);
         setupRenderMode();
@@ -201,7 +227,19 @@ public class GameLoop {
         try {
             long deadline = Sys.getTime();
             long timerResolution = Sys.getTimerResolution();
+            long fpsTimer = Sys.getTime() + timerResolution;
+            int frames = 0;
             while (running) {
+                if (fpsTimer <= Sys.getTime()) {
+                    double f = frames;
+                    frames = 0;
+                    double duration = (Sys.getTime() - fpsTimer) + timerResolution;
+                    duration /= timerResolution;
+                    f /= duration;
+                    System.err.println("fps: " + f);
+                    fpsTimer = Sys.getTime() + timerResolution;
+                }
+                frames++;
 
                 int error = GL11.glGetError();
                 if (error != GL11.GL_NO_ERROR) {
@@ -218,7 +256,8 @@ public class GameLoop {
 
                 switch (gameState) {
 
-                    case MENU_STATE: break;
+                    case MENU_STATE:
+                        break;
 
                     case CLIENT_STATE:
 
@@ -234,39 +273,20 @@ public class GameLoop {
                         core.render();
                         break;
 
-                    case SERVER_STATE: break;
+                    case FAIL_STATE:
+
+                        GL11.glClearColor(1f,0,0,1f);
+                        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT + GL11.GL_COLOR_BUFFER_BIT); // assuming we need one
 
                 }
 
 
                 painter.start();
 
-                    painter.draw(input.getX() / PIXEL_SCALE,input.getY()/ PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
-                            getCurrentMouseCursorTileSheetPoint().y, TILE_BASE_WIDTH / 2, TILE_BASE_WIDTH / 2);
+                painter.draw(input.getX() / Constants.PIXEL_SCALE, input.getY() / Constants.PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
+                        getCurrentMouseCursorTileSheetPoint().y, Constants.TILE_BASE_WIDTH / 2, Constants.TILE_BASE_WIDTH / 2);
 
                 painter.flush();
-
-                /*GL11.glBegin(GL11.GL_TRIANGLES);
-
-                if (input.isMouseButtonDown(0, false))
-                    GL11.glColor4f(1f, 1f, 1f, 0.5f);
-                else
-                    GL11.glColor4f(1f, 0f, 0f, 1f);
-                GL11.glVertex2d(0, 0);
-                GL11.glTexCoord2f(0,0);
-                if (input.isKeyDown(Keyboard.KEY_SPACE, false))
-                    GL11.glColor4f(0f, 0f, 0f, 1f);
-                else
-                    GL11.glColor4f(0f, 1f, 0f, 1f);
-                GL11.glVertex2d(input.getX(), 0);
-                GL11.glTexCoord2f(1, 0);
-                GL11.glColor4f(0f, 0f, 1f, 1f);
-                GL11.glVertex2d(0, input.getY());
-                GL11.glTexCoord2f(0, 1);
-
-                GL11.glEnd();  */
-
-
 
                 //flip
 
@@ -275,7 +295,6 @@ public class GameLoop {
                 if (Display.isCloseRequested()) {
                     running = false;
                 }
-
 
                 // sync
                 long nextDeadline = Sys.getTime() + (timerResolution * 16) / 1000;
@@ -290,6 +309,11 @@ public class GameLoop {
                     if (delta < 2)
                         break;
                     Thread.sleep(0);
+                }
+                // spinwait
+                while (true) {
+                    if (deadline - Sys.getTime() <= 0)
+                        break;
                 }
                 deadline = nextDeadline;
 

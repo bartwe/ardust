@@ -1,7 +1,6 @@
 package ardust;
 
 import ardust.client.GameLoop;
-import ardust.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,17 +8,11 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class Standalone {
     static Canvas display_parent;
 
     public static void main(String[] args) {
-        // lil local server
-        Server server = new Server();
-        server.start();
-
         int width = 910;
         int height = 512;
 
@@ -30,11 +23,6 @@ public class Standalone {
         f.setLayout(new BorderLayout());
         f.pack();
         f.setVisible(true);
-
-        //Workaround for using a custom cursor (set actual cursor to a blank image)
-        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
-        //f.getContentPane().setCursor(blankCursor);
 
         try {
             final GameLoop game = new GameLoop();
@@ -91,12 +79,5 @@ public class Standalone {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        server.stop();
-
     }
 }

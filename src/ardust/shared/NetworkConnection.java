@@ -20,6 +20,7 @@ public class NetworkConnection {
     Deque<Packet> inbound = new ArrayDeque<Packet>();  //this synchronized
     EventFlag inboundFlag = new EventFlag();
     Thread inboundThread;
+    private boolean stopped;
 
     public NetworkConnection(Socket socket) {
         this.socket = socket;
@@ -43,6 +44,9 @@ public class NetworkConnection {
     }
 
     public void stop() {
+        stopped = true;
+        inboundFlag.set();
+        outboundFlag.set();
         try {
             if (socket != null)
                 socket.close();
@@ -75,7 +79,7 @@ public class NetworkConnection {
     }
 
     public boolean isValid() {
-        return !socket.isClosed() && socket.isConnected();
+        return !stopped && !socket.isClosed() && socket.isConnected();
     }
 
     private void handleOutbound() {
@@ -83,7 +87,7 @@ public class NetworkConnection {
         try {
             OutputStream outStream = socket.getOutputStream();
             while (true) {
-                if (socket.isClosed() || !socket.isConnected())
+                if (!isValid())
                     break;
                 outboundFlag.reset();
                 Packet packet = null;
@@ -106,12 +110,16 @@ public class NetworkConnection {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!stopped) {
+                if (!e.getMessage().equals("EOF"))
+                    e.printStackTrace();
+            }
             try {
                 if (socket != null)
                     socket.close();
             } catch (IOException e1) {
-                e1.printStackTrace();
+                if (!stopped)
+                    e1.printStackTrace();
             }
         }
     }
@@ -133,10 +141,12 @@ public class NetworkConnection {
         try {
             InputStream inStream = socket.getInputStream();
             while (true) {
-                if (socket.isClosed() || !socket.isConnected())
+                if (!isValid())
                     break;
+                buffer.clear();
                 ensureBuffer(buffer, inStream, 2);
                 int size = buffer.getShort(0);
+
                 if ((size <= 0) || (size > 32000))
                     throw new RuntimeException("Invalid packet size.");
                 buffer.clear();
@@ -144,6 +154,7 @@ public class NetworkConnection {
                 int position = buffer.position();
                 if (position != size)
                     throw new RuntimeException("Bad receive buffer.");
+                buffer.flip();
                 Packet packet = Packet.read(buffer);
                 synchronized (this) {
                     inbound.addLast(packet);
@@ -151,13 +162,35 @@ public class NetworkConnection {
                 inboundFlag.set();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!stopped) {
+                if (!"EOF".equals(e.getMessage()))
+                    e.printStackTrace();
+            }
             try {
                 if (socket != null)
                     socket.close();
             } catch (IOException e1) {
-                e1.printStackTrace();
+                if (!stopped)
+                    e1.printStackTrace();
             }
+        }
+    }
+
+    public boolean hasInboundPackets() {
+        synchronized (this) {
+            return !inbound.isEmpty();
+        }
+    }
+
+    public Packet nextInboundPacket() {
+        while (true) {
+            inboundFlag.reset();
+            if (hasInboundPackets())
+                break;
+            inboundFlag.waitFor();
+        }
+        synchronized (this) {
+            return inbound.removeFirst();
         }
     }
 }
