@@ -164,7 +164,6 @@ public class GameLoop {
 
                 int error = GL11.glGetError();
                 if (error != GL11.GL_NO_ERROR) {
-                    //String glerrmsg = GLU.gluErrorString(error);
                     System.err.println("OpenGL Error: (" + error + ") ");
                 }
 
