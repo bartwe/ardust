@@ -43,8 +43,8 @@ public class ArdustApplet extends java.applet.Applet {
             display_parent = new Canvas() {
                 public final void addNotify() {
                     super.addNotify();
-                    game.startLWJGL(display_parent);
                     game.setGameState(GameLoop.GameState.CLIENT_STATE);
+                    game.startLWJGL(display_parent);
                 }
 
                 public final void removeNotify() {
