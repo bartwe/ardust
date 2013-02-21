@@ -35,12 +35,13 @@ public class Standalone {
                 }
             };
             display_parent.setSize(width, height);
-            f.add(display_parent);
-            f.add(game.menu);
+            f.add(display_parent);;
             display_parent.setFocusTraversalKeysEnabled(false);
             display_parent.setFocusable(true);
             display_parent.requestFocus();
             display_parent.setIgnoreRepaint(true);
+            game.menu = new GameMenu(f.getContentPane());
+            f.getContentPane().add(game.menu, BorderLayout.CENTER, 0);
             f.setVisible(true);
             f.addComponentListener(new ComponentAdapter() {
                 @Override

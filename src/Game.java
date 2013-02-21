@@ -3,7 +3,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.util.glu.GLU;
+//import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
 
@@ -20,9 +20,11 @@ public class Game {
     private boolean requestResetViewPort;
     private Input input;
     private Painter painter;
+    public GameMenu menu;
 
     public void startLWJGL(final Canvas display_parent) {
         this.display_parent = display_parent;
+
         gameThread = new Thread() {
             public void run() {
                 running = true;
@@ -139,8 +141,8 @@ public class Game {
 
                 int error = GL11.glGetError();
                 if (error != GL11.GL_NO_ERROR) {
-                    String glerrmsg = GLU.gluErrorString(error);
-                    System.err.println("OpenGL Error: (" + error + ") " + glerrmsg);
+                    //String glerrmsg = GLU.gluErrorString(error);
+                    System.err.println("OpenGL Error: (" + error + ") ");
                 }
 
                 if (requestResetViewPort) {
