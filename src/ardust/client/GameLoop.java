@@ -1,12 +1,11 @@
 package ardust.client;
 
-import ardust.shared.NetworkConnection;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-//import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import java.net.Socket;
 
 public class GameLoop {
     private static final int PIXEL_SCALE = 4;
+
 
     private Canvas display_parent;
     private Thread gameThread;

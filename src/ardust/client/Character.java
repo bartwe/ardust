@@ -1,4 +1,4 @@
-package ardust.shared;
+package ardust.client;
 
 public class Character {
 
