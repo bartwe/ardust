@@ -4,10 +4,13 @@ import ardust.packets.HelloPacket;
 import ardust.shared.NameGenerator;
 import ardust.shared.NetworkConnection;
 
+import java.awt.*;
+
 public class GameCore {
     private final NetworkConnection network;
     private final Input input;
-    private final Painter painter;
+    private Painter painter;
+    private final World world;
 
     String name;
 
@@ -15,8 +18,13 @@ public class GameCore {
         this.network = network;
         this.input = input;
         this.painter = painter;
-
+        this.world = new World();
         name = NameGenerator.next();
+    }
+
+    public void setPainter(Painter p)
+    {
+        painter = p;
     }
 
     public void start() {
@@ -29,9 +37,21 @@ public class GameCore {
 
     public void tick() {
 
+        //Panning around on the map
+        if (input.isMouseButtonDown(1, false)) {
+            int xPan = (int)Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(1).x) / (double)GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
+            int yPan = (int)Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double)GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
+
+            GameLoop.setViewportLocation(new Point(GameLoop.getViewportLocation().x  + xPan,
+                    GameLoop.getViewportLocation().y + yPan));
+        }
+
+        world.tick();
+
     }
 
     public void render() {
 
+       world.draw(painter,  GameLoop.getViewportLocation(), GameLoop.getWidth(), GameLoop.getHeight());
     }
 }
