@@ -60,7 +60,6 @@ public class World {
             }
         }
         p.flush();
-
     }
 
     public static void screenCoordToWorldCoord(Point viewportLocation, Point result) {

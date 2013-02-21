@@ -15,11 +15,11 @@ import java.net.Socket;
 
 
 public class GameLoop {
-    private static GameState gameState = GameState.MENU_STATE;
-    private static int width;
-    private static int height;
-    private static Point viewportLocation = new Point();
-    private static int currentMouseCursor = Constants.DEFAULT_CURSOR;
+    private GameState gameState = GameState.MENU_STATE;
+    private int width;
+    private int height;
+    private Point viewportLocation = new Point();
+    private int currentMouseCursor = Constants.DEFAULT_CURSOR;
     private Canvas display_parent;
     private Thread gameThread;
     private boolean running;
@@ -29,7 +29,11 @@ public class GameLoop {
     private Painter painter;
     private NetworkConnection network;
     private GameCore core;
-    private GameMenu menu = new GameMenu();
+    private GameMenu menu;
+
+    public GameLoop() {
+        menu = new GameMenu(this);
+    }
 
     public enum GameState {
         MENU_STATE,
@@ -37,40 +41,33 @@ public class GameLoop {
         SERVER_STATE;
     }
 
-    public static GameState getGameState() {
+    public GameState getGameState() {
         return gameState;
     }
 
-    public static void setGameState(GameState newState) {
+    public void setGameState(GameState newState) {
         gameState = newState;
     }
 
-    public static Point getViewportLocation() {
+    public Point getViewportLocation() {
         return viewportLocation;
     }
 
-    public static void setViewportLocation(Point p) {
+    public void setViewportLocation(Point p) {
         viewportLocation = p;
     }
 
-    public static int getWidth() {
-        return width;
-    }
 
-    public static int getHeight() {
-        return height;
-    }
-
-    public static int getCurrentMouseCursor() {
+    public int getCurrentMouseCursor() {
         return currentMouseCursor;
     }
 
-    public static Point getCurrentMouseCursorTileSheetPoint() {
+    public Point getCurrentMouseCursorTileSheetPoint() {
         return new Point(Constants.CURSOR_X_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) % Constants.TILE_BASE_WIDTH),
                 Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH);
     }
 
-    public static void setCurrentMouseCursor(int which) {
+    public void setCurrentMouseCursor(int which) {
         currentMouseCursor = which;
     }
 
@@ -142,7 +139,8 @@ public class GameLoop {
         painter = new Painter();
         painter.setScale(Constants.PIXEL_SCALE);
         painter.init();
-        core = new GameCore(network, input, painter);
+
+        core = new GameCore(this, network, input, painter);
         core.start();
     }
 

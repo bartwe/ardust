@@ -8,6 +8,7 @@ abstract public class Packet {
     public static final byte ID_WORLD_UPDATE_PACKET = 2;
     public static final byte ID_WINDOW_PACKET = 3;
     public static final byte ID_WORLD_REGION_PACKET = 4;
+    public static final byte ID_DEBUG_CHANGE_TILE_PACKET = 5;
 
     public static Packet read(ByteBuffer buffer) {
         byte packetId = buffer.get();
@@ -19,6 +20,8 @@ abstract public class Packet {
             return new WindowPacket(buffer);
         if (packetId == ID_WORLD_REGION_PACKET)
             return new WorldRegionPacket(buffer);
+        if (packetId == ID_DEBUG_CHANGE_TILE_PACKET)
+            return new DebugChangeTilePacket(buffer);
         throw new RuntimeException("Unknown packet id: "+packetId);
     }
 

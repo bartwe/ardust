@@ -129,7 +129,7 @@ public class ServerWorld {
     }
 
     public void readTiles(byte[] tiles, int[] locations) {
-        for (int i = 0; i<locations.length; i++)
+        for (int i = 0; i < locations.length; i++)
             tiles[i] = world[locations[i]];
     }
 
@@ -140,5 +140,20 @@ public class ServerWorld {
         y = normalizeAxis(y);
 
         return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
+    }
+
+    public void writeDirect(int x, int y, int z, byte tile) {
+        if ((z < 0) || (z >= Constants.WORLD_DEPTH)) {
+            // return;
+            throw new RuntimeException("writing outside of the world ?");
+        }
+        x = normalizeAxis(x);
+        y = normalizeAxis(y);
+
+        byte current = world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
+        if (current != tile) {
+            world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH] = tile;
+            appendUpdate(x, y, z);
+        }
     }
 }

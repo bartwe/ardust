@@ -14,8 +14,10 @@ public class GameCore {
     private final World world;
 
     String name;
+    private final GameLoop parent;
 
-    public GameCore(NetworkConnection network, Input input, Painter painter) {
+    public GameCore(GameLoop parent, NetworkConnection network, Input input, Painter painter) {
+        this.parent = parent;
         this.network = network;
         this.input = input;
         this.painter = painter;
@@ -44,7 +46,7 @@ public class GameCore {
         while (network.hasInboundPackets()) {
             Packet packet = network.nextInboundPacket();
             if (packet instanceof WorldRegionPacket) {
-                WorldRegionPacket wrp = (WorldRegionPacket)packet;
+                WorldRegionPacket wrp = (WorldRegionPacket) packet;
                 int entries = wrp.entries();
                 if (entries > 0) {
                     int[] locations = new int[entries];
@@ -52,38 +54,41 @@ public class GameCore {
                     wrp.readUpdates(locations, tiles);
                     world.writeTiles(locations, tiles);
                 }
-            }
-            else
-            if (packet instanceof WorldUpdatesPacket) {
-                WorldUpdatesPacket wup = (WorldUpdatesPacket)packet;
+            } else if (packet instanceof WorldUpdatesPacket) {
+                WorldUpdatesPacket wup = (WorldUpdatesPacket) packet;
                 world.writeTiles(wup.locations, wup.tiles);
-            }
-            else
-                throw new RuntimeException("Unknown packet: "+ packet.packetId());
+            } else
+                throw new RuntimeException("Unknown packet: " + packet.packetId());
         }
 
-        world.screenCoordToWorldCoord(GameLoop.getViewportLocation(), temp);
-        WindowPacket wp = new WindowPacket((int)temp.getX(), (int)temp.getY(), Constants.DUMMY_Z);
+        world.screenCoordToWorldCoord(parent.getViewportLocation(), temp);
+        WindowPacket wp = new WindowPacket((int) temp.getX(), (int) temp.getY(), Constants.DUMMY_Z);
         network.send(wp);
     }
 
     private void mousePan() {
         //Panning around on the map
         if (input.isMouseButtonDown(1, false)) {
-            GameLoop.setCurrentMouseCursor(Constants.PANNING_CURSOR);
+            parent.setCurrentMouseCursor(Constants.PANNING_CURSOR);
             int xPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(1).x) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
             int yPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
 
-            GameLoop.setViewportLocation(new Point(GameLoop.getViewportLocation().x + xPan,
-                    GameLoop.getViewportLocation().y + yPan));
+            parent.setViewportLocation(new Point(parent.getViewportLocation().x + xPan, parent.getViewportLocation().y + yPan));
+        } else
+            parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
+
+        if (input.isMouseButtonDown(0, true)) {
+            temp.setLocation(parent.getViewportLocation());
+            temp.setLocation(temp.getX() + input.getX()/Constants.PIXEL_SCALE, temp.getY() + input.getY()/Constants.PIXEL_SCALE);
+            world.screenCoordToWorldCoord(temp, temp);
+            DebugChangeTilePacket wp = new DebugChangeTilePacket((int) temp.getX(), (int) temp.getY(), Constants.DUMMY_Z);
+            network.send(wp);
         }
-        else
-            GameLoop.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
     }
 
     public void render() {
 
-        world.draw(painter, GameLoop.getViewportLocation(), GameLoop.getWidth(), GameLoop.getHeight());
+        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight());
     }
 }

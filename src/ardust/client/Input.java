@@ -17,6 +17,8 @@ public class Input {
     public Input() {
         mouseButtons = new boolean[2];        //the old way wasn't working right for me
         mostRecentClicks = new Point[mouseButtons.length];
+        for (int i = 0; i< mostRecentClicks.length; i++)
+            mostRecentClicks[i] = new Point();
         consumedMouseButton = new boolean[mouseButtons.length];
         keys = new boolean[Keyboard.getKeyCount()];
         consumedKeys = new boolean[keys.length];

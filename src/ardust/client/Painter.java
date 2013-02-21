@@ -155,4 +155,12 @@ public class Painter {
                     Constants.TILE_BASE_WIDTH,
                     Constants.TILE_DRAW_HEIGHT);
     }
+
+    public int getDrawableWidth() {
+        return (int)(screenWidth / Constants.PIXEL_SCALE);
+    }
+
+    public int getDrawableHeight() {
+        return (int)(screenHeight / Constants.PIXEL_SCALE);
+    }
 }
