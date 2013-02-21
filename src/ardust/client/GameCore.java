@@ -53,6 +53,7 @@ public class GameCore {
 
         mousePan();
 
+        world.tick();
     }
 
     Point temp = new Point(); //javawut

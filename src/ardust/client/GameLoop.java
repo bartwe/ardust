@@ -236,7 +236,7 @@ public class GameLoop {
                     double duration = (Sys.getTime() - fpsTimer) + timerResolution;
                     duration /= timerResolution;
                     f /= duration;
-                    System.err.println("fps: " + f);
+                    System.err.println("fps: " + f + " viewport: " + (getViewportLocation().x / Constants.TILE_BASE_WIDTH) + " , " + (getViewportLocation().y / Constants.TILE_BASE_HEIGHT));
                     fpsTimer = Sys.getTime() + timerResolution;
                 }
                 frames++;
@@ -284,7 +284,7 @@ public class GameLoop {
                 painter.start();
 
                 painter.draw(input.getX() / Constants.PIXEL_SCALE, input.getY() / Constants.PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
-                        getCurrentMouseCursorTileSheetPoint().y, Constants.TILE_BASE_WIDTH / 2, Constants.TILE_BASE_WIDTH / 2);
+                        getCurrentMouseCursorTileSheetPoint().y, Constants.TILE_BASE_WIDTH / 2, Constants.TILE_BASE_WIDTH / 2, false);
 
                 painter.flush();
 

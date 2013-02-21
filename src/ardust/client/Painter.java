@@ -111,7 +111,7 @@ public class Painter {
         GL11.glColor4f(1f, 1f, 1f, 1f);
     }
 
-    void draw(int x, int y, int textureX, int textureY, int width, int height) {
+    void draw(int x, int y, int textureX, int textureY, int width, int height, boolean flip) {
 
         double screenleftx = x * scale;
         double screenrightx = (x + width) * scale;
@@ -128,17 +128,32 @@ public class Painter {
 
         // is this order correct ?
 
-        GL11.glTexCoord2f((float) textureleftx, (float) texturetopy);
-        GL11.glVertex2f((float) screenleftx, (float) screentopy);
+        if (!flip) {
+            GL11.glTexCoord2f((float) textureleftx, (float) texturetopy);
+            GL11.glVertex2f((float) screenleftx, (float) screentopy);
 
-        GL11.glTexCoord2f((float) texturerightx, (float) texturetopy);
-        GL11.glVertex2f((float) screenrightx, (float) screentopy);
+            GL11.glTexCoord2f((float) texturerightx, (float) texturetopy);
+            GL11.glVertex2f((float) screenrightx, (float) screentopy);
 
-        GL11.glTexCoord2f((float) texturerightx, (float) texturebottomy);
-        GL11.glVertex2f((float) screenrightx, (float) screenbottomy);
+            GL11.glTexCoord2f((float) texturerightx, (float) texturebottomy);
+            GL11.glVertex2f((float) screenrightx, (float) screenbottomy);
 
-        GL11.glTexCoord2f((float) textureleftx, (float) texturebottomy);
-        GL11.glVertex2f((float) screenleftx, (float) screenbottomy);
+            GL11.glTexCoord2f((float) textureleftx, (float) texturebottomy);
+            GL11.glVertex2f((float) screenleftx, (float) screenbottomy);
+        } else {
+            GL11.glTexCoord2f((float) texturerightx, (float) texturetopy);
+            GL11.glVertex2f((float) screenrightx, (float) screentopy);
+
+            GL11.glTexCoord2f((float) textureleftx, (float) texturetopy);
+            GL11.glVertex2f((float) screenleftx, (float) screentopy);
+
+            GL11.glTexCoord2f((float) texturerightx, (float) texturebottomy);
+            GL11.glVertex2f((float) screenrightx, (float) screenbottomy);
+
+            GL11.glTexCoord2f((float) textureleftx, (float) texturebottomy);
+            GL11.glVertex2f((float) screenleftx, (float) screenbottomy);
+        }
+
 
     }
 
