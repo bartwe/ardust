@@ -6,7 +6,7 @@ default:
         rm -Rf jarprepare
         mkdir -p jarprepare
         javac -g -Xlint:unchecked @jars -sourcepath src -d jarprepare `find src -iname "*.java"`
-        jar cfm ardun.jar src/org/ardun/manifest.mf -C jarprepare/ .
+        jar cfm ardust.jar src/ardust/manifest.mf -C jarprepare/ .
         rm -Rf classes
         cp lwjgl_applet/applet/basic/* release/
         rm release/basicapplet.html
