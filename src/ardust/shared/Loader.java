@@ -1,3 +1,5 @@
+package ardust.shared;
+
 import java.io.*;
 import java.net.URL;
 

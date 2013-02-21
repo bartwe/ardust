@@ -1,3 +1,5 @@
+package ardust.client;
+
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -54,6 +56,7 @@ public class Game {
                 }
             }
         };
+        sleeperThread.setDaemon(true);
         sleeperThread.start();
         start();
     }
@@ -177,10 +180,10 @@ public class Game {
                 else
                     GL11.glColor4f(0f, 1f, 0f, 1f);
                 GL11.glVertex2d(input.getX(), 0);
-                GL11.glTexCoord2f(1,0);
+                GL11.glTexCoord2f(1, 0);
                 GL11.glColor4f(0f, 0f, 1f, 1f);
                 GL11.glVertex2d(0, input.getY());
-                GL11.glTexCoord2f(0,1);
+                GL11.glTexCoord2f(0, 1);
 
                 GL11.glEnd();
 
