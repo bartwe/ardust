@@ -27,6 +27,8 @@ public class Painter {
     private int scale = 0;
 
 
+
+
     void setScreenDimensions(int width, int height) {
         screenWidth = width;
         screenHeight = height;
@@ -51,7 +53,7 @@ public class Painter {
 
         BufferedImage image = null;
         try {
-            image = ImageIO.read(Loader.getRequiredResourceAsStream("resources/texture.png"));
+            image = ImageIO.read(Loader.getRequiredResourceAsStream("resources/placeholder.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -141,5 +143,12 @@ public class Painter {
     public void flush() {
         GL11.glEnd();
 
+    }
+
+    public Rectangle getSourceRectFromTileSheetIndex(int index) {
+        if (textureWidth <= 0) return new Rectangle(0,0,0,0);
+        return new Rectangle((index * GameLoop.TILE_BASE_WIDTH) % (int)(textureWidth),
+                ((index * GameLoop.TILE_BASE_WIDTH) / (int)(textureWidth)) * GameLoop.TILE_DRAW_HEIGHT,
+                GameLoop.TILE_BASE_WIDTH, GameLoop.TILE_DRAW_HEIGHT );
     }
 }

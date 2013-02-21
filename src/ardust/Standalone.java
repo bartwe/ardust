@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Standalone {
@@ -30,6 +31,11 @@ public class Standalone {
         f.pack();
         f.setVisible(true);
 
+        //Workaround for using a custom cursor (set actual cursor to a blank image)
+        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
+        //f.getContentPane().setCursor(blankCursor);
+
         try {
             final GameLoop game = new GameLoop();
             display_parent = new Canvas() {
@@ -43,12 +49,14 @@ public class Standalone {
                     super.removeNotify();
                 }
             };
+            //display_parent.setCursor(blankCursor);
             display_parent.setSize(width, height);
             f.add(display_parent);
             display_parent.setFocusTraversalKeysEnabled(false);
             display_parent.setFocusable(true);
             display_parent.requestFocus();
             display_parent.setIgnoreRepaint(true);
+            f.add(game.getMenu(), 0);
             f.setVisible(true);
             f.addComponentListener(new ComponentAdapter() {
                 @Override

@@ -11,7 +11,7 @@ public class GameMenu extends JPanel implements ActionListener {
 
              private JButton hostGameButton, joinGameButton, quitGameButton;
 
-           public GameMenu(Component frame) {
+           public GameMenu() {
                hostGameButton = initializeButton("Host Game");
                joinGameButton = initializeButton("Join Game");
                quitGameButton = initializeButton("Quit Game");
@@ -27,7 +27,7 @@ public class GameMenu extends JPanel implements ActionListener {
                this.setVisible(true);
                this.setPreferredSize(new Dimension(100, 200));
                this.setBackground(Color.LIGHT_GRAY);
-               this.setBounds(frame.getWidth() / 2 - getWidth() / 2, frame.getHeight() / 2 - getHeight() / 2, 100, 200);
+               //this.setBounds(frame.getWidth() / 2 - getWidth() / 2, frame.getHeight() / 2 - getHeight() / 2, 100, 200);
            }
 
 
@@ -47,9 +47,11 @@ public class GameMenu extends JPanel implements ActionListener {
          if (e.getSource() == hostGameButton) {
                        this.setEnabled(false);
              this.setVisible(false);
+             GameLoop.setGameState(GameLoop.GameState.SERVER_STATE);
          }    else if (e.getSource() == joinGameButton) {
              this.setEnabled(false);
              this.setVisible(false);
+             GameLoop.setGameState(GameLoop.GameState.CLIENT_STATE);
         }  else if (e.getSource() == quitGameButton) {
              //Does openGL need to do something here?
             System.exit(0);
