@@ -9,8 +9,8 @@ public class Constants {
     public static final int WORLD_DEPTH = 16;
     public static final int WORLD_LENGTH = 1024;
 
-    public static final int DWARF_DEFAULT_SPEED = 2;
-    public static final int DWARF_ANIMATION_SPEED = 30;
+    public static final double DWARF_DEFAULT_SPEED = .5;
+    public static final int DWARF_ANIMATION_SPEED = 10;
     public static final int DWARF_OFFSET_ON_TILE = 8;
 
     // client get this radius of data around the screen center from the server

@@ -13,6 +13,7 @@ public class GameCore {
     private Painter painter;
     private final World world;
 
+    Character selectedDwarf;
     String name;
     private final GameLoop parent;
 
@@ -97,17 +98,27 @@ public class GameCore {
             parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
         if (input.isMouseButtonDown(0, true)) {
+            /*
             temp.setLocation(parent.getViewportLocation());
             temp.setLocation(temp.getX() + input.getX()/Constants.PIXEL_SCALE, temp.getY() + input.getY()/Constants.PIXEL_SCALE);
             world.screenCoordToWorldCoord(temp, temp);
             DebugChangeTilePacket wp = new DebugChangeTilePacket((int) temp.getX(), (int) temp.getY(), Constants.DUMMY_Z);
-            network.send(wp);
+            network.send(wp);  */
+            Point p = new Point(-1,-1);
+            World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), p);
+            if (selectedDwarf == null || world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z) != null)
+            {
+                selectedDwarf = world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z);
+            } else {
+                selectedDwarf.setMovingBasedOnTileDifferential(p.x, p.y, world);
+            }
+
         }
 
     }
 
     public void render() {
 
-        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight());
+        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf);
     }
 }

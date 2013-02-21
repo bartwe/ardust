@@ -25,10 +25,10 @@ public class World {
 
     public World() {
         clientWorld = new ClientWorld();
-        characters.add(new Character(4, 4, Constants.DUMMY_Z, 2));
-        characters.add(new Character(5, 4, Constants.DUMMY_Z, 2));
-        characters.add(new Character(3, 3, Constants.DUMMY_Z, 2));
-        characters.add(new Character(4, 6, Constants.DUMMY_Z, 2));
+        characters.add(new Character(4, 4, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
+        characters.add(new Character(5, 4, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
+        characters.add(new Character(3, 3, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
+        characters.add(new Character(4, 6, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
     }
 
     public static void globalTileToLocalCoord(int tileX, int tileY, Point viewportLocation, Point result) {
@@ -40,7 +40,7 @@ public class World {
         for (Character c : characters) c.tick(this);
     }
 
-    public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight) {
+    public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight, Character selectedDwarf) {
 
         int tileRectX = viewportLocation.x / Constants.TILE_BASE_WIDTH - tilesBeyondViewportToRender;
         int tileRectY = viewportLocation.y / Constants.TILE_BASE_HEIGHT - tilesBeyondViewportToRender;
@@ -70,9 +70,9 @@ public class World {
                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height, false);
 
                 //Draw Character
-                Point3 tile = new Point3(x, y, z);
+                Point3 tile = new Point3(x - 1, y, z);
                 if (charactersByPosition.containsKey(tile)){
-                    charactersByPosition.get(tile).draw(p, viewportLocation);
+                    charactersByPosition.get(tile).draw(p, viewportLocation, charactersByPosition.get(tile).equals(selectedDwarf));
                 }
 
                 //Draw Terrain Item
@@ -93,6 +93,11 @@ public class World {
         result.setLocation(x, y);
     }
 
+    public static void localCoordToGlobalTile(int x, int y, Point viewportLocation, Point result)
+    {
+        result.setLocation((viewportLocation.x + x/ Constants.PIXEL_SCALE) / Constants.TILE_BASE_WIDTH, (viewportLocation.y + y/ Constants.PIXEL_SCALE) / Constants.TILE_BASE_HEIGHT);
+    }
+
     public void writeTiles(int[] locations, byte[] tiles) {
         clientWorld.writeTiles(locations, tiles);
     }
@@ -100,5 +105,15 @@ public class World {
     public boolean isTileOccupied(int x, int y, int z)
     {
        return (clientWorld.readDirect(x,y,z) != 0);
+    }
+
+    public Character getCharacterAtTile(int x, int y, int z)
+    {
+        Point3 p = new Point3(x, y, z);
+        for (Character c : characters)
+        {
+           if (c.location.equals(p)) return c;
+        }
+        return null;
     }
 }

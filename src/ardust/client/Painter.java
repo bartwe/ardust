@@ -141,17 +141,18 @@ public class Painter {
             GL11.glTexCoord2f((float) textureleftx, (float) texturebottomy);
             GL11.glVertex2f((float) screenleftx, (float) screenbottomy);
         } else {
-            GL11.glTexCoord2f((float) texturerightx, (float) texturetopy);
+            GL11.glTexCoord2f((float) textureleftx, (float) texturetopy);
             GL11.glVertex2f((float) screenrightx, (float) screentopy);
 
-            GL11.glTexCoord2f((float) textureleftx, (float) texturetopy);
+
+            GL11.glTexCoord2f((float) texturerightx, (float) texturetopy);
             GL11.glVertex2f((float) screenleftx, (float) screentopy);
 
             GL11.glTexCoord2f((float) texturerightx, (float) texturebottomy);
-            GL11.glVertex2f((float) screenrightx, (float) screenbottomy);
+            GL11.glVertex2f((float) screenleftx, (float) screenbottomy);
 
             GL11.glTexCoord2f((float) textureleftx, (float) texturebottomy);
-            GL11.glVertex2f((float) screenleftx, (float) screenbottomy);
+            GL11.glVertex2f((float) screenrightx, (float) screenbottomy);
         }
 
 
