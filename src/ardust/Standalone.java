@@ -1,7 +1,6 @@
 package ardust;
 
 import ardust.client.GameLoop;
-import ardust.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,10 +13,6 @@ public class Standalone {
     static Canvas display_parent;
 
     public static void main(String[] args) {
-        // lil local server
-        final Server server = new Server();
-        server.start();
-
         int width = 910;
         int height = 512;
 
@@ -63,7 +58,6 @@ public class Standalone {
 
                 public void windowClosing(WindowEvent e) {
                     game.stopLWJGL();
-                    server.stop();
                     System.exit(0);
                 }
 

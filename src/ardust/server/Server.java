@@ -29,8 +29,10 @@ public class Server {
 
     public void stop() {
         System.err.println("Stopping server");
-        world.save();
-        networkServer.stop();
+        if (world != null)
+            world.save();
+        if (networkServer != null)
+            networkServer.stop();
         running = false;
         if (workerThread != null) {
             try {
@@ -93,7 +95,7 @@ public class Server {
         //TODO: sends updates outside of the players world range, perf thingy
 
         for (Player player : players) {
-            for (Packet packet: packets)
+            for (Packet packet : packets)
                 player.sendPacket(packet);
         }
     }
@@ -107,28 +109,25 @@ public class Server {
 
     private void executeCommand(Player player, Packet packet) {
         if (packet instanceof HelloPacket) {
-            HelloPacket hp = (HelloPacket)packet;
+            HelloPacket hp = (HelloPacket) packet;
             player.setName(hp.getName());
-        }
-        else if (packet instanceof WindowPacket) {
-            WindowPacket wp = (WindowPacket)packet;
+        } else if (packet instanceof WindowPacket) {
+            WindowPacket wp = (WindowPacket) packet;
             int oldX = player.getX();
             int oldY = player.getY();
             int oldZ = player.getZ();
             player.setXYZ(wp.x, wp.y, wp.z);
             sendWorldRegion(player, oldX, oldY, oldZ, wp.x, wp.y, wp.z);
-        }
-        else if (packet instanceof DebugChangeTilePacket) {
-            DebugChangeTilePacket wp = (DebugChangeTilePacket)packet;
+        } else if (packet instanceof DebugChangeTilePacket) {
+            DebugChangeTilePacket wp = (DebugChangeTilePacket) packet;
             byte tile = world.readDirect(wp.x, wp.y, wp.z);
             tile += 1;
             if (tile >= 3)
                 tile = 0;
-            System.err.println("changetile: "+wp.x+","+wp.y+","+wp.z+"  "+tile);
+            System.err.println("changetile: " + wp.x + "," + wp.y + "," + wp.z + "  " + tile);
             world.writeDirect(wp.x, wp.y, wp.z, tile);
-        }
-        else
-            throw new RuntimeException("Unknown packet: "+packet.packetId());
+        } else
+            throw new RuntimeException("Unknown packet: " + packet.packetId());
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {

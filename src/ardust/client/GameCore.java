@@ -43,6 +43,9 @@ public class GameCore {
     Point temp = new Point(); //javawut
 
     private void processNetwork() {
+        if (!network.isValid())
+            parent.fail("Network lost");
+
         while (network.hasInboundPackets()) {
             Packet packet = network.nextInboundPacket();
             if (packet instanceof WorldRegionPacket) {

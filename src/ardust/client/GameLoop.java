@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.server.Server;
 import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
 import org.lwjgl.BufferUtils;
@@ -30,15 +31,30 @@ public class GameLoop {
     private NetworkConnection network;
     private GameCore core;
     private GameMenu menu;
+    private Server server;
 
     public GameLoop() {
         menu = new GameMenu(this);
     }
 
+    public void startServer() {
+        server = new Server();
+        server.start();
+        try {
+            Thread.sleep(200); // give it time to start.
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public void fail(String message) {
+        System.err.println("Failure: "+message);
+        setGameState(GameState.FAIL_STATE);
+    }
+
     public enum GameState {
         MENU_STATE,
         CLIENT_STATE,
-        SERVER_STATE;
+        FAIL_STATE
     }
 
     public GameState getGameState() {
@@ -46,7 +62,20 @@ public class GameLoop {
     }
 
     public void setGameState(GameState newState) {
+        if (newState == GameState.CLIENT_STATE)
+            setupCore();
         gameState = newState;
+    }
+
+    private void setupCore() {
+        try {
+            network = new NetworkConnection(new Socket("localhost", 53421));
+            network.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        core = new GameCore(this, network, input, painter);
+        core.start();
     }
 
     public Point getViewportLocation() {
@@ -129,24 +158,19 @@ public class GameLoop {
     }
 
     private void start() {
-        try {
-            network = new NetworkConnection(new Socket("localhost", 53421));
-            network.start();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         input = new Input();
         painter = new Painter();
         painter.setScale(Constants.PIXEL_SCALE);
         painter.init();
-
-        core = new GameCore(this, network, input, painter);
-        core.start();
     }
 
     private void stop() {
-        core.stop();
-        network.stop();
+        if (server != null)
+            server.stop();
+        if (core != null)
+            core.stop();
+        if (network != null)
+            network.stop();
     }
 
     public void resized() {
@@ -246,8 +270,10 @@ public class GameLoop {
                         core.render();
                         break;
 
-                    case SERVER_STATE:
-                        break;
+                    case FAIL_STATE:
+
+                        GL11.glClearColor(1f,0,0,1f);
+                        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT + GL11.GL_COLOR_BUFFER_BIT); // assuming we need one
 
                 }
 
