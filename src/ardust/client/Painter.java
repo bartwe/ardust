@@ -1,3 +1,6 @@
+package ardust.client;
+
+import ardust.shared.Loader;
 import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;

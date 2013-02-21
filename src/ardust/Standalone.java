@@ -1,3 +1,7 @@
+package ardust;
+
+import ardust.client.Game;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
