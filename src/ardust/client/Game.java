@@ -22,7 +22,19 @@ public class Game {
     private boolean requestResetViewPort;
     private Input input;
     private Painter painter;
-    public GameMenu menu;
+    private GameMenu menu;
+    private GameState gameState;
+
+    public enum GameState{
+        MENU_STATE,
+        CLIENT_STATE,
+        SERVER_STATE;
+    }
+
+    public GameState getGameState() {return gameState;}
+    public void setGameState(GameState newState) {gameState = newState;}
+
+    public GameMenu getMenu() {return menu;}
 
     public void startLWJGL(final Canvas display_parent) {
         this.display_parent = display_parent;

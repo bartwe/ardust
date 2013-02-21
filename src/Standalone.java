@@ -1,6 +1,5 @@
-package ardust;
-
 import ardust.client.Game;
+import ardust.client.GameMenu;
 
 import javax.swing.*;
 import java.awt.*;

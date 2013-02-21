@@ -1,3 +1,5 @@
+package ardust.client;
+
 import com.sun.javafx.font.FontFactory;
 import org.lwjgl.opengl.Display;
 import javax.swing.*;

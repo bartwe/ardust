@@ -1,3 +1,4 @@
+package ardust.shared;
 
 public class Character {
 
@@ -7,6 +8,5 @@ public class Character {
     public Character(int x, int y) {
             this.x = x;
         this.y = y;
-
     }
 }
