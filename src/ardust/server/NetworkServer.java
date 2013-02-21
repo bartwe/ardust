@@ -5,6 +5,7 @@ import ardust.shared.NetworkConnection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class NetworkServer {
@@ -12,7 +13,7 @@ public class NetworkServer {
     private Thread worker;
     ServerSocket acceptSocket;
 
-    Deque<NetworkConnection> newConnections;
+    Deque<NetworkConnection> newConnections = new ArrayDeque<NetworkConnection>();
 
     NetworkServer(int port) {
         try {

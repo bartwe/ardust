@@ -1,21 +1,24 @@
 package ardust.shared;
 
+import ardust.packets.Packet;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class NetworkConnection {
     Socket socket;
 
-    Deque<Packet> outbound; //this synchronized
-    EventFlag outboundFlag;
+    Deque<Packet> outbound = new ArrayDeque<Packet>(); //this synchronized
+    EventFlag outboundFlag = new EventFlag();
     Thread outboundThread;
 
-    Deque<Packet> inbound;  //this synchronized
-    EventFlag inboundFlag;
+    Deque<Packet> inbound = new ArrayDeque<Packet>();  //this synchronized
+    EventFlag inboundFlag = new EventFlag();
     Thread inboundThread;
 
     public NetworkConnection(Socket socket) {
@@ -25,13 +28,11 @@ public class NetworkConnection {
     public void start() {
         outboundThread = new Thread() {
             public void run() {
-                setDaemon(true);
                 handleOutbound();
             }
         };
         inboundThread = new Thread() {
             public void run() {
-                setDaemon(true);
                 handleInbound();
             }
         };
@@ -56,6 +57,25 @@ public class NetworkConnection {
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         }
+    }
+
+    public void send(Packet packet) {
+        synchronized (this) {
+            outbound.addLast(packet);
+        }
+        outboundFlag.set();
+    }
+
+    public Packet receive() {
+        synchronized (this) {
+            if (inbound.isEmpty())
+                return null;
+            return inbound.removeFirst();
+        }
+    }
+
+    public boolean isValid() {
+        return !socket.isClosed() && socket.isConnected();
     }
 
     private void handleOutbound() {

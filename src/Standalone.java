@@ -1,5 +1,7 @@
-import ardust.client.Game;
-import ardust.client.GameMenu;
+package ardust;
+
+import ardust.client.GameLoop;
+import ardust.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +26,7 @@ public class Standalone {
         f.setVisible(true);
 
         try {
-            final Game game = new Game();
+            final GameLoop game = new GameLoop();
             game.init();
             display_parent = new Canvas() {
                 public final void addNotify() {
@@ -38,13 +40,11 @@ public class Standalone {
                 }
             };
             display_parent.setSize(width, height);
-            f.add(display_parent);;
+            f.add(display_parent);
             display_parent.setFocusTraversalKeysEnabled(false);
             display_parent.setFocusable(true);
             display_parent.requestFocus();
             display_parent.setIgnoreRepaint(true);
-            game.menu = new GameMenu(f.getContentPane());
-            f.getContentPane().add(game.menu, BorderLayout.CENTER, 0);
             f.setVisible(true);
             f.addComponentListener(new ComponentAdapter() {
                 @Override
