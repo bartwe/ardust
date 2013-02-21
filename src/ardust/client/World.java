@@ -33,6 +33,7 @@ public class World {
         }
     }
 
+
     public void tick() {
 
     }
@@ -69,6 +70,18 @@ public class World {
        Point p = localPointToGlobalTile(x, y, viewportLocation);
         return (p.x >= 0 && p.x < worldWidth && p.y >= 0 && p.y < worldHeight);
     }
+
+    public void constrainViewport(){
+        if (GameLoop.getViewportLocation().x < 0)  GameLoop.setViewportX(0);
+        else if (GameLoop.getViewportLocation().x > World.worldWidth * GameLoop.TILE_BASE_WIDTH - GameLoop.getWidth()) {
+            GameLoop.setViewportX(World.worldWidth* GameLoop.TILE_BASE_HEIGHT - GameLoop.getWidth());
+        }
+        if (GameLoop.getViewportLocation().y < -GameLoop.TILE_DRAW_HEIGHT ) GameLoop.setViewportY(-GameLoop.TILE_DRAW_HEIGHT);
+        else if (GameLoop.getViewportLocation().y > World.worldHeight * GameLoop.TILE_BASE_HEIGHT - GameLoop.getHeight())  {
+            GameLoop.setViewportY(World.worldHeight* GameLoop.TILE_BASE_HEIGHT - GameLoop.getHeight());
+        }
+    }
+
 
 
     public void draw(Painter p, Point viewportLocation,int screenWidth, int screenHeight ) {

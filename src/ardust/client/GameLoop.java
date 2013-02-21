@@ -56,7 +56,11 @@ public class GameLoop {
     public static void setGameState(GameState newState) {gameState = newState;}
 
     public static Point getViewportLocation() {return viewportLocation;}
-    public static void setViewportLocation(Point p) {viewportLocation = p;}
+    public static void setViewportLocation(Point p) {
+        viewportLocation = p;
+    }
+    public static void setViewportX(int x) {viewportLocation.x = x;}
+    public static void setViewportY(int y) {viewportLocation.y = y;}
 
     public static int getWidth() {return width;}
 
@@ -154,6 +158,7 @@ public class GameLoop {
         height = display_parent.getParent().getHeight();
         display_parent.setSize(width, height);
         input.setHeight(height);
+        core.getWorld().constrainViewport();
         painter.setScreenDimensions(width, height);
         GL11.glViewport(0, 0, width, height);
         setupRenderMode();

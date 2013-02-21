@@ -22,6 +22,8 @@ public class GameCore {
         name = NameGenerator.next();
     }
 
+    public World getWorld(){return world;}
+
     public void setPainter(Painter p)
     {
         painter = p;
@@ -44,6 +46,7 @@ public class GameCore {
 
             GameLoop.setViewportLocation(new Point(GameLoop.getViewportLocation().x  + xPan,
                     GameLoop.getViewportLocation().y + yPan));
+            world.constrainViewport();
         }
 
         world.tick();
