@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.shared.NetworkConnection;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -8,10 +9,11 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
+import java.io.IOException;
+import java.net.Socket;
 
-public class Game {
+public class GameLoop {
     private static final int PIXEL_SCALE = 4;
-
 
     private Canvas display_parent;
     private Thread gameThread;
@@ -22,9 +24,14 @@ public class Game {
     private boolean requestResetViewPort;
     private Input input;
     private Painter painter;
+    private NetworkConnection network;
+    private GameCore core;
 
     public void startLWJGL(final Canvas display_parent) {
         this.display_parent = display_parent;
+
+        start();
+
         gameThread = new Thread() {
             public void run() {
                 running = true;
@@ -58,7 +65,6 @@ public class Game {
         };
         sleeperThread.setDaemon(true);
         sleeperThread.start();
-        start();
     }
 
     public void stopLWJGL() {
@@ -76,16 +82,19 @@ public class Game {
         }
     }
 
-    public void init() {
-
-    }
-
     private void start() {
-
+        try {
+            network = new NetworkConnection(new Socket("localhost", 53421));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        core = new GameCore(network, input, painter);
+        core.start();
     }
 
     private void stop() {
-
+        core.stop();
+        network.stop();
     }
 
     public void resized() {
@@ -154,12 +163,16 @@ public class Game {
                 input.tick();
                 //update
 
+                core.tick();
+
                 //soundmanager.tick();
 
                 //clear
                 GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT + GL11.GL_COLOR_BUFFER_BIT); // assuming we need one
 
                 //render
+
+                core.render();
 
                 painter.start();
 
@@ -219,9 +232,5 @@ public class Game {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void processKeyboardAndMouse() {
-
     }
 }

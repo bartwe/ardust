@@ -20,7 +20,7 @@ public class Server {
         server.stop();
     }
 
-    private void stop() {
+    public void stop() {
         networkServer.stop();
         running = false;
         if (workerThread != null) {
@@ -32,7 +32,7 @@ public class Server {
         }
     }
 
-    private void start() {
+    public void start() {
         networkServer = new NetworkServer(53421);
         workerThread = new Thread() {
             public void run() {

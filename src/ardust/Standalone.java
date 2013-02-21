@@ -1,6 +1,7 @@
 package ardust;
 
-import ardust.client.Game;
+import ardust.client.GameLoop;
+import ardust.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,11 +9,16 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 
 public class Standalone {
     static Canvas display_parent;
 
     public static void main(String[] args) {
+        // lil local server
+        Server server = new Server();
+        server.start();
+
         int width = 910;
         int height = 512;
 
@@ -25,8 +31,7 @@ public class Standalone {
         f.setVisible(true);
 
         try {
-            final Game game = new Game();
-            game.init();
+            final GameLoop game = new GameLoop();
             display_parent = new Canvas() {
                 public final void addNotify() {
                     super.addNotify();
@@ -78,5 +83,12 @@ public class Standalone {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        server.stop();
+
     }
 }
