@@ -1,13 +1,11 @@
 package ardust.packets;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 public class HelloPacket extends Packet {
     String name;
 
 
-    static Charset Utf8Charset = Charset.forName("UTF-8");
 
     public HelloPacket(String name) {
         this.name = name;
@@ -16,18 +14,13 @@ public class HelloPacket extends Packet {
     }
 
     public HelloPacket(ByteBuffer buffer) {
-        int size = buffer.getShort();
-        byte[] nameBytes = new byte[size];
-        buffer.get(nameBytes);
-        name = new String(nameBytes, Utf8Charset);
+        name = readString(buffer);
     }
 
     @Override
     public void write(ByteBuffer buffer) {
         buffer.put(packetId());
-        byte[] nameBytes = name.getBytes(Utf8Charset);
-        buffer.putShort((short) nameBytes.length);
-        buffer.put(nameBytes);
+        writeString(buffer, name);
     }
 
     @Override

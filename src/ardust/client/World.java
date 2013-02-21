@@ -23,12 +23,12 @@ public class World {
     private byte[][] terrainItems = new byte[worldWidth][worldHeight];
 
     public World() {
-       //Populate with random stuff for now
+        //Populate with random stuff for now
         Random r = new Random();
 
-          for (int i = 0; i < worldWidth; i++) {
+        for (int i = 0; i < worldWidth; i++) {
             for (int j = 0; j < worldHeight; j++) {
-               terrainItems[i][j] = r.nextDouble () < .5 ? (byte)(r.nextInt(2) * 2 + 1) : emptySpot;
+                terrainItems[i][j] = r.nextDouble() < .5 ? (byte) (r.nextInt(2) * 2 + 1) : emptySpot;
             }
         }
     }
@@ -39,14 +39,14 @@ public class World {
 
     public byte getTerrainItemAt(int x, int y) {
         if (x >= 0 && x < worldWidth && y >= 0 && y < worldHeight)
-        return terrainItems[x][y];
+            return terrainItems[x][y];
 
         return -1;
     }
 
     public void setTerrainItemAt(int x, int y, byte whichItem) {
         if (x >= 0 && x < worldWidth && y >= 0 && y < worldHeight)
-        terrainItems[x][y] = whichItem;
+            terrainItems[x][y] = whichItem;
     }
 
     public static Point globalTileToLocalCoord(int tileX, int tileY, Point viewportLocation) {
@@ -54,24 +54,21 @@ public class World {
         return new Point(tileX * GameLoop.TILE_BASE_WIDTH - viewportLocation.x, tileY * GameLoop.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
-    public static Point localPointToGlobalTile(int x, int y, Point viewportLocation)
-    {
+    public static Point localPointToGlobalTile(int x, int y, Point viewportLocation) {
         return new Point(viewportLocation.x + x, viewportLocation.y + y);
     }
 
-    public boolean isGlobalPointOnMap(int x, int y)
-    {
+    public boolean isGlobalPointOnMap(int x, int y) {
         return (x >= 0 && x < worldWidth * GameLoop.TILE_BASE_WIDTH && y >= 0 && y < worldHeight * GameLoop.TILE_BASE_HEIGHT);
     }
 
-    public boolean isLocalPointOnMap(int x, int y, Point viewportLocation)
-    {
-       Point p = localPointToGlobalTile(x, y, viewportLocation);
+    public boolean isLocalPointOnMap(int x, int y, Point viewportLocation) {
+        Point p = localPointToGlobalTile(x, y, viewportLocation);
         return (p.x >= 0 && p.x < worldWidth && p.y >= 0 && p.y < worldHeight);
     }
 
 
-    public void draw(Painter p, Point viewportLocation,int screenWidth, int screenHeight ) {
+    public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight) {
 
         int tileRectX = viewportLocation.x / GameLoop.TILE_BASE_WIDTH - tilesBeyondViewportToRender;
         int tileRectY = viewportLocation.y / GameLoop.TILE_BASE_HEIGHT - tilesBeyondViewportToRender;
@@ -86,8 +83,8 @@ public class World {
 
                 //Draw Floor
                 Rectangle tileSheetFloorRect = p.getSourceRectFromTileSheetIndex(0);
-                 p.draw(toDrawCoord.x, toDrawCoord.y - (GameLoop.TILE_DRAW_HEIGHT - GameLoop.TILE_BASE_HEIGHT) + GameLoop.FLOOR_TILE_THICKNESS,
-                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height);
+                p.draw(toDrawCoord.x, toDrawCoord.y - (GameLoop.TILE_DRAW_HEIGHT - GameLoop.TILE_BASE_HEIGHT) + GameLoop.FLOOR_TILE_THICKNESS,
+                        tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height);
 
                 //Draw Terrain Item
                 byte whatItem = getTerrainItemAt(x, y);
@@ -101,7 +98,6 @@ public class World {
         p.flush();
 
     }
-
 
 
 }

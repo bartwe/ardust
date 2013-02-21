@@ -9,7 +9,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Standalone {
@@ -30,11 +29,6 @@ public class Standalone {
         f.setLayout(new BorderLayout());
         f.pack();
         f.setVisible(true);
-
-        //Workaround for using a custom cursor (set actual cursor to a blank image)
-        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
-        //f.getContentPane().setCursor(blankCursor);
 
         try {
             final GameLoop game = new GameLoop();
@@ -92,11 +86,11 @@ public class Standalone {
             throw new RuntimeException(e);
         }
         try {
-            System.in.read();
+            System.out.print("Running local server.");
+            System.out.println(System.in.read());
         } catch (IOException e) {
             e.printStackTrace();
         }
         server.stop();
-
     }
 }

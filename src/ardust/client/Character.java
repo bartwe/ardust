@@ -6,7 +6,7 @@ public class Character {
 
 
     public Character(int x, int y) {
-            this.x = x;
+        this.x = x;
         this.y = y;
     }
 }

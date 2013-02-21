@@ -16,6 +16,8 @@ public class Loader {
                 }
             }
             URL url = Loader.class.getClassLoader().getResource(ref);
+            if (url == null)
+                throw new RuntimeException("No such resouce embedded: " + ref);
             return new BufferedInputStream(url.openStream());
         } catch (IOException e) {
             System.err.println("Resource loading failed: " + ref);

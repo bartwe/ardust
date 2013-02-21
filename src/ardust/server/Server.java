@@ -13,7 +13,7 @@ public class Server {
         Server server = new Server();
         server.start();
         try {
-            System.in.read();
+            System.out.println(System.in.read());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -21,6 +21,7 @@ public class Server {
     }
 
     public void stop() {
+        System.err.println("Stopping server");
         networkServer.stop();
         running = false;
         if (workerThread != null) {
@@ -30,9 +31,11 @@ public class Server {
                 throw new RuntimeException(e);
             }
         }
+        System.err.println("Stopped server");
     }
 
     public void start() {
+        System.err.println("Starting server");
         networkServer = new NetworkServer(53421);
         workerThread = new Thread() {
             public void run() {
@@ -56,6 +59,7 @@ public class Server {
         running = true;
         workerThread.start();
         networkServer.start();
+        System.err.println("Started server");
     }
 
     private void step() {

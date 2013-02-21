@@ -22,11 +22,6 @@ public class GameCore {
         name = NameGenerator.next();
     }
 
-    public void setPainter(Painter p)
-    {
-        painter = p;
-    }
-
     public void start() {
         network.send(new HelloPacket(name));
     }
@@ -39,10 +34,10 @@ public class GameCore {
 
         //Panning around on the map
         if (input.isMouseButtonDown(1, false)) {
-            int xPan = (int)Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(1).x) / (double)GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
-            int yPan = (int)Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double)GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
+            int xPan = (int) Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(1).x) / (double) GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
+            int yPan = (int) Math.max(-GameLoop.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double) GameLoop.MAP_PAN_SENSITIVITY) * GameLoop.MAP_PAN_MAX_SPEED, GameLoop.MAP_PAN_MAX_SPEED));
 
-            GameLoop.setViewportLocation(new Point(GameLoop.getViewportLocation().x  + xPan,
+            GameLoop.setViewportLocation(new Point(GameLoop.getViewportLocation().x + xPan,
                     GameLoop.getViewportLocation().y + yPan));
         }
 
@@ -52,6 +47,6 @@ public class GameCore {
 
     public void render() {
 
-       world.draw(painter,  GameLoop.getViewportLocation(), GameLoop.getWidth(), GameLoop.getHeight());
+        world.draw(painter, GameLoop.getViewportLocation(), GameLoop.getWidth(), GameLoop.getHeight());
     }
 }

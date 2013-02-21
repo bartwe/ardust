@@ -27,8 +27,6 @@ public class Painter {
     private int scale = 0;
 
 
-
-
     void setScreenDimensions(int width, int height) {
         screenWidth = width;
         screenHeight = height;
@@ -51,7 +49,7 @@ public class Painter {
         textureId = tmp.get(0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             image = ImageIO.read(Loader.getRequiredResourceAsStream("resources/placeholder.png"));
         } catch (IOException e) {
@@ -119,6 +117,9 @@ public class Painter {
         double screentopy = y * scale;
         double screenbottomy = (y + height) * scale;
 
+        if ((screenbottomy < 0) || (screenrightx < 0) || (screenleftx > screenWidth) || (screentopy > screenHeight))
+            return;
+
         double textureleftx = textureX / textureWidth - TEXTURE_EPSILON;
         double texturerightx = (textureX + width) / textureWidth + TEXTURE_EPSILON;
         double texturetopy = 1.0 - (textureY / textureHeight - TEXTURE_EPSILON);
@@ -146,9 +147,9 @@ public class Painter {
     }
 
     public Rectangle getSourceRectFromTileSheetIndex(int index) {
-        if (textureWidth <= 0) return new Rectangle(0,0,0,0);
-        return new Rectangle((index * GameLoop.TILE_BASE_WIDTH) % (int)(textureWidth),
-                ((index * GameLoop.TILE_BASE_WIDTH) / (int)(textureWidth)) * GameLoop.TILE_DRAW_HEIGHT,
-                GameLoop.TILE_BASE_WIDTH, GameLoop.TILE_DRAW_HEIGHT );
+        if (textureWidth <= 0) return new Rectangle(0, 0, 0, 0);
+        return new Rectangle((index * GameLoop.TILE_BASE_WIDTH) % (int) (textureWidth),
+                ((index * GameLoop.TILE_BASE_WIDTH) / (int) (textureWidth)) * GameLoop.TILE_DRAW_HEIGHT,
+                GameLoop.TILE_BASE_WIDTH, GameLoop.TILE_DRAW_HEIGHT);
     }
 }
