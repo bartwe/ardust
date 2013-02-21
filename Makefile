@@ -6,8 +6,9 @@ default:
 	rm -Rf jarprepare
 	mkdir -p jarprepare
 	javac -g -Xlint:unchecked @jars -sourcepath src -d jarprepare `find src -iname "*.java"`
-	cp -R resource jarprepare/
+	cp -R resources jarprepare/
 	jar cfm ardust.jar src/ardust/manifest.mf -C jarprepare/ .
+	mv ardust.jar release/
 	rm -Rf classes
 	cp lwjgl_applet/applet/basic/* release/
 	rm release/basicapplet.html

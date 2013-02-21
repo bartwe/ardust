@@ -63,8 +63,9 @@ public class GameLoop {
     }
 
     public void setGameState(GameState newState) {
-        if (newState == GameState.CLIENT_STATE)
-            setupCore();
+        if (running)
+            if (newState == GameState.CLIENT_STATE)
+                setupCore();
         gameState = newState;
     }
 
@@ -128,7 +129,6 @@ public class GameLoop {
             }
         };
 
-
         gameThread.start();
 
         sleeperThread = new Thread("High precision sleep workaround") {
@@ -163,6 +163,8 @@ public class GameLoop {
         painter = new Painter();
         painter.setScale(Constants.PIXEL_SCALE);
         painter.init();
+        if (gameState == GameState.CLIENT_STATE)
+            setupCore();
     }
 
     private void stop() {

@@ -17,6 +17,14 @@ public class GameCore {
     private final GameLoop parent;
 
     public GameCore(GameLoop parent, NetworkConnection network, Input input, Painter painter) {
+        if (parent == null)
+            throw new IllegalArgumentException("parent");
+        if (network == null)
+            throw new IllegalArgumentException("network");
+        if (input == null)
+            throw new IllegalArgumentException("input");
+        if (painter == null)
+            throw new IllegalArgumentException("painter");
         this.parent = parent;
         this.network = network;
         this.input = input;
