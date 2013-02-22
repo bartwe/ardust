@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Entities {
+    Integer nextId = 0;
     HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     ArrayList<Integer> inserted = new ArrayList<Integer>();
     ArrayList<Integer> deleted = new ArrayList<Integer>();
@@ -54,7 +55,7 @@ public class Entities {
         return mode != 0;
     }
 
-    public void read(ByteBuffer buffer) {
+    public void read(ByteBuffer buffer, boolean force) {
         int mode = buffer.get();
         if ((mode & 0x1) != 0) { // deleted
             int count = buffer.getShort();
@@ -75,6 +76,9 @@ public class Entities {
             int count = buffer.getShort();
             while (count > 0) {
                 Integer id = buffer.getInt();
+                if (force)
+                    if (!entities.containsKey(id))
+                        entities.put(id, new Entity(id));
                 entities.get(id).read(buffer);
                 count--;
             }
@@ -102,7 +106,7 @@ public class Entities {
             entities.clear();
             inserted.clear();
             deleted.clear();
-            read(buffer);
+            read(buffer, true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -121,5 +125,13 @@ public class Entities {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addEntity(Entity entity) {
+        while (entities.containsKey(nextId))
+            nextId++;
+        entity.id = nextId++;
+        entities.put(entity.id, entity);
+        inserted.add(entity.id);
     }
 }

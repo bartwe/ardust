@@ -55,7 +55,7 @@ public class Values {
     }
 
     public void read(ByteBuffer buffer) {
-        int count = buffer.getShort();
+        int count = buffer.get();
         if (count == entries.length) {
             for (int i = 0; i < entries.length; i++)
                 entries[i] = buffer.getInt();

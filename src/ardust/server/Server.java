@@ -16,10 +16,12 @@ public class Server {
     ServerWorld world;
     Entities entities;
     NetworkServer networkServer;
+    ByteBuffer tempBuffer = ByteBufferBuffer.alloc(1024 * 1024);
     private Thread workerThread;
     private boolean running;
     private ArrayList<Player> players = new ArrayList<Player>();
     private long saveDeadline;
+    private ArrayList<Player> playersTemp = new ArrayList<Player>();
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -89,16 +91,14 @@ public class Server {
         sendUpdates();
 
         if (System.currentTimeMillis() > saveDeadline) {
-            saveDeadline = System.currentTimeMillis() + 15*60*1000;
-        if (entities != null)
-            entities.save();
-        if (world != null)
-            world.save();
+            saveDeadline = System.currentTimeMillis() + 15 * 60 * 1000;
+            if (entities != null)
+                entities.save();
+            if (world != null)
+                world.save();
         }
 
     }
-
-    ByteBuffer tempBuffer = ByteBufferBuffer.alloc(1024*1024);
 
     private void sendUpdates() {
         int[] updates = world.getUpdatesBufferArray();
@@ -113,8 +113,9 @@ public class Server {
             packets.add(updatePacket);
         }
         tempBuffer.clear();
-        if (entities.write(tempBuffer,  false)) {
+        if (entities.write(tempBuffer, false)) {
             // could be too large...
+            tempBuffer.flip();
             EntitiesPacket entitiesPacket = new EntitiesPacket(tempBuffer, true);
             packets.add(entitiesPacket);
         }
@@ -137,6 +138,15 @@ public class Server {
         if (packet instanceof HelloPacket) {
             HelloPacket hp = (HelloPacket) packet;
             player.setName(hp.getName());
+            int x = Constants.START_OFFSET;
+            int y = Constants.START_OFFSET;
+            int z = Constants.DEFAULT_Z;
+            Random random = new Random();
+            x += random.nextInt(Constants.WORLD_LENGTH);
+            y += random.nextInt(Constants.WORLD_LENGTH);
+            player.setXYZ(x, y, z);
+            player.spawnSetup(entities, world);
+            player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
         } else if (packet instanceof WindowPacket) {
             WindowPacket wp = (WindowPacket) packet;
             int oldX = player.getX();
@@ -160,8 +170,6 @@ public class Server {
         WorldRegionPacket wrp = new WorldRegionPacket(world, oldX, oldY, oldZ, x, y, z);
         player.sendPacket(wrp);
     }
-
-    private ArrayList<Player> playersTemp = new ArrayList<Player>();
 
     private void fetchClientCommands() {
         while (networkServer.hasNewConnection()) {

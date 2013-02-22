@@ -20,7 +20,7 @@ public class GameLoop {
     private GameState gameState = GameState.MENU_STATE;
     private int width;
     private int height;
-    private Point viewportLocation = new Point(Constants.START_OFFSET, Constants.START_OFFSET);
+    private Point viewportLocation = new Point();
     private int currentMouseCursor = Constants.DEFAULT_CURSOR;
     private Canvas display_parent;
     private Thread gameThread;
@@ -52,12 +52,6 @@ public class GameLoop {
         setGameState(GameState.FAIL_STATE);
     }
 
-    public enum GameState {
-        MENU_STATE,
-        CLIENT_STATE,
-        FAIL_STATE
-    }
-
     public GameState getGameState() {
         return gameState;
     }
@@ -85,12 +79,7 @@ public class GameLoop {
     }
 
     public void setViewportLocation(Point p) {
-        viewportLocation = p;
-    }
-
-
-    public int getCurrentMouseCursor() {
-        return currentMouseCursor;
+        viewportLocation.setLocation(p);
     }
 
     public Point getCurrentMouseCursorTileSheetPoint() {
@@ -194,9 +183,7 @@ public class GameLoop {
         Display.setVSyncEnabled(true);
         GL11.glClearColor(0f, 0f, 0f, 0f);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        //GL11.glAlphaFunc(GL11.GL_GEQUAL, 0.8f); // cutoff ?
 
-        // for cursor
         GL11.glLogicOp(GL11.GL_XOR);
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
@@ -322,5 +309,11 @@ public class GameLoop {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public enum GameState {
+        MENU_STATE,
+        CLIENT_STATE,
+        FAIL_STATE
     }
 }

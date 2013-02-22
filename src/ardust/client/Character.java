@@ -174,7 +174,7 @@ public class Character {
 
     public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
         Point localPoint = new Point(0, 0);
-        World.globalTileToLocalCoord(location.x, location.y, Constants.DUMMY_Z, viewportLocation, localPoint);
+        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
 
         if (isMoving()) {
             switch (movementDirection) {

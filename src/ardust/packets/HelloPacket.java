@@ -5,8 +5,6 @@ import java.nio.ByteBuffer;
 public class HelloPacket extends Packet {
     String name;
 
-
-
     public HelloPacket(String name) {
         this.name = name;
         if (name.length() > 255)

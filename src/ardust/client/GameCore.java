@@ -18,6 +18,7 @@ public class GameCore {
     Character selectedDwarf;
     String name;
     private final GameLoop parent;
+    int zLayer;
 
     public GameCore(GameLoop parent, NetworkConnection network, Input input, Painter painter) {
         if (parent == null)
@@ -61,7 +62,14 @@ public class GameCore {
 
         while (network.hasInboundPackets()) {
             Packet packet = network.nextInboundPacket();
-            if (packet instanceof WorldRegionPacket) {
+            if (packet instanceof WindowPacket) {
+                WindowPacket spp = (WindowPacket)packet;
+                temp.setLocation(spp.x, spp.y);
+                zLayer = spp.z;
+                world.worldCoordToScreenCoord(temp, temp);
+                System.err.println("Force viewport "+spp.x+":"+spp.y+":"+spp.z+" "+temp);
+                parent.setViewportLocation(temp);
+            } else if (packet instanceof WorldRegionPacket) {
                 WorldRegionPacket wrp = (WorldRegionPacket) packet;
                 int entries = wrp.entries();
                 if (entries > 0) {
@@ -75,13 +83,13 @@ public class GameCore {
                 world.writeTiles(wup.locations, wup.tiles);
             } else if (packet instanceof EntitiesPacket) {
                 EntitiesPacket ep = (EntitiesPacket) packet;
-                entities.read(ep.data);
+                entities.read(ep.data, false);
             } else
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }
 
         world.screenCoordToWorldCoord(parent.getViewportLocation(), temp);
-        WindowPacket wp = new WindowPacket((int) temp.getX(), (int) temp.getY(), Constants.DUMMY_Z);
+        WindowPacket wp = new WindowPacket((int) temp.getX(), (int) temp.getY(), zLayer);
         network.send(wp);
     }
 
@@ -97,19 +105,17 @@ public class GameCore {
             parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
         if (input.isMouseButtonDown(0, true)) {
-            // needs a generic function, one that actually works
-            if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, Constants.DUMMY_Z) != null) {
-                selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, Constants.DUMMY_Z);
+            World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
+            if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {
+                selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
             } else {
                 selectedDwarf.setMovingBasedOnTileDifferential(temp.x, temp.y, world);
             }
-
         }
-
     }
 
     public void render() {
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
-        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, Constants.DUMMY_Z);
+        world.draw(painter, parent.getViewportLocation(), zLayer, painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, zLayer);
     }
 }

@@ -31,11 +31,12 @@ public class Constants {
     public static final int DEFAULT_CURSOR = 0;
     public static final int PANNING_CURSOR = 1;
 
-    public static final int DUMMY_Z = 5;
+    public static final int DEFAULT_Z = 5;
 
     public static final int V_ENTITY_POS_X = 0;
     public static final int V_ENTITY_POS_Y = 1;
-    public static final int V_ENTITY_VALUES_SIZE = 2;
+    public static final int V_ENTITY_KIND = 2;
+    public static final int V_ENTITY_VALUES_SIZE = 3;
 
     public static final int CURSOR_TILE_NORMAL = 4;
     public static final int CURSOR_TILE_PROBLEM = 5;

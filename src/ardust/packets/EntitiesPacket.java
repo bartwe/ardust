@@ -8,11 +8,13 @@ public class EntitiesPacket extends Packet {
     public ByteBuffer data;
 
     public EntitiesPacket(ByteBuffer buffer, boolean tosend) {
-        data = buffer;
-        if (data.remaining() > 20000)
+        if (buffer.remaining() > 20000)
             throw new RuntimeException("Too long of entity delta");
-        if (data.remaining() == 0)
+        if (buffer.remaining() == 0)
             throw new RuntimeException("Whuh?");
+        int size = buffer.remaining();
+        data = ByteBufferBuffer.alloc(size);
+        buffer.get(data.array(), data.arrayOffset(), size);
     }
 
     public EntitiesPacket(ByteBuffer buffer) {

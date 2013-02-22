@@ -26,10 +26,6 @@ public class World {
 
     public World() {
         clientWorld = new ClientWorld();
-        characters.add(new Character(4, 4, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
-        characters.add(new Character(5, 4, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
-        characters.add(new Character(3, 3, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
-        characters.add(new Character(4, 6, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
     }
 
     public static void globalTileToLocalCoord(int tileX, int tileY, int tileZ, Point viewportLocation, Point result) {
@@ -44,7 +40,7 @@ public class World {
     Rectangle tileSheetFloorRect = new Rectangle();
     Rectangle tileSheetRect = new Rectangle();
 
-    public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight, Character selectedDwarf, int cursorX, int cursorY, int cursorZ) {
+    public void draw(Painter p, Point viewportLocation, int zLayer, int screenWidth, int screenHeight, Character selectedDwarf, int cursorX, int cursorY, int cursorZ) {
 
         int tileRectX = viewportLocation.x / Constants.TILE_BASE_WIDTH - tilesBeyondViewportToRender;
         int tileRectY = viewportLocation.y / Constants.TILE_BASE_HEIGHT - tilesBeyondViewportToRender;
@@ -63,7 +59,7 @@ public class World {
         float a = 0.5f + 0.5f * (float) Math.abs(Math.sin(t * 3));
 
         p.start();
-        int z = Constants.DUMMY_Z;
+        int z = zLayer;
         for (int x = tileRectX; x < tileRectX + tileRectWidth; x++) {
             for (int y = tileRectY; y < tileRectY + tileRectHeight; y++) {
 
@@ -109,6 +105,12 @@ public class World {
     public static void screenCoordToWorldCoord(Point viewportLocation, Point result) {
         int x = viewportLocation.x / Constants.TILE_BASE_WIDTH;
         int y = viewportLocation.y / Constants.TILE_BASE_HEIGHT;
+        result.setLocation(x, y);
+    }
+
+    public static void worldCoordToScreenCoord(Point worldLocation, Point result) {
+        int x = worldLocation.x * Constants.TILE_BASE_WIDTH;
+        int y = worldLocation.y * Constants.TILE_BASE_HEIGHT;
         result.setLocation(x, y);
     }
 
