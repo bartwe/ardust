@@ -3,8 +3,6 @@ package ardust.client;
 import ardust.packets.*;
 import ardust.shared.*;
 import org.lwjgl.input.Keyboard;
-import ardust.shared.*;
-import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
@@ -21,8 +19,7 @@ public class GameCore {
     DwarfActionMenu currentActionMenu;
     UserInputState currentInputState = UserInputState.NO_DWARF_SELECTED;
 
-    public enum UserInputState
-    {
+    public enum UserInputState {
         NO_DWARF_SELECTED,
         DWARF_SELECTED,
         WALK,
@@ -76,7 +73,7 @@ public class GameCore {
                 temp.setLocation(spp.x, spp.y);
                 zLayer = spp.z;
                 world.worldCoordToScreenCoord(temp, temp);
-                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
+                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
                 parent.setViewportLocation(temp);
             } else if (packet instanceof WorldRegionPacket) {
                 WorldRegionPacket wrp = (WorldRegionPacket) packet;
@@ -117,18 +114,16 @@ public class GameCore {
             World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
             if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {
                 selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
-                if (selectedDwarf != null)
-                {
+                if (selectedDwarf != null) {
                     currentActionMenu = new DwarfActionMenu(selectedDwarf);
                     currentInputState = UserInputState.DWARF_SELECTED;
-                }  else {
+                } else {
                     currentActionMenu = null;
                     currentInputState = UserInputState.NO_DWARF_SELECTED;
                 }
             } else {
                 // dwarf interaction stuffs
-                switch (currentInputState)
-                {
+                switch (currentInputState) {
                     case DWARF_SELECTED:
                         if (currentActionMenu != null)
                             currentInputState = currentActionMenu.isButtonHere(input.getX(), input.getY(), parent.getViewportLocation());

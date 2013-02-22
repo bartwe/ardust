@@ -66,11 +66,26 @@ public class Character {
         boolean setCountdown = prevMode != entity.mode;
         prevMode = entity.mode;
         location.set(entity.position);
+        targetLocation.set(location);
         switch (entity.mode) {
             case WALKING:
                 if (setCountdown)
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 animateWalk();
+                switch (entity.orientation) {
+                    case NORTH:
+                        targetLocation.y -= 1;
+                        break;
+                    case EAST:
+                        targetLocation.x += 1;
+                        break;
+                    case SOUTH:
+                        targetLocation.y += 1;
+                        break;
+                    case WEST:
+                        targetLocation.x -= 1;
+                        break;
+                }
                 break;
 //            case MINING:
 //                animateMining();
@@ -85,7 +100,6 @@ public class Character {
         Point localPoint = new Point(0, 0);
         World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
 
-        boolean flipAnimation = entity.orientation == Orientation.EAST;
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
                 case NORTH:

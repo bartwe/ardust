@@ -24,7 +24,8 @@ public class Characters {
         for (Character character : mapping.values()) {
             character.tick(deltaT, world);
             positional.put(character.location, character);
-            positional.put(character.targetLocation, character);
+            if (!character.targetLocation.equals(character.location))
+	            positional.put(character.targetLocation, character);
         }
     }
 
