@@ -17,6 +17,17 @@ public class GameCore {
     String name;
     private final GameLoop parent;
     int zLayer;
+    DwarfActionMenu currentActionMenu;
+    UserInputState currentInputState = UserInputState.NO_DWARF_SELECTED;
+
+    public enum UserInputState
+    {
+        NO_DWARF_SELECTED,
+        DWARF_SELECTED,
+        WALK,
+        HALT,
+        MINE
+    }
 
     public GameCore(GameLoop parent, NetworkConnection network, Input input, Painter painter) {
         if (parent == null)
@@ -105,9 +116,35 @@ public class GameCore {
             World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
             if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {
                 selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
+                if (selectedDwarf != null)
+                {
+                    currentActionMenu = new DwarfActionMenu(selectedDwarf);
+                    currentInputState = UserInputState.DWARF_SELECTED;
+                }  else {
+                    currentActionMenu = null;
+                    currentInputState = UserInputState.NO_DWARF_SELECTED;
+                }
             } else {
                 // dwarf interaction stuffs
+                switch (currentInputState)
+                {
+                    case DWARF_SELECTED:
+                        if (currentActionMenu != null)
+                            currentInputState = currentActionMenu.isButtonHere(input.getX(), input.getY(), parent.getViewportLocation());
+                        break;
 
+                    case WALK:
+
+                        break;
+
+                    case HALT:
+
+                        break;
+
+                    case MINE:
+
+                        break;
+                }
             }
         }
     }
@@ -115,5 +152,6 @@ public class GameCore {
     public void render() {
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
         world.draw(painter, parent.getViewportLocation(), zLayer, painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, zLayer);
+        if (currentActionMenu != null) currentActionMenu.draw(painter,  parent.getViewportLocation());
     }
 }
