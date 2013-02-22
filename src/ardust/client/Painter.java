@@ -180,10 +180,10 @@ public class Painter {
         return (int) (screenHeight / Constants.PIXEL_SCALE);
     }
 
-    public static Color getColorAt(int x, int y)
-    {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(4);
-        GL11.glReadPixels(x, y, 1, 1,GL11.GL_RGBA,GL11.GL_UNSIGNED_BYTE, buffer);
-        return new Color(buffer.get(0), buffer.get(1), buffer.get(2), buffer.get(3));
+    static ByteBuffer buffer = ByteBuffer.allocateDirect(4);
+
+    public static Color getColorAt(int x, int y) {
+        GL11.glReadPixels(x, y, 1, 1, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        return new Color(((int) buffer.get(0)) & 0xff, ((int) buffer.get(1)) & 0xff, ((int) buffer.get(2)) & 0xff, ((int) buffer.get(3)) & 0xff);
     }
 }
