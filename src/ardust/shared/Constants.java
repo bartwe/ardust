@@ -35,8 +35,11 @@ public class Constants {
 
     public static final int V_ENTITY_POS_X = 0;
     public static final int V_ENTITY_POS_Y = 1;
-    public static final int V_ENTITY_KIND = 2;
-    public static final int V_ENTITY_VALUES_SIZE = 3;
+    public static final int V_ENTITY_POS_Z = 2;
+    public static final int V_ENTITY_KIND = 3;
+    public static final int V_ENTITY_ORIENTATION = 4;
+    public static final int V_ENTITY_MODE = 5;
+    public static final int V_ENTITY_VALUES_SIZE = 6;
 
     public static final int CURSOR_TILE_NORMAL = 4;
     public static final int CURSOR_TILE_PROBLEM = 5;
@@ -45,4 +48,6 @@ public class Constants {
 
     // start away from 0,0, bugs near negative numbers
     public static final int START_OFFSET = 1000000;
+
+    public static final double WALK_PROGRESS_PERCLIENTTICK = 1.0d / 60.0d;
 }

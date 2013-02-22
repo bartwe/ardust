@@ -66,9 +66,9 @@ public class Player {
                 world.writeDirect(xx + x, yy + y, z, tile);
             }
 
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + -2));
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + 2));
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + 2));
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + -2));
+        entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + -2, z));
+        entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + 2, z));
+        entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + 2, z));
+        entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + -2, z));
     }
 }

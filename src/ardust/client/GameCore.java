@@ -1,6 +1,5 @@
 package ardust.client;
 
-import ardust.entities.Entities;
 import ardust.packets.*;
 import ardust.shared.Constants;
 import ardust.shared.NameGenerator;
@@ -13,7 +12,6 @@ public class GameCore {
     private final Input input;
     private Painter painter;
     private final World world;
-    private Entities entities;
 
     Character selectedDwarf;
     String name;
@@ -34,7 +32,6 @@ public class GameCore {
         this.input = input;
         this.painter = painter;
         this.world = new World();
-        this.entities = new Entities();
         name = NameGenerator.next();
     }
 
@@ -49,9 +46,9 @@ public class GameCore {
     public void tick() {
         processNetwork();
 
-        mousePan();
-
         world.tick();
+
+        mousePan();
     }
 
     Point temp = new Point(); //javawut
@@ -83,7 +80,7 @@ public class GameCore {
                 world.writeTiles(wup.locations, wup.tiles);
             } else if (packet instanceof EntitiesPacket) {
                 EntitiesPacket ep = (EntitiesPacket) packet;
-                entities.read(ep.data, false);
+                world.updateEntities(ep.data);
             } else
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }
@@ -109,7 +106,8 @@ public class GameCore {
             if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {
                 selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
             } else {
-                selectedDwarf.setMovingBasedOnTileDifferential(temp.x, temp.y, world);
+                // dwarf interaction stuffs
+
             }
         }
     }

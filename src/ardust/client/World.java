@@ -1,10 +1,12 @@
 package ardust.client;
 
+import ardust.entities.Entities;
 import ardust.shared.Constants;
+import ardust.shared.Point3;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 /* I chose to store the "terrainItems" (any stationary object that exists in the world... like stones, structures, etc.)  in a byte array to save on memory (the bytes would presumably
@@ -22,10 +24,14 @@ public class World {
     public static final int tilesBeyondViewportToRender = 3;
 
     ClientWorld clientWorld;
-    ArrayList<Character> characters = new ArrayList<Character>();
+    Entities entities;
+    Characters characters;
+
 
     public World() {
         clientWorld = new ClientWorld();
+        entities = new Entities();
+        characters = new Characters(entities);
     }
 
     public static void globalTileToLocalCoord(int tileX, int tileY, int tileZ, Point viewportLocation, Point result) {
@@ -33,12 +39,13 @@ public class World {
     }
 
     public void tick() {
-        for (Character c : characters) c.tick(this);
+        characters.tick(clientWorld);
     }
 
     Point toDrawCoord = new Point();
     Rectangle tileSheetFloorRect = new Rectangle();
     Rectangle tileSheetRect = new Rectangle();
+    Point3 tilePoint = new Point3();
 
     public void draw(Painter p, Point viewportLocation, int zLayer, int screenWidth, int screenHeight, Character selectedDwarf, int cursorX, int cursorY, int cursorZ) {
 
@@ -47,10 +54,7 @@ public class World {
         int tileRectWidth = screenWidth / Constants.TILE_BASE_WIDTH + 2 * tilesBeyondViewportToRender;
         int tileRectHeight = screenHeight / Constants.TILE_BASE_HEIGHT + 2 * tilesBeyondViewportToRender;
 
-        HashMap<Point3, Character> charactersByPosition = new HashMap<Point3, Character>();
-        for (Character c : characters) {
-            charactersByPosition.put(c.getLocation(), c);
-        }
+        HashMap<Point3, Character> charactersByPosition = characters.charactersByPosition();
 
         double t = (System.currentTimeMillis() / 1000d * 2d * 3.14d) / 5;
         float r = (float) Math.abs(Math.sin(t));
@@ -60,8 +64,8 @@ public class World {
 
         p.start();
         int z = zLayer;
-        for (int x = tileRectX; x < tileRectX + tileRectWidth; x++) {
-            for (int y = tileRectY; y < tileRectY + tileRectHeight; y++) {
+        for (int y = tileRectY; y < tileRectY + tileRectHeight; y++) {
+            for (int x = tileRectX; x < tileRectX + tileRectWidth; x++) {
 
                 globalTileToLocalCoord(x, y, z, viewportLocation, toDrawCoord);
 
@@ -71,11 +75,11 @@ public class World {
                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height, false);
 
                 //Draw Character
-                Point3 tile = new Point3(x - 1, y, z);
-                if (charactersByPosition.containsKey(tile)) {
-                    charactersByPosition.get(tile).draw(p, viewportLocation, charactersByPosition.get(tile).equals(selectedDwarf));
+                tilePoint.set(x, y, z);
+                Character character = charactersByPosition.get(tilePoint);
+                if (character != null) {
+                    character.draw(p, viewportLocation, character.equals(selectedDwarf));
                 }
-
 
                 //Draw Terrain Item
                 byte whatItem = clientWorld.readDirect(x, y, z);
@@ -127,10 +131,10 @@ public class World {
     }
 
     public Character getCharacterAtTile(int x, int y, int z) {
-        Point3 p = new Point3(x, y, z);
-        for (Character c : characters) {
-            if (c.location.equals(p)) return c;
-        }
-        return null;
+        return characters.getCharacterAtTile(x, y, z);
+    }
+
+    public void updateEntities(ByteBuffer data) {
+        entities.read(data, false);
     }
 }
