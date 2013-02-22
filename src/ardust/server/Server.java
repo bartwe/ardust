@@ -5,7 +5,6 @@ import ardust.entities.Entity;
 import ardust.packets.*;
 import ardust.shared.ByteBufferBuffer;
 import ardust.shared.Constants;
-import org.lwjgl.Sys;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -89,11 +88,11 @@ public class Server {
     }
 
     private void step() {
-        long currentT = Sys.getTime();
+        long currentT = System.currentTimeMillis();
         if (prevT == 0)
             prevT = currentT;
-        int deltaT = (int) (((currentT - prevT) * 1000) / Sys.getTimerResolution());
-        prevT += (deltaT * Sys.getTimerResolution()) / 1000;
+        int deltaT = (int)(currentT - prevT);
+        prevT += deltaT;
 
         fetchClientCommands();
         evaluateDwarves(deltaT);
