@@ -56,6 +56,9 @@ public class Dwarves {
                         dwarf.position.x -= 1;
                         break;
                 }
+                dwarf.mode = Entity.Mode.COOLDOWN; // 1 frame cooldown, avoid the client not seeing the arrival, hacks
+                break;
+            case COOLDOWN:
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
             default:
