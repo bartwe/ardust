@@ -34,10 +34,11 @@ public class GameCore {
         name = NameGenerator.next();
     }
 
-    public World getWorld(){return world;}
+    public World getWorld() {
+        return world;
+    }
 
-    public void setPainter(Painter p)
-    {
+    public void setPainter(Painter p) {
         painter = p;
     }
 
@@ -104,10 +105,9 @@ public class GameCore {
             world.screenCoordToWorldCoord(temp, temp);
             DebugChangeTilePacket wp = new DebugChangeTilePacket((int) temp.getX(), (int) temp.getY(), Constants.DUMMY_Z);
             network.send(wp);  */
-            Point p = new Point(-1,-1);
+            Point p = new Point(-1, -1);
             World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), p);
-            if (selectedDwarf == null || world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z) != null)
-            {
+            if (selectedDwarf == null || world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z) != null) {
                 selectedDwarf = world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z);
             } else {
                 selectedDwarf.setMovingBasedOnTileDifferential(p.x, p.y, world);

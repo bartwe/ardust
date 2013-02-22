@@ -4,21 +4,18 @@ import java.awt.*;
 
 public class AnimatedSprite {
 
-     int currentFrame, accumulator;
+    int currentFrame, accumulator;
 
-     public AnimatedSprite()
-     {
+    public AnimatedSprite() {
 
-     }
+    }
 
-    public void animate(int startingFrame, int framesInAnimation, int ticksPerFrame)
-    {
+    public void animate(int startingFrame, int framesInAnimation, int ticksPerFrame) {
         accumulator = (accumulator + 1) % (ticksPerFrame * framesInAnimation);
         currentFrame = startingFrame + accumulator / ticksPerFrame;
     }
 
-    public void draw(Painter p, int x, int y, boolean flip)
-    {
+    public void draw(Painter p, int x, int y, boolean flip) {
 
         Rectangle tileSheetRect = new Rectangle();
         p.getSourceRectFromTileSheetIndex(currentFrame, tileSheetRect);

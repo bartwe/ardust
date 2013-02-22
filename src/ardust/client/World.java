@@ -35,8 +35,7 @@ public class World {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
-    public void tick()
-    {
+    public void tick() {
         for (Character c : characters) c.tick(this);
     }
 
@@ -48,8 +47,7 @@ public class World {
         int tileRectHeight = screenHeight / Constants.TILE_BASE_HEIGHT + 2 * tilesBeyondViewportToRender;
 
         HashMap<Point3, Character> charactersByPosition = new HashMap<Point3, Character>();
-        for (Character c : characters)
-        {
+        for (Character c : characters) {
             charactersByPosition.put(c.getLocation(), c);
         }
 
@@ -71,7 +69,7 @@ public class World {
 
                 //Draw Character
                 Point3 tile = new Point3(x - 1, y, z);
-                if (charactersByPosition.containsKey(tile)){
+                if (charactersByPosition.containsKey(tile)) {
                     charactersByPosition.get(tile).draw(p, viewportLocation, charactersByPosition.get(tile).equals(selectedDwarf));
                 }
 
@@ -93,26 +91,22 @@ public class World {
         result.setLocation(x, y);
     }
 
-    public static void localCoordToGlobalTile(int x, int y, Point viewportLocation, Point result)
-    {
-        result.setLocation((viewportLocation.x + x/ Constants.PIXEL_SCALE) / Constants.TILE_BASE_WIDTH, (viewportLocation.y + y/ Constants.PIXEL_SCALE) / Constants.TILE_BASE_HEIGHT);
+    public static void localCoordToGlobalTile(int x, int y, Point viewportLocation, Point result) {
+        result.setLocation((viewportLocation.x + x / Constants.PIXEL_SCALE) / Constants.TILE_BASE_WIDTH, (viewportLocation.y + y / Constants.PIXEL_SCALE) / Constants.TILE_BASE_HEIGHT);
     }
 
     public void writeTiles(int[] locations, byte[] tiles) {
         clientWorld.writeTiles(locations, tiles);
     }
 
-    public boolean isTileOccupied(int x, int y, int z)
-    {
-       return (clientWorld.readDirect(x,y,z) != 0);
+    public boolean isTileOccupied(int x, int y, int z) {
+        return (clientWorld.readDirect(x, y, z) != 0);
     }
 
-    public Character getCharacterAtTile(int x, int y, int z)
-    {
+    public Character getCharacterAtTile(int x, int y, int z) {
         Point3 p = new Point3(x, y, z);
-        for (Character c : characters)
-        {
-           if (c.location.equals(p)) return c;
+        for (Character c : characters) {
+            if (c.location.equals(p)) return c;
         }
         return null;
     }

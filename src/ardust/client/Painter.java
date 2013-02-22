@@ -173,10 +173,10 @@ public class Painter {
     }
 
     public int getDrawableWidth() {
-        return (int)(screenWidth / Constants.PIXEL_SCALE);
+        return (int) (screenWidth / Constants.PIXEL_SCALE);
     }
 
     public int getDrawableHeight() {
-        return (int)(screenHeight / Constants.PIXEL_SCALE);
+        return (int) (screenHeight / Constants.PIXEL_SCALE);
     }
 }

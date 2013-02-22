@@ -17,7 +17,7 @@ public class Input {
     public Input() {
         mouseButtons = new boolean[2];        //the old way wasn't working right for me
         mostRecentClicks = new Point[mouseButtons.length];
-        for (int i = 0; i< mostRecentClicks.length; i++)
+        for (int i = 0; i < mostRecentClicks.length; i++)
             mostRecentClicks[i] = new Point();
         consumedMouseButton = new boolean[mouseButtons.length];
         keys = new boolean[Keyboard.getKeyCount()];
@@ -68,11 +68,10 @@ public class Input {
     }
 
     public Point getMostRecentClick(int button) {
-        if (button >= 0 && button < mostRecentClicks.length)
-        {
-           return mostRecentClicks[button];
+        if (button >= 0 && button < mostRecentClicks.length) {
+            return mostRecentClicks[button];
         }
-        return new Point(0,0);
+        return new Point(0, 0);
     }
 
     public boolean isMouseButtonDown(int button, boolean consume) {
