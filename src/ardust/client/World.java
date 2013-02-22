@@ -74,13 +74,6 @@ public class World {
                 p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT) + Constants.FLOOR_TILE_THICKNESS,
                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height, false);
 
-                //Draw Character
-                tilePoint.set(x, y, z);
-                Character character = charactersByPosition.get(tilePoint);
-                if (character != null) {
-                    character.draw(p, viewportLocation, character.equals(selectedDwarf));
-                }
-
                 //Draw Terrain Item
                 byte whatItem = clientWorld.readDirect(x, y, z);
                 if (whatItem != 0) {
@@ -91,6 +84,13 @@ public class World {
                             tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height, false);
                     if ((x == cursorX) && (y == cursorY) && (z == cursorZ))
                         GL11.glColor4f(1, 1, 1, 1);
+                }
+
+                //Draw Character
+                tilePoint.set(x, y, z); // render players one layer too early
+                Character character = charactersByPosition.get(tilePoint);
+                if (character != null) {
+                    character.draw(p, viewportLocation, character.equals(selectedDwarf));
                 }
             }
         }

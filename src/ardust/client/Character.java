@@ -23,7 +23,7 @@ public class Character {
     }
 
     public void animateWalk() {
-        modeProgress = 1d - (double)entity.countdown / (double)Constants.WALKING_COUNTDOWN;
+        modeProgress = 1d - (double) entity.countdown / (double) Constants.WALKING_COUNTDOWN;
         switch (entity.orientation) {
             case NORTH:
                 sprite.animate(28, 4, Constants.DWARF_ANIMATION_SPEED);
@@ -66,11 +66,26 @@ public class Character {
         boolean setCountdown = prevMode != entity.mode;
         prevMode = entity.mode;
         location.set(entity.position);
+        targetLocation.set(location);
         switch (entity.mode) {
             case WALKING:
                 if (setCountdown)
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 animateWalk();
+                switch (entity.orientation) {
+                    case NORTH:
+                        targetLocation.y -= 1;
+                        break;
+                    case EAST:
+                        targetLocation.x += 1;
+                        break;
+                    case SOUTH:
+                        targetLocation.y += 1;
+                        break;
+                    case WEST:
+                        targetLocation.x -= 1;
+                        break;
+                }
                 break;
 //            case MINING:
 //                animateMining();

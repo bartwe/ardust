@@ -11,20 +11,21 @@ public class Characters {
     HashMap<Point3, Character> positional = new HashMap<Point3, Character>();
 
     public Characters(Entities entities) {
-          this.entities = entities;
+        this.entities = entities;
     }
 
     public void tick(int deltaT, ClientWorld world) {
-        for (Integer id: entities.deleted)
+        for (Integer id : entities.deleted)
             mapping.remove(id);
-        for (Integer id: entities.inserted)
+        for (Integer id : entities.inserted)
             mapping.put(id, new Character(entities.getEntity(id)));
         entities.clearDelta();
         positional.clear();
         for (Character character : mapping.values()) {
             character.tick(deltaT, world);
             positional.put(character.location, character);
-            positional.put(character.targetLocation, character);
+            if (!character.targetLocation.equals(character.location))
+                positional.put(character.targetLocation, character);
         }
     }
 
