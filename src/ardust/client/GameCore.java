@@ -145,13 +145,13 @@ public class GameCore {
         }
 
         if (selectedDwarf != null) {
-            if (input.isKeyDown(Keyboard.KEY_W, true) || input.isKeyDown(Keyboard.KEY_UP, true))
+            if (input.isKeyDown(Keyboard.KEY_W, false) || input.isKeyDown(Keyboard.KEY_UP, false))
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.NORTH));
-            if (input.isKeyDown(Keyboard.KEY_D, true) || input.isKeyDown(Keyboard.KEY_RIGHT, true))
+            if (input.isKeyDown(Keyboard.KEY_D, false) || input.isKeyDown(Keyboard.KEY_RIGHT, false))
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.EAST));
-            if (input.isKeyDown(Keyboard.KEY_S, true) || input.isKeyDown(Keyboard.KEY_DOWN, true))
+            if (input.isKeyDown(Keyboard.KEY_S, false) || input.isKeyDown(Keyboard.KEY_DOWN, false))
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.SOUTH));
-            if (input.isKeyDown(Keyboard.KEY_A, true) || input.isKeyDown(Keyboard.KEY_LEFT, true))
+            if (input.isKeyDown(Keyboard.KEY_A, false) || input.isKeyDown(Keyboard.KEY_LEFT, false))
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.WEST));
         }
     }

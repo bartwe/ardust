@@ -62,9 +62,10 @@ public class Character {
         if (entity.countdown < 0)
             entity.countdown = 0;
 
-        // detect if just started moving
-        boolean setCountdown = prevMode != entity.mode;
+        boolean setCountdown = (prevMode != entity.mode) || (!location.equals(entity.position));
         prevMode = entity.mode;
+
+        // detect if just started moving
         location.set(entity.position);
         targetLocation.set(location);
         switch (entity.mode) {
@@ -95,8 +96,7 @@ public class Character {
         }
     }
 
-    public Point getLocalDrawPoint(Point viewportLocation)
-    {
+    public Point getLocalDrawPoint(Point viewportLocation) {
         Point localPoint = new Point(0, 0);
         World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
 

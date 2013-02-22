@@ -50,5 +50,5 @@ public class Constants {
     // start away from 0,0, bugs near negative numbers
     public static final int START_OFFSET = 1000000;
 
-    public static final int WALKING_COUNTDOWN = 1000;
+    public static final int WALKING_COUNTDOWN = 500;
 }
