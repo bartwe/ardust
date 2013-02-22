@@ -1,10 +1,10 @@
 package ardust.client;
 
 import ardust.shared.Constants;
-import com.sun.org.apache.bcel.internal.classfile.StackMapEntry;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /* I chose to store the "terrainItems" (any stationary object that exists in the world... like stones, structures, etc.)  in a byte array to save on memory (the bytes would presumably
 correspond to an index in the tile sheet).
@@ -18,7 +18,7 @@ I dunno.. it's something to discuss.
 
 */
 public class World {
-    public static final int tilesBeyondViewportToRender = 1;
+    public static final int tilesBeyondViewportToRender = 3;
 
     ClientWorld clientWorld;
     ArrayList<Character> characters = new ArrayList<Character>();
