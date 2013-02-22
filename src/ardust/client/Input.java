@@ -15,12 +15,12 @@ public class Input {
     private Point[] mostRecentClicks;
 
     public Input() {
-        mouseButtons = new boolean[2];        //the old way wasn't working right for me
+        mouseButtons = new boolean[2]; // we only use the two
         mostRecentClicks = new Point[mouseButtons.length];
         for (int i = 0; i < mostRecentClicks.length; i++)
             mostRecentClicks[i] = new Point();
         consumedMouseButton = new boolean[mouseButtons.length];
-        keys = new boolean[Keyboard.getKeyCount()];
+        keys = new boolean[Keyboard.KEYBOARD_SIZE];
         consumedKeys = new boolean[keys.length];
     }
 
@@ -35,7 +35,7 @@ public class Input {
         }
         while (Mouse.next()) {
             int key = Mouse.getEventButton();
-            if (key == -1)
+            if ((key == -1)||(key >= mouseButtons.length))
                 continue;
             boolean state = Mouse.getEventButtonState();
             if (state)

@@ -1,9 +1,8 @@
 package ardust.client;
 
 import ardust.packets.*;
-import ardust.shared.Constants;
-import ardust.shared.NameGenerator;
-import ardust.shared.NetworkConnection;
+import ardust.shared.*;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
@@ -54,10 +53,10 @@ public class GameCore {
 
     }
 
-    public void tick() {
+    public void tick(int deltaT) {
         processNetwork();
 
-        world.tick();
+        world.tick(deltaT);
 
         mousePan();
     }
@@ -71,11 +70,11 @@ public class GameCore {
         while (network.hasInboundPackets()) {
             Packet packet = network.nextInboundPacket();
             if (packet instanceof WindowPacket) {
-                WindowPacket spp = (WindowPacket)packet;
+                WindowPacket spp = (WindowPacket) packet;
                 temp.setLocation(spp.x, spp.y);
                 zLayer = spp.z;
                 world.worldCoordToScreenCoord(temp, temp);
-                System.err.println("Force viewport "+spp.x+":"+spp.y+":"+spp.z+" "+temp);
+                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
                 parent.setViewportLocation(temp);
             } else if (packet instanceof WorldRegionPacket) {
                 WorldRegionPacket wrp = (WorldRegionPacket) packet;
@@ -147,11 +146,21 @@ public class GameCore {
                 }
             }
         }
+
+        if (selectedDwarf != null) {
+            if (input.isKeyDown(Keyboard.KEY_W, true) || input.isKeyDown(Keyboard.KEY_UP, true))
+                network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.NORTH));
+            if (input.isKeyDown(Keyboard.KEY_D, true) || input.isKeyDown(Keyboard.KEY_RIGHT, true))
+                network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.EAST));
+            if (input.isKeyDown(Keyboard.KEY_S, true) || input.isKeyDown(Keyboard.KEY_DOWN, true))
+                network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.SOUTH));
+            if (input.isKeyDown(Keyboard.KEY_A, true) || input.isKeyDown(Keyboard.KEY_LEFT, true))
+                network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.WEST));
+        }
     }
 
     public void render() {
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
         world.draw(painter, parent.getViewportLocation(), zLayer, painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, zLayer);
-        if (currentActionMenu != null) currentActionMenu.draw(painter,  parent.getViewportLocation());
     }
 }

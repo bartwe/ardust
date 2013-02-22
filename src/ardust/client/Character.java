@@ -2,7 +2,7 @@ package ardust.client;
 
 import ardust.entities.Entity;
 import ardust.shared.Constants;
-import ardust.shared.Maths;
+import ardust.shared.Orientation;
 import ardust.shared.Point3;
 
 import java.awt.*;
@@ -23,7 +23,7 @@ public class Character {
     }
 
     public void animateWalk() {
-        modeProgress = Maths.clampd(modeProgress + Constants.WALK_PROGRESS_PERCLIENTTICK, 0, 1);
+        modeProgress = 1d - (double)entity.countdown / (double)Constants.WALKING_COUNTDOWN;
         switch (entity.orientation) {
             case NORTH:
                 sprite.animate(28, 4, Constants.DWARF_ANIMATION_SPEED);
@@ -56,17 +56,20 @@ public class Character {
         }
     }
 
+    public void tick(int deltaT, ClientWorld world) {
+        entity.countdown -= deltaT;
 
-    public void tick(ClientWorld world) {
+        if (entity.countdown < 0)
+            entity.countdown = 0;
 
         // detect if just started moving
-        if (prevMode != entity.mode) {
-            modeProgress = 0;
-            prevMode = entity.mode;
-        }
+        boolean setCountdown = prevMode != entity.mode;
+        prevMode = entity.mode;
         location.set(entity.position);
         switch (entity.mode) {
             case WALKING:
+                if (setCountdown)
+                    entity.countdown = Constants.WALKING_COUNTDOWN;
                 animateWalk();
                 break;
 //            case MINING:
@@ -83,19 +86,21 @@ public class Character {
         World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
 
 
+        boolean flipAnimation = entity.orientation == Orientation.EAST;
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
                 case NORTH:
-                    localPoint.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    localPoint.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
                     break;
                 case EAST:
                     localPoint.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
-                    break;
-                case WEST:
                     localPoint.x += (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     break;
+                case WEST:
+                    localPoint.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
+                    break;
                 case SOUTH:
-                    localPoint.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    localPoint.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
                     break;
             }
         }
@@ -104,11 +109,14 @@ public class Character {
 
     public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
         Point localPoint = getLocalDrawPoint(viewportLocation);
-        boolean flipAnimation = (entity.orientation == Entity.Orientation.EAST);
+        boolean flipAnimation = (entity.orientation == Orientation.EAST);
         if (selectedDwarf)
             p.draw(localPoint.x, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 43, 7, false);//sorry
         sprite.draw(p, localPoint.x, localPoint.y - Constants.TILE_BASE_HEIGHT - Constants.DWARF_OFFSET_ON_TILE, flipAnimation);
     }
 
 
+    public Integer id() {
+        return entity.id;
+    }
 }

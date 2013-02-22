@@ -14,7 +14,7 @@ public class Characters {
           this.entities = entities;
     }
 
-    public void tick(ClientWorld world) {
+    public void tick(int deltaT, ClientWorld world) {
         for (Integer id: entities.deleted)
             mapping.remove(id);
         for (Integer id: entities.inserted)
@@ -22,7 +22,7 @@ public class Characters {
         entities.clearDelta();
         positional.clear();
         for (Character character : mapping.values()) {
-            character.tick(world);
+            character.tick(deltaT, world);
             positional.put(character.location, character);
             positional.put(character.targetLocation, character);
         }

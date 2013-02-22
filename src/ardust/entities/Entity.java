@@ -1,21 +1,18 @@
 package ardust.entities;
 
 import ardust.shared.Constants;
+import ardust.shared.Orientation;
 import ardust.shared.Point3;
 import ardust.shared.Values;
 
 import java.nio.ByteBuffer;
 
 public class Entity {
+    // not serialized
+    public int countdown;
+
     public enum Kind {
         DWARF
-    }
-
-    public enum Orientation {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
     }
 
     public enum Mode {

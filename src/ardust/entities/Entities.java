@@ -149,4 +149,10 @@ public class Entities {
     public Entity getEntity(Integer id) {
         return entities.get(id);
     }
+
+    public void getDwarves(ArrayList<Entity> dwarves) {
+        for (Entity entity : entities.values())
+            if (entity.kind == Entity.Kind.DWARF)
+                dwarves.add(entity);
+    }
 }
