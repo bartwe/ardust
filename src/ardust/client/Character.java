@@ -85,7 +85,6 @@ public class Character {
         Point localPoint = new Point(0, 0);
         World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
 
-
         boolean flipAnimation = entity.orientation == Orientation.EAST;
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
@@ -93,7 +92,6 @@ public class Character {
                     localPoint.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
                     break;
                 case EAST:
-                    localPoint.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     localPoint.x += (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     break;
                 case WEST:

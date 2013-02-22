@@ -3,6 +3,8 @@ package ardust.client;
 import ardust.packets.*;
 import ardust.shared.*;
 import org.lwjgl.input.Keyboard;
+import ardust.shared.*;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
@@ -74,7 +76,7 @@ public class GameCore {
                 temp.setLocation(spp.x, spp.y);
                 zLayer = spp.z;
                 world.worldCoordToScreenCoord(temp, temp);
-                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
+                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
                 parent.setViewportLocation(temp);
             } else if (packet instanceof WorldRegionPacket) {
                 WorldRegionPacket wrp = (WorldRegionPacket) packet;
