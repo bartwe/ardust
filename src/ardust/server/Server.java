@@ -221,6 +221,8 @@ public class Server {
         for (Player player : players) {
             if (player.isValid())
                 this.players.add(player);
+            else
+                player.disconnect();
         }
     }
 }
