@@ -11,10 +11,12 @@ import java.util.Random;
 public class Server {
 
     ServerWorld world;
+    Entities entities;
     NetworkServer networkServer;
     private Thread workerThread;
     private boolean running;
     private ArrayList<Player> players = new ArrayList<Player>();
+    private long saveDeadline;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -29,6 +31,8 @@ public class Server {
 
     public void stop() {
         System.err.println("Stopping server");
+        if (entities != null)
+            entities.save();
         if (world != null)
             world.save();
         if (networkServer != null)
@@ -46,6 +50,8 @@ public class Server {
 
     public void start() {
         System.err.println("Starting server");
+        entities = new Entities();
+        entities.load();
         world = new ServerWorld();
         world.load();
         networkServer = new NetworkServer(Constants.PORT);
@@ -78,6 +84,15 @@ public class Server {
         fetchClientCommands();
         executeCommands();
         sendUpdates();
+
+        if (System.currentTimeMillis() > saveDeadline) {
+            saveDeadline = System.currentTimeMillis() + 15*60*1000;
+        if (entities != null)
+            entities.save();
+        if (world != null)
+            world.save();
+        }
+
     }
 
     private void sendUpdates() {

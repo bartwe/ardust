@@ -32,4 +32,9 @@ public class Constants {
     public static final int PANNING_CURSOR = 1;
 
     public static final int DUMMY_Z = 5;
+
+    public static final int V_ENTITY_POS_X = 0;
+    public static final int V_ENTITY_POS_Y = 1;
+    public static final int V_ENTITY_VALUES_SIZE = 2;
+
 }
