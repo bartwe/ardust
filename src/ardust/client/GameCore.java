@@ -110,6 +110,10 @@ public class GameCore {
         } else
             parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
+        if (input.isKeyDown(Keyboard.KEY_TAB, true)) {
+            selectedDwarf = world.nextCharacter(selectedDwarf);
+        }
+
         if (input.isMouseButtonDown(0, true)) {
             World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
             if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {

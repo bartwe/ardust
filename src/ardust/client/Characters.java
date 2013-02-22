@@ -3,7 +3,7 @@ package ardust.client;
 import ardust.entities.Entities;
 import ardust.shared.Point3;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class Characters {
     HashMap<Integer, Character> mapping = new HashMap<Integer, Character>();
@@ -40,4 +40,34 @@ public class Characters {
         return positional;
     }
 
+    public Character nextCharacter(Character selectedDwarf) {
+        if (mapping.isEmpty())
+            return null;
+
+        ArrayList<Character> options = new ArrayList<Character>(mapping.values());
+
+        if ((selectedDwarf != null) && (!mapping.containsKey(selectedDwarf.id())))
+            selectedDwarf = null;
+
+        if (selectedDwarf == null) {
+            Random random = new Random();
+            return options.get(random.nextInt(options.size()));
+        }
+
+        Collections.sort(options, new Comparator<Character>() {
+            public int compare(Character o1, Character o2) {
+                return o1.id().compareTo(o2.id());
+            }
+        });
+
+        int idx = 0;
+
+        for (int i = 0; i < options.size(); ++i) {
+            if (options.get(i).id().equals(selectedDwarf.id()))
+                idx = i;
+        }
+        idx = (idx + 1) % options.size();
+
+        return options.get(idx);
+    }
 }

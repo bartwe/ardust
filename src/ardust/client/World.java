@@ -136,4 +136,8 @@ public class World {
     public void updateEntities(ByteBuffer data) {
         entities.read(data, false);
     }
+
+    public Character nextCharacter(Character selectedDwarf) {
+        return characters.nextCharacter(selectedDwarf);
+    }
 }
