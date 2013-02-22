@@ -1,4 +1,4 @@
-package ardust.server;
+package ardust.entities;
 
 import ardust.shared.Constants;
 import ardust.shared.Values;

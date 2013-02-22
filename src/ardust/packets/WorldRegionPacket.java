@@ -20,11 +20,13 @@ public class WorldRegionPacket extends Packet {
         for (int zi = z - Constants.ZRADIUS; zi <= z + Constants.ZRADIUS; zi++)
             for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
                 for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
-                    int dx = Math.abs(xi - oldX);
-                    int dy = Math.abs(yi - oldY);
-                    int dz = Math.abs(zi - oldZ);
-                    if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
-                        tileBuffer.put(world.readDirect(xi, yi, zi));
+                    if ((zi >= 0) && (zi < Constants.WORLD_DEPTH)) {
+                        int dx = Math.abs(xi - oldX);
+                        int dy = Math.abs(yi - oldY);
+                        int dz = Math.abs(zi - oldZ);
+                        if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
+                            tileBuffer.put(world.readDirect(xi, yi, zi));
+                        }
                     }
                 }
     }
@@ -68,12 +70,14 @@ public class WorldRegionPacket extends Packet {
         for (int zi = z - Constants.ZRADIUS; zi <= z + Constants.ZRADIUS; zi++)
             for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
                 for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
-                    int dx = Math.abs(xi - oldX);
-                    int dy = Math.abs(yi - oldY);
-                    int dz = Math.abs(zi - oldZ);
-                    if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
-                        locations[index] = xi + (yi + zi * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH;
-                        index++;
+                    if ((zi >= 0) && (zi < Constants.WORLD_DEPTH)) {
+                        int dx = Math.abs(xi - oldX);
+                        int dy = Math.abs(yi - oldY);
+                        int dz = Math.abs(zi - oldZ);
+                        if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
+                            locations[index] = ServerWorld.normalizeAxis(xi) + (ServerWorld.normalizeAxis(yi) + zi * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH;
+                            index++;
+                        }
                     }
                 }
         if (index != tileBuffer.position())

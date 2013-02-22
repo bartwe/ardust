@@ -1,9 +1,12 @@
 package ardust.server;
 
+import ardust.entities.Entities;
 import ardust.packets.*;
+import ardust.shared.ByteBufferBuffer;
 import ardust.shared.Constants;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -95,6 +98,8 @@ public class Server {
 
     }
 
+    ByteBuffer tempBuffer = ByteBufferBuffer.alloc(1024*1024);
+
     private void sendUpdates() {
         int[] updates = world.getUpdatesBufferArray();
         int index = 0;
@@ -107,8 +112,14 @@ public class Server {
             index += len;
             packets.add(updatePacket);
         }
-        //TODO: sends updates outside of the players world range, perf thingy
+        tempBuffer.clear();
+        if (entities.write(tempBuffer,  false)) {
+            // could be too large...
+            EntitiesPacket entitiesPacket = new EntitiesPacket(tempBuffer, true);
+            packets.add(entitiesPacket);
+        }
 
+        //TODO: sends updates outside of the players world range, perf thingy
         for (Player player : players) {
             for (Packet packet : packets)
                 player.sendPacket(packet);

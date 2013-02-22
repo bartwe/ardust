@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.entities.Entities;
 import ardust.packets.*;
 import ardust.shared.Constants;
 import ardust.shared.NameGenerator;
@@ -12,6 +13,7 @@ public class GameCore {
     private final Input input;
     private Painter painter;
     private final World world;
+    private Entities entities;
 
     Character selectedDwarf;
     String name;
@@ -31,15 +33,8 @@ public class GameCore {
         this.input = input;
         this.painter = painter;
         this.world = new World();
+        this.entities = new Entities();
         name = NameGenerator.next();
-    }
-
-    public World getWorld() {
-        return world;
-    }
-
-    public void setPainter(Painter p) {
-        painter = p;
     }
 
     public void start() {
@@ -78,6 +73,9 @@ public class GameCore {
             } else if (packet instanceof WorldUpdatesPacket) {
                 WorldUpdatesPacket wup = (WorldUpdatesPacket) packet;
                 world.writeTiles(wup.locations, wup.tiles);
+            } else if (packet instanceof EntitiesPacket) {
+                EntitiesPacket ep = (EntitiesPacket) packet;
+                entities.read(ep.data);
             } else
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }
@@ -99,18 +97,11 @@ public class GameCore {
             parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
         if (input.isMouseButtonDown(0, true)) {
-            /*
-            temp.setLocation(parent.getViewportLocation());
-            temp.setLocation(temp.getX() + input.getX()/Constants.PIXEL_SCALE, temp.getY() + input.getY()/Constants.PIXEL_SCALE);
-            world.screenCoordToWorldCoord(temp, temp);
-            DebugChangeTilePacket wp = new DebugChangeTilePacket((int) temp.getX(), (int) temp.getY(), Constants.DUMMY_Z);
-            network.send(wp);  */
-            Point p = new Point(-1, -1);
-            World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), p);
-            if (selectedDwarf == null || world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z) != null) {
-                selectedDwarf = world.getCharacterAtTile(p.x, p.y, Constants.DUMMY_Z);
+            // needs a generic function, one that actually works
+            if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, Constants.DUMMY_Z) != null) {
+                selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, Constants.DUMMY_Z);
             } else {
-                selectedDwarf.setMovingBasedOnTileDifferential(p.x, p.y, world);
+                selectedDwarf.setMovingBasedOnTileDifferential(temp.x, temp.y, world);
             }
 
         }
@@ -118,7 +109,7 @@ public class GameCore {
     }
 
     public void render() {
-
-        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf);
+        World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
+        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, Constants.DUMMY_Z);
     }
 }

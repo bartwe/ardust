@@ -1,4 +1,4 @@
-package ardust.server;
+package ardust.entities;
 
 import ardust.shared.ByteBufferBuffer;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Entities {
-    HashMap<Integer, Entity> entities;
+    HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     ArrayList<Integer> inserted = new ArrayList<Integer>();
     ArrayList<Integer> deleted = new ArrayList<Integer>();
 

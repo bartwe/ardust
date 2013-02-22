@@ -37,4 +37,11 @@ public class Constants {
     public static final int V_ENTITY_POS_Y = 1;
     public static final int V_ENTITY_VALUES_SIZE = 2;
 
+    public static final int CURSOR_TILE_NORMAL = 4;
+    public static final int CURSOR_TILE_PROBLEM = 5;
+
+    public static final int MOUSE_TO_TILE_YSHIFT = 8;
+
+    // start away from 0,0, bugs near negative numbers
+    public static final int START_OFFSET = 1000000;
 }

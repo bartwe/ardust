@@ -35,6 +35,15 @@ public class ClientWorld {
         return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
     }
 
+    public void debugWriteDirect(int x, int y, int z, byte tile) {
+        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
+            return;
+        x = normalizeAxis(x);
+        y = normalizeAxis(y);
+
+        world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH] = tile;
+    }
+
     private int normalizeAxis(int axis) {
         //sure, modulo should do the job too
         while (axis < 0)
@@ -49,4 +58,5 @@ public class ClientWorld {
         for (int i = 0; i < locations.length; i++)
             world[locations[i]] = tiles[i];
     }
+
 }

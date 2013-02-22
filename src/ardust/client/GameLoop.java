@@ -20,7 +20,7 @@ public class GameLoop {
     private GameState gameState = GameState.MENU_STATE;
     private int width;
     private int height;
-    private Point viewportLocation = new Point();
+    private Point viewportLocation = new Point(Constants.START_OFFSET, Constants.START_OFFSET);
     private int currentMouseCursor = Constants.DEFAULT_CURSOR;
     private Canvas display_parent;
     private Thread gameThread;

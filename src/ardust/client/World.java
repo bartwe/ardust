@@ -1,6 +1,7 @@
 package ardust.client;
 
 import ardust.shared.Constants;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class World {
         characters.add(new Character(4, 6, Constants.DUMMY_Z, Constants.DWARF_DEFAULT_SPEED));
     }
 
-    public static void globalTileToLocalCoord(int tileX, int tileY, Point viewportLocation, Point result) {
+    public static void globalTileToLocalCoord(int tileX, int tileY, int tileZ, Point viewportLocation, Point result) {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
@@ -39,7 +40,11 @@ public class World {
         for (Character c : characters) c.tick(this);
     }
 
-    public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight, Character selectedDwarf) {
+    Point toDrawCoord = new Point();
+    Rectangle tileSheetFloorRect = new Rectangle();
+    Rectangle tileSheetRect = new Rectangle();
+
+    public void draw(Painter p, Point viewportLocation, int screenWidth, int screenHeight, Character selectedDwarf, int cursorX, int cursorY, int cursorZ) {
 
         int tileRectX = viewportLocation.x / Constants.TILE_BASE_WIDTH - tilesBeyondViewportToRender;
         int tileRectY = viewportLocation.y / Constants.TILE_BASE_HEIGHT - tilesBeyondViewportToRender;
@@ -51,16 +56,18 @@ public class World {
             charactersByPosition.put(c.getLocation(), c);
         }
 
+        double t = (System.currentTimeMillis() / 1000d * 2d * 3.14d) / 5;
+        float r = (float) Math.abs(Math.sin(t));
+        float g = (float) Math.abs(Math.sin(t + 2));
+        float b = (float) Math.abs(Math.sin(t + 4));
+        float a = 0.5f + 0.5f * (float) Math.abs(Math.sin(t * 3));
 
-        Point toDrawCoord = new Point();
-        Rectangle tileSheetFloorRect = new Rectangle();
-        Rectangle tileSheetRect = new Rectangle();
         p.start();
         int z = Constants.DUMMY_Z;
         for (int x = tileRectX; x < tileRectX + tileRectWidth; x++) {
             for (int y = tileRectY; y < tileRectY + tileRectHeight; y++) {
 
-                globalTileToLocalCoord(x, y, viewportLocation, toDrawCoord);
+                globalTileToLocalCoord(x, y, z, viewportLocation, toDrawCoord);
 
                 //Draw Floor
                 p.getSourceRectFromTileSheetIndex(0, tileSheetFloorRect);
@@ -73,15 +80,29 @@ public class World {
                     charactersByPosition.get(tile).draw(p, viewportLocation, charactersByPosition.get(tile).equals(selectedDwarf));
                 }
 
+
                 //Draw Terrain Item
                 byte whatItem = clientWorld.readDirect(x, y, z);
                 if (whatItem != 0) {
+                    if ((x == cursorX) && (y == cursorY) && (z == cursorZ))
+                        GL11.glColor4f(r, g, b, 1);
                     p.getSourceRectFromTileSheetIndex(whatItem, tileSheetRect);
                     p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT),
                             tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height, false);
+                    if ((x == cursorX) && (y == cursorY) && (z == cursorZ))
+                        GL11.glColor4f(1, 1, 1, 1);
                 }
             }
         }
+
+        //cursor
+        GL11.glColor4f(r, g, b, a);
+        globalTileToLocalCoord(cursorX, cursorY, cursorZ, viewportLocation, toDrawCoord);
+
+        p.getSourceRectFromTileSheetIndex(Constants.CURSOR_TILE_NORMAL, tileSheetRect);
+        p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT),
+                tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height, false);
+
         p.flush();
     }
 
@@ -92,7 +113,7 @@ public class World {
     }
 
     public static void localCoordToGlobalTile(int x, int y, Point viewportLocation, Point result) {
-        result.setLocation((viewportLocation.x + x / Constants.PIXEL_SCALE) / Constants.TILE_BASE_WIDTH, (viewportLocation.y + y / Constants.PIXEL_SCALE) / Constants.TILE_BASE_HEIGHT);
+        result.setLocation((viewportLocation.x + x / Constants.PIXEL_SCALE) / Constants.TILE_BASE_WIDTH, (viewportLocation.y + y / Constants.PIXEL_SCALE + Constants.MOUSE_TO_TILE_YSHIFT) / Constants.TILE_BASE_HEIGHT);
     }
 
     public void writeTiles(int[] locations, byte[] tiles) {
