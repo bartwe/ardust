@@ -12,8 +12,8 @@ import java.util.HashMap;
 public class Entities {
     Integer nextId = 0;
     HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
-    ArrayList<Integer> inserted = new ArrayList<Integer>();
-    ArrayList<Integer> deleted = new ArrayList<Integer>();
+    public ArrayList<Integer> inserted = new ArrayList<Integer>();
+    public ArrayList<Integer> deleted = new ArrayList<Integer>();
 
     public boolean write(ByteBuffer buffer, boolean all) {
         int mode = 0;
@@ -55,13 +55,16 @@ public class Entities {
         return mode != 0;
     }
 
-    public void read(ByteBuffer buffer, boolean force) {
+    public void read(ByteBuffer buffer, boolean checkpoint) {
         int mode = buffer.get();
         if ((mode & 0x1) != 0) { // deleted
             int count = buffer.getShort();
             while (count > 0) {
-                entities.remove(buffer.getInt());
+                Integer id = buffer.getInt();
+                entities.remove(id);
                 count--;
+                if (!checkpoint)
+                    deleted.add(id);
             }
         }
         if ((mode & 0x2) != 0) { // inserts
@@ -70,13 +73,15 @@ public class Entities {
                 Integer id = buffer.getInt();
                 entities.put(id, new Entity(id));
                 count--;
+                if (!checkpoint)
+                    inserted.add(id);
             }
         }
         if ((mode & 0x4) != 0) {
             int count = buffer.getShort();
             while (count > 0) {
                 Integer id = buffer.getInt();
-                if (force)
+                if (checkpoint)
                     if (!entities.containsKey(id))
                         entities.put(id, new Entity(id));
                 entities.get(id).read(buffer);
@@ -94,6 +99,7 @@ public class Entities {
             in = new FileInputStream(file);
             int rem = (int) file.length();
             ByteBuffer buffer = ByteBufferBuffer.alloc(rem);
+            buffer.limit(rem);
             int off = buffer.arrayOffset();
             while (rem > 0) {
                 int len = in.read(buffer.array(), off, rem);
@@ -133,5 +139,14 @@ public class Entities {
         entity.id = nextId++;
         entities.put(entity.id, entity);
         inserted.add(entity.id);
+    }
+
+    public void clearDelta() {
+        deleted.clear();
+        inserted.clear();
+    }
+
+    public Entity getEntity(Integer id) {
+        return entities.get(id);
     }
 }
