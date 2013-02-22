@@ -95,11 +95,11 @@ public class Character {
         }
     }
 
-    public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
+    public Point getLocalDrawPoint(Point viewportLocation)
+    {
         Point localPoint = new Point(0, 0);
         World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
 
-        boolean flipAnimation = entity.orientation == Orientation.EAST;
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
                 case NORTH:
@@ -116,6 +116,12 @@ public class Character {
                     break;
             }
         }
+        return localPoint;
+    }
+
+    public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
+        Point localPoint = getLocalDrawPoint(viewportLocation);
+        boolean flipAnimation = (entity.orientation == Orientation.EAST);
         if (selectedDwarf)
             p.draw(localPoint.x, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 43, 7, false);//sorry
         sprite.draw(p, localPoint.x, localPoint.y - Constants.TILE_BASE_HEIGHT - Constants.DWARF_OFFSET_ON_TILE, flipAnimation);

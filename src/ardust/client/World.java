@@ -87,7 +87,7 @@ public class World {
                 }
 
                 //Draw Character
-                tilePoint.set(x, y, z); // render players one layer too early
+                tilePoint.set(x, y, z);
                 Character character = charactersByPosition.get(tilePoint);
                 if (character != null) {
                     character.draw(p, viewportLocation, character.equals(selectedDwarf));
