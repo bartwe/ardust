@@ -1,9 +1,11 @@
 package ardust.server;
 
 import ardust.entities.Entities;
+import ardust.entities.Entity;
 import ardust.packets.*;
 import ardust.shared.ByteBufferBuffer;
 import ardust.shared.Constants;
+import org.lwjgl.Sys;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,6 +24,7 @@ public class Server {
     private ArrayList<Player> players = new ArrayList<Player>();
     private long saveDeadline;
     private ArrayList<Player> playersTemp = new ArrayList<Player>();
+    long prevT;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -86,7 +89,14 @@ public class Server {
     }
 
     private void step() {
+        long currentT = Sys.getTime();
+        if (prevT == 0)
+            prevT = currentT;
+        int deltaT = (int) (((currentT - prevT) * 1000) / Sys.getTimerResolution());
+        prevT += (deltaT * Sys.getTimerResolution()) / 1000;
+
         fetchClientCommands();
+        evaluateDwarves(deltaT);
         executeCommands();
         sendUpdates();
 
@@ -97,7 +107,15 @@ public class Server {
             if (world != null)
                 world.save();
         }
+    }
 
+    ArrayList<Entity> entitiesTemp = new ArrayList<Entity>();
+
+    private void evaluateDwarves(int deltaT) {
+        entities.getDwarves(entitiesTemp);
+        for (Entity dwarf : entitiesTemp)
+            Dwarves.tick(deltaT, dwarf);
+        entitiesTemp.clear();
     }
 
     private void sendUpdates() {
@@ -136,24 +154,11 @@ public class Server {
 
     private void executeCommand(Player player, Packet packet) {
         if (packet instanceof HelloPacket) {
-            HelloPacket hp = (HelloPacket) packet;
-            player.setName(hp.getName());
-            int x = Constants.START_OFFSET;
-            int y = Constants.START_OFFSET;
-            int z = Constants.DEFAULT_Z;
-            Random random = new Random();
-            x += random.nextInt(Constants.WORLD_LENGTH);
-            y += random.nextInt(Constants.WORLD_LENGTH);
-            player.setXYZ(x, y, z);
-            player.spawnSetup(entities, world);
-            player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
+            handleHello(player, (HelloPacket) packet);
         } else if (packet instanceof WindowPacket) {
-            WindowPacket wp = (WindowPacket) packet;
-            int oldX = player.getX();
-            int oldY = player.getY();
-            int oldZ = player.getZ();
-            player.setXYZ(wp.x, wp.y, wp.z);
-            sendWorldRegion(player, oldX, oldY, oldZ, wp.x, wp.y, wp.z);
+            handleWindowChange(player, (WindowPacket) packet);
+        } else if (packet instanceof DwarfRequestPacket) {
+            handleDwarfRequest(player, (DwarfRequestPacket) packet);
         } else if (packet instanceof DebugChangeTilePacket) {
             DebugChangeTilePacket wp = (DebugChangeTilePacket) packet;
             byte tile = world.readDirect(wp.x, wp.y, wp.z);
@@ -164,6 +169,39 @@ public class Server {
             world.writeDirect(wp.x, wp.y, wp.z, tile);
         } else
             throw new RuntimeException("Unknown packet: " + packet.packetId());
+    }
+
+    private void handleDwarfRequest(Player player, DwarfRequestPacket packet) {
+        Entity entity = entities.getEntity(packet.id);
+        if (entity == null)
+            return; // command can be late, ignore
+        if (entity.kind != Entity.Kind.DWARF)
+            return;
+        // todo: ownership check
+        Dwarves.handle(entity, packet);
+    }
+
+    private void handleWindowChange(Player player, WindowPacket packet) {
+        WindowPacket wp = (WindowPacket) packet;
+        int oldX = player.getX();
+        int oldY = player.getY();
+        int oldZ = player.getZ();
+        player.setXYZ(wp.x, wp.y, wp.z);
+        sendWorldRegion(player, oldX, oldY, oldZ, wp.x, wp.y, wp.z);
+    }
+
+    private void handleHello(Player player, HelloPacket packet) {
+        HelloPacket hp = (HelloPacket) packet;
+        player.setName(hp.getName());
+        int x = Constants.START_OFFSET;
+        int y = Constants.START_OFFSET;
+        int z = Constants.DEFAULT_Z;
+        Random random = new Random();
+        x += random.nextInt(Constants.WORLD_LENGTH);
+        y += random.nextInt(Constants.WORLD_LENGTH);
+        player.setXYZ(x, y, z);
+        player.spawnSetup(entities, world);
+        player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {

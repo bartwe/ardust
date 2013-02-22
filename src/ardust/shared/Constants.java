@@ -9,7 +9,6 @@ public class Constants {
     public static final int WORLD_DEPTH = 16;
     public static final int WORLD_LENGTH = 1024;
 
-    public static final double DWARF_DEFAULT_SPEED = .5;
     public static final int DWARF_ANIMATION_SPEED = 10;
     public static final int DWARF_OFFSET_ON_TILE = 8;
 
@@ -49,5 +48,5 @@ public class Constants {
     // start away from 0,0, bugs near negative numbers
     public static final int START_OFFSET = 1000000;
 
-    public static final double WALK_PROGRESS_PERCLIENTTICK = 1.0d / 60.0d;
+    public static final int WALKING_COUNTDOWN = 1000;
 }

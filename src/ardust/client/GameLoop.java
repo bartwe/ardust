@@ -33,6 +33,7 @@ public class GameLoop {
     private GameCore core;
     private GameMenu menu;
     private Server server;
+    private long prevT;
 
     public GameLoop() {
         menu = new GameMenu(this);
@@ -241,6 +242,13 @@ public class GameLoop {
                 input.tick();
                 //update
 
+                long currentT = Sys.getTime();
+                if (prevT == 0)
+                    prevT = currentT;
+                int deltaT = (int)(((currentT - prevT)*1000) / Sys.getTimerResolution());
+                prevT += (deltaT * Sys.getTimerResolution()) / 1000;
+
+
                 switch (gameState) {
 
                     case MENU_STATE:
@@ -248,7 +256,7 @@ public class GameLoop {
 
                     case CLIENT_STATE:
 
-                        core.tick();
+                        core.tick(deltaT);
 
                         //soundmanager.tick();
 

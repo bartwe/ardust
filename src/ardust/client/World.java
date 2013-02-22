@@ -38,8 +38,8 @@ public class World {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
-    public void tick() {
-        characters.tick(clientWorld);
+    public void tick(int deltaT) {
+        characters.tick(deltaT, clientWorld);
     }
 
     Point toDrawCoord = new Point();
