@@ -13,6 +13,8 @@ public class Constants {
     public static final int DWARF_ANIMATION_SPEED = 10;
     public static final int DWARF_OFFSET_ON_TILE = 8;
 
+    public static final int BUTTON_SIZE = 32;
+
     // client get this radius of data around the screen center from the server
     public static final int RADIUS = 32;
     public static final int ZRADIUS = 2;
