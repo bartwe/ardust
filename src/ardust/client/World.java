@@ -91,7 +91,6 @@ public class World {
                 if (character != null) {
                     character.draw(p, viewportLocation, character.equals(selectedDwarf));
                 }
-
             }
         }
 

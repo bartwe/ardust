@@ -23,7 +23,7 @@ public class Character {
     }
 
     public void animateWalk() {
-        modeProgress = 1d - (double)entity.countdown / (double)Constants.WALKING_COUNTDOWN;
+        modeProgress = 1d - (double) entity.countdown / (double) Constants.WALKING_COUNTDOWN;
         switch (entity.orientation) {
             case NORTH:
                 sprite.animate(28, 4, Constants.DWARF_ANIMATION_SPEED);
