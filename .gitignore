@@ -1,5 +1,6 @@
 *.class
 *.jar
+!jorbis-oggdecoder-1.1.jar
 *.war
 *.ear
 *~
