@@ -23,6 +23,7 @@ public class Entity {
     }
 
     public Integer id;
+    public Integer playerId;
     public Point3 position = new Point3();
     public Kind kind = Kind.DWARF;
     public Orientation orientation = Orientation.SOUTH;
@@ -35,8 +36,9 @@ public class Entity {
         values = new Values(Constants.V_ENTITY_VALUES_SIZE);
     }
 
-    public Entity(Kind kind, int x, int y, int z) {
+    public Entity(Integer playerId, Kind kind, int x, int y, int z) {
         values = new Values(Constants.V_ENTITY_VALUES_SIZE);
+        this.playerId = playerId;
         this.kind = kind;
         position.set(x, y, z);
     }
@@ -49,6 +51,7 @@ public class Entity {
         values.set(Constants.V_ENTITY_ORIENTATION, orientation.ordinal());
         values.set(Constants.V_ENTITY_MODE, mode.ordinal());
         values.set(Constants.V_ENTITY_HEALTH, health);
+        values.set(Constants.V_ENTITY_PLAYER, playerId);
 
         return values.write(buffer, all);
     }
@@ -60,6 +63,7 @@ public class Entity {
         orientation = Orientation.values()[values.get(Constants.V_ENTITY_ORIENTATION)];
         mode = Mode.values()[values.get(Constants.V_ENTITY_MODE)];
         health = values.get(Constants.V_ENTITY_HEALTH);
+        playerId = values.get(Constants.V_ENTITY_PLAYER);
     }
 
     public static void dropRead(ByteBuffer buffer) {

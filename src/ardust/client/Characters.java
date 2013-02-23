@@ -41,11 +41,18 @@ public class Characters {
         return positional;
     }
 
-    public Character nextCharacter(Character selectedDwarf) {
+    public Character nextCharacter(int playerId, Character selectedDwarf) {
         if (mapping.isEmpty())
             return null;
 
-        ArrayList<Character> options = new ArrayList<Character>(mapping.values());
+        ArrayList<Character> options = new ArrayList<Character>();
+
+        for (Character character: mapping.values())
+            if (character.playerId() == playerId)
+                options.add(character);
+
+        if (options.size() == 0)
+            return null;
 
         if ((selectedDwarf != null) && (!mapping.containsKey(selectedDwarf.id())))
             selectedDwarf = null;

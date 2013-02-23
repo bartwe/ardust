@@ -99,22 +99,13 @@ public class Character {
             case WALK:
                 if (!pathTowards(world, network, true))
                     aiMode = CharacterAIMode.IDLE;
-
                 break;
             case MINE:
                 if (!pathTowards(world, network, false)) {
                     if (location.equals(pathingTarget) || (targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
-                        System.err.println("Stopped mining, destination reached");
                         aiMode = CharacterAIMode.IDLE;
                     } else {
-                        System.err.println("Stopped walking to mine site");
-
                         Orientation orientation = orientationToward(world, false);
-                        if (orientation == Orientation.NONE)
-                            orientation = orientationToward(world, false);
-
-                        System.err.println("Mining orientation: " + orientation);
-
                         tempPoint.set(location);
                         tempPoint.move(orientation);
                         if (world.isTileMineable(tempPoint)) {
@@ -124,7 +115,6 @@ public class Character {
                             if (world.isTileOccupied(tempPoint.x, tempPoint.y, tempPoint.z, entity)) { // don't complain about walkables, dunno why the pathing is failing on it however
                                 miningFailStrike -= 1;
                                 if (miningFailStrike <= 0) {
-                                    System.err.println("Tile not mineable " + tempPoint);
                                     aiMode = CharacterAIMode.IDLE;
                                 }
                             } else
@@ -293,5 +283,9 @@ public class Character {
     private void clearFailStrikes() {
         pathingFailStrike = Constants.WALK_LOOP_LIMIT;
         miningFailStrike = Constants.MINE_FAIL_LIMIT;
+    }
+
+    public int playerId() {
+        return entity.playerId.intValue();
     }
 }

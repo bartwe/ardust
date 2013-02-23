@@ -141,8 +141,8 @@ public class World {
         entities.read(data, checkpoint);
     }
 
-    public Character nextCharacter(Character selectedDwarf) {
-        return characters.nextCharacter(selectedDwarf);
+    public Character nextCharacter(int playerId, Character selectedDwarf) {
+        return characters.nextCharacter(playerId, selectedDwarf);
     }
 
     public boolean isTileOccupied(Point3 point, Entity entity) {

@@ -40,7 +40,8 @@ public class Constants {
     public static final int V_ENTITY_ORIENTATION = 4;
     public static final int V_ENTITY_MODE = 5;
     public static final int V_ENTITY_HEALTH = 6;
-    public static final int V_ENTITY_VALUES_SIZE = 7;
+    public static final int V_ENTITY_PLAYER = 7;
+    public static final int V_ENTITY_VALUES_SIZE = 8;
 
     public static final int CURSOR_TILE_NORMAL = 4;
 
@@ -64,7 +65,8 @@ public class Constants {
     public static final int V_PLAYER_STONES = 0;
     public static final int V_PLAYER_IRON = 1;
     public static final int V_PLAYER_GOLD = 2;
-    public static final int V_PLAYER_VALUES_SIZE = 3;
+    public static final int V_PLAYER_ID = 3;
+    public static final int V_PLAYER_VALUES_SIZE = 4;
     public static final int BAD_AXIS = -1000000;
 
     public static int isWorldPieceMineable(byte index) {

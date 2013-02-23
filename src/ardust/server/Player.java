@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class Player {
+    Integer id;
     String name;
     NetworkConnection connection;
     private int x;
@@ -24,10 +25,12 @@ public class Player {
     public Player(NetworkConnection networkConnection) {
         connection = networkConnection;
         name = "Unknown-" + hashCode();
+        id = 0;
         values = new Values(Constants.V_PLAYER_VALUES_SIZE);
         values.set(Constants.V_PLAYER_STONES, 0);
         values.set(Constants.V_PLAYER_IRON, 2);
         values.set(Constants.V_PLAYER_GOLD, 1);
+        values.set(Constants.V_PLAYER_ID, id);
     }
 
     public boolean isValid() {
@@ -48,6 +51,8 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
+        id = name.hashCode();  // oh the collisions ! the humanity !
+        values.set(Constants.V_PLAYER_ID, id);
     }
 
     public int getX() {
@@ -88,7 +93,7 @@ public class Player {
     }
 
     public void addDwarf(Entities entities, PositionalMap positionalMap, int x, int y, int z) {
-        Entity entity = new Entity(Entity.Kind.DWARF, x, y, z);
+        Entity entity = new Entity(id, Entity.Kind.DWARF, x, y, z);
         entities.addEntity(entity);
         positionalMap.addEntity(entity);
         dwarfs.put(entity.id, entity);

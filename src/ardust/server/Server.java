@@ -197,6 +197,7 @@ public class Server {
 
     private void handleHello(Player player, HelloPacket packet) {
         player.setName(packet.getName());
+
         int x = Constants.START_OFFSET;
         int y = Constants.START_OFFSET;
         int z = Constants.DEFAULT_Z;
@@ -214,7 +215,6 @@ public class Server {
         }
 
         sendWorldRegion(player, Constants.BAD_AXIS, Constants.BAD_AXIS, Constants.BAD_AXIS, x, y, z);
-
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {
