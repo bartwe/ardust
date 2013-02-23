@@ -13,14 +13,14 @@ public class Character {
     double modeProgress;
     AnimatedSprite sprite = new AnimatedSprite();
 
-    public Point3 location = new Point3();
-    public Point3 targetLocation = new Point3();
+    public Point2 location = new Point2();
+    public Point2 targetLocation = new Point2();
 
     private final Entity entity;
     Entity.Mode prevMode = Entity.Mode.IDLE;
 
     CharacterAIMode aiMode = CharacterAIMode.IDLE;
-    Point3 pathingTarget = new Point3();
+    Point2 pathingTarget = new Point2();
 
     Random random = new Random();
     private int pathingFailStrike;
@@ -112,7 +112,7 @@ public class Character {
                             clearFailStrikes();
                             network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Mine, orientation));
                         } else {
-                            if (world.isTileOccupied(tempPoint.x, tempPoint.y, tempPoint.z, entity)) { // don't complain about walkables, dunno why the pathing is failing on it however
+                            if (world.isTileOccupied(tempPoint.x, tempPoint.y, entity)) { // don't complain about walkables, dunno why the pathing is failing on it however
                                 miningFailStrike -= 1;
                                 if (miningFailStrike <= 0) {
                                     aiMode = CharacterAIMode.IDLE;
@@ -135,7 +135,7 @@ public class Character {
         }
     }
 
-    Point3 tempPoint = new Point3();
+    Point2 tempPoint = new Point2();
 
     private Orientation orientationToward(World world, boolean goAround) {
         Orientation ew;
@@ -222,7 +222,7 @@ public class Character {
     }
 
     public void getLocalDrawPoint(Point viewportLocation, Point result) {
-        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, result);
+        World.globalTileToLocalCoord(location.x, location.y, viewportLocation, result);
 
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
@@ -262,19 +262,19 @@ public class Character {
         aiMode = CharacterAIMode.IDLE;
     }
 
-    public void walkTo(Point3 target) {
+    public void walkTo(Point2 target) {
         aiMode = CharacterAIMode.WALK;
         pathingTarget.set(target);
         clearFailStrikes();
     }
 
-    public void mineTo(Point3 target) {
+    public void mineTo(Point2 target) {
         aiMode = CharacterAIMode.MINE;
         pathingTarget.set(target);
         clearFailStrikes();
     }
 
-    public void use(Point3 target) {
+    public void use(Point2 target) {
         aiMode = CharacterAIMode.USE;
         pathingTarget.set(target);
         clearFailStrikes();

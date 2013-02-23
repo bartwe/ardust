@@ -8,37 +8,30 @@ import java.nio.ByteBuffer;
 
 public class WorldRegionPacket extends Packet {
     ByteBuffer tileBuffer;
-    int oldX, oldY, oldZ, x, y, z;
+    int oldX, oldY, x, y;
 
-    public WorldRegionPacket(ServerWorld world, int oldX, int oldY, int oldZ, int x, int y, int z) {
+    public WorldRegionPacket(ServerWorld world, int oldX, int oldY, int x, int y) {
         this.oldX = oldX;
         this.oldY = oldY;
-        this.oldZ = oldZ;
         this.x = x;
         this.y = y;
-        this.z = z;
-        tileBuffer = ByteBufferBuffer.alloc((Constants.ZRADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1));
-        for (int zi = z - Constants.ZRADIUS; zi <= z + Constants.ZRADIUS; zi++)
-            for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
-                for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
-                    if ((zi >= 0) && (zi < Constants.WORLD_DEPTH)) {
-                        int dx = Math.abs(xi - oldX);
-                        int dy = Math.abs(yi - oldY);
-                        int dz = Math.abs(zi - oldZ);
-                        if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
-                            tileBuffer.put(world.read(xi, yi, zi));
-                        }
-                    }
+        tileBuffer = ByteBufferBuffer.alloc((Constants.RADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1));
+        for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
+            for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
+                int dx = Math.abs(xi - oldX);
+                int dy = Math.abs(yi - oldY);
+                if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS)) {
+                    tileBuffer.put(world.read(xi, yi));
                 }
+
+            }
     }
 
     public WorldRegionPacket(ByteBuffer buffer) {
         oldX = buffer.getInt();
         oldY = buffer.getInt();
-        oldZ = buffer.getInt();
         x = buffer.getInt();
         y = buffer.getInt();
-        z = buffer.getInt();
         int size = buffer.getShort();
         tileBuffer = ByteBufferBuffer.alloc(size);
         tileBuffer.put(buffer);
@@ -57,10 +50,8 @@ public class WorldRegionPacket extends Packet {
         buffer.put(packetId());
         buffer.putInt(oldX);
         buffer.putInt(oldY);
-        buffer.putInt(oldZ);
         buffer.putInt(x);
         buffer.putInt(y);
-        buffer.putInt(z);
         buffer.putShort((short) tileBuffer.position());
         buffer.put(tileBuffer.array(), tileBuffer.arrayOffset(), tileBuffer.position());
     }
@@ -68,19 +59,17 @@ public class WorldRegionPacket extends Packet {
     public void readUpdates(int[] locations, byte[] tiles) {
         System.arraycopy(tileBuffer.array(), tileBuffer.arrayOffset(), tiles, 0, tileBuffer.position());
         int index = 0;
-        for (int zi = z - Constants.ZRADIUS; zi <= z + Constants.ZRADIUS; zi++)
-            for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
-                for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
-                    if ((zi >= 0) && (zi < Constants.WORLD_DEPTH)) {
-                        int dx = Math.abs(xi - oldX);
-                        int dy = Math.abs(yi - oldY);
-                        int dz = Math.abs(zi - oldZ);
-                        if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
-                            locations[index] = ServerWorld.normalizeAxis(xi) + (ServerWorld.normalizeAxis(yi) + zi * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH;
-                            index++;
-                        }
-                    }
+        for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
+            for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
+                int dx = Math.abs(xi - oldX);
+                int dy = Math.abs(yi - oldY);
+
+                if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS)) {
+                    locations[index] = ServerWorld.normalizeAxis(xi) + ServerWorld.normalizeAxis(yi) * Constants.WORLD_LENGTH;
+                    index++;
                 }
+
+            }
         if (index != tileBuffer.position())
             throw new RuntimeException("wut");
     }

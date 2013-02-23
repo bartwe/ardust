@@ -5,18 +5,16 @@ import java.nio.ByteBuffer;
 public class WindowPacket extends Packet {
     public int x;
     public int y;
-    public int z;
 
-    public WindowPacket(int x, int y, int z) {
+    public WindowPacket(int x, int y) {
         this.x = x;
         this.y = y;
-        this.z = z;
+
     }
 
     public WindowPacket(ByteBuffer buffer) {
         x = buffer.getInt();
         y = buffer.getInt();
-        z = buffer.getInt();
     }
 
     @Override
@@ -24,7 +22,6 @@ public class WindowPacket extends Packet {
         buffer.put(packetId());
         buffer.putInt(x);
         buffer.putInt(y);
-        buffer.putInt(z);
     }
 
     @Override

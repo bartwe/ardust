@@ -1,30 +1,26 @@
 package ardust.shared;
 
-public class Point3 {
-    public int x, y, z;
+public class Point2 {
+    public int x, y;
 
-    public Point3(int x, int y, int z) {
+    public Point2(int x, int y) {
         this.x = x;
         this.y = y;
-        this.z = z;
     }
 
-    public Point3() {
+    public Point2() {
         x = 0;
         y = 0;
-        z = 0;
     }
 
-    public void set(Point3 point) {
+    public void set(Point2 point) {
         this.x = point.x;
         this.y = point.y;
-        this.z = point.z;
     }
 
-    public void set(int x, int y, int z) {
+    public void set(int x, int y) {
         this.x = x;
         this.y = y;
-        this.z = z;
     }
 
     //todo, make fast
@@ -33,11 +29,10 @@ public class Point3 {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Point3 point3 = (Point3) o;
+        Point2 point3 = (Point2) o;
 
         if (x != point3.x) return false;
         if (y != point3.y) return false;
-        if (z != point3.z) return false;
 
         return true;
     }
@@ -47,13 +42,12 @@ public class Point3 {
     public int hashCode() {
         int result = x;
         result = 31 * result + y;
-        result = 31 * result + z;
         return result;
     }
 
     @Override
     public String toString() {
-        return "{" + x + ", " + y + ", " + z + "}";
+        return "{" + x + ", " + y + "}";
     }
 
     public void move(Orientation orientation) {
