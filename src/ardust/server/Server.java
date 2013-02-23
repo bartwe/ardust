@@ -27,6 +27,7 @@ public class Server {
     long prevT;
     PositionalMap positionalMap = new PositionalMap();
     int playerCount = 0;
+    int ringSequence = 0;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -213,7 +214,11 @@ public class Server {
 //        x += random.nextInt(Constants.WORLD_LENGTH);
 //        y += random.nextInt(Constants.WORLD_LENGTH);
         //player.setXY(x, y);
-        player.setLocation(playerCount,20);
+        boolean newRing = player.setLocation(playerCount,20,ringSequence);
+
+        if (newRing)
+            ringSequence++;
+
         player.spawnSetup(entities, world, positionalMap);
         player.sendPacket(new WindowPacket(player.getX(), player.getY()));
 

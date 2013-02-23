@@ -83,9 +83,8 @@ public class Player {
         addDwarf(entities, positionalMap, x + -2, y + -2);
     }
 
-    public void setLocation(int sequence, float distance)
+    public boolean setLocation(int sequence, float distance, int ringSequence)
     {
-        float rotation = 0;
         float centerX = Constants.START_OFFSET;
         float centerY = Constants.START_OFFSET;
         //
@@ -94,42 +93,40 @@ public class Player {
         //
         // How far to rotate around center for each side.
 
-        float aroundStep = (0.25f);// 0 to 1 based.
+        float aroundStep;
+
+        if (ringSequence > 0)
+            aroundStep = 1.0f / (4.0f * ringSequence);// 0 to 1 based.
+
+        else aroundStep = 0;
         //
         // Convert aroundStep to radians.
         double aroundRadians = aroundStep * 2 * Math.PI;
         //
-        // Convert rotation to radians.
-        rotation *= 2 * Math.PI;
-        //
-        // For every side, step around and away from center.
 
-        //
-        // How far away from center
-        float away;
-
-        if (sequence > 0)
-            away = ((sequence / 4) + 1) * awayStep;
-        else
-            away = 0;
-        //float away = Math.ceil((double)sequence / 4.0) * awayStep;
+        float away = ringSequence * awayStep;
         //
         // How far around the center.
-        double around = sequence * aroundRadians + rotation;
 
-        System.out.println(around);
-        System.out.println(Math.sin(around));
+        double around;
+
+        if (ringSequence > 0)
+            around = (sequence - (4 * (ringSequence - 1))) * aroundRadians;
+        else
+            around = 0;
+
         //
         // Convert 'around' and 'away' to X and Y.
         int x = (int) (centerX + Math.cos(around) * away);
         int y = (int) (centerY + Math.sin(around) * away);
         setXY(x, y);
-
-        System.out.println(this.x);
-        System.out.println(this.y);
-        System.out.println(sequence);
         //
         // Now that you know it, do it.
+
+        if (Math.cos(around) == 1)
+            return true;
+        else
+            return false;
     }
 
     public void addDwarf(Entities entities, PositionalMap positionalMap, int x, int y) {
