@@ -18,6 +18,7 @@ public class GameCore {
     int zLayer;
     DwarfActionMenu currentActionMenu;
     UserInputState currentInputState = UserInputState.NO_DWARF_SELECTED;
+    int soundID;
 
     public enum UserInputState {
         NO_DWARF_SELECTED,
