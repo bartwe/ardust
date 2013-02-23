@@ -1,6 +1,7 @@
 package ardust.client;
 
 import ardust.shared.Constants;
+import ardust.shared.Point3;
 import ardust.shared.Tile;
 
 public class ClientWorld {
@@ -59,4 +60,7 @@ public class ClientWorld {
             world[locations[i]] = tiles[i];
     }
 
+    public byte readDirect(Point3 point) {
+        return readDirect(point.x, point.y, point.z);
+    }
 }

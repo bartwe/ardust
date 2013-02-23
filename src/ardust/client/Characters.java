@@ -71,4 +71,8 @@ public class Characters {
 
         return options.get(idx);
     }
+
+    public boolean containsId(Integer id) {
+        return mapping.containsKey(id);
+    }
 }

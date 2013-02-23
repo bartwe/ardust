@@ -98,4 +98,7 @@ public class Constants {
     }
 
 
+    public static boolean isWalkable(byte tile) {
+        return tile == 0;
+    }
 }

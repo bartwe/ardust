@@ -5,6 +5,7 @@ import ardust.packets.DwarfRequestPacket;
 import ardust.shared.*;
 
 import java.awt.*;
+import java.util.Random;
 
 public class Character {
 
@@ -17,7 +18,10 @@ public class Character {
     private final Entity entity;
     Entity.Mode prevMode = Entity.Mode.IDLE;
 
-    public boolean isHalting;
+    CharacterAIMode aiMode = CharacterAIMode.IDLE;
+    Point3 pathingTarget = new Point3();
+
+    Random random = new Random();
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -50,12 +54,6 @@ public class Character {
         }
     }
 
-    public void halt() {
-        if (entity.mode == Entity.Mode.WALKING) {
-            isHalting = true;
-        }
-    }
-
     public void showStationarySprite() {
         switch (entity.orientation) {
             case NORTH:
@@ -84,20 +82,7 @@ public class Character {
                 if (setCountdown)
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 animateWalk();
-                switch (entity.orientation) {
-                    case NORTH:
-                        targetLocation.y -= 1;
-                        break;
-                    case EAST:
-                        targetLocation.x += 1;
-                        break;
-                    case SOUTH:
-                        targetLocation.y += 1;
-                        break;
-                    case WEST:
-                        targetLocation.x -= 1;
-                        break;
-                }
+                targetLocation.move(entity.orientation);
                 break;
             case MINING:
                 animateMining();
@@ -118,49 +103,104 @@ public class Character {
                 showStationarySprite();
         }
 
-        if (modeProgress >= 1 && entity.mode == Entity.Mode.WALKING) {
-            if (!isHalting) {
-                network.send(new DwarfRequestPacket(id(), DwarfRequest.Walk, entity.orientation));
-            } else {
-                isHalting = false;
-                entity.mode = Entity.Mode.IDLE;
-            }
+        switch (aiMode) {
+            case WALK:
+                if (!pathTowards(world, network))
+                    aiMode = CharacterAIMode.IDLE;
+
+                break;
+            case IDLE:
+                break;
         }
     }
 
-    public Point getLocalDrawPoint(Point viewportLocation) {
-        Point localPoint = new Point(0, 0);
-        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
+    Point3 tempPoint = new Point3();
+
+    private boolean pathTowards(ClientWorld world, NetworkConnection network) {
+        if (targetLocation.equals(pathingTarget))
+            return false;
+        Orientation ew;
+        if (pathingTarget.x == targetLocation.x)
+            ew = random.nextBoolean() ? Orientation.EAST : Orientation.WEST;
+        else
+            ew = (pathingTarget.x > targetLocation.x) ? Orientation.EAST : Orientation.WEST;
+
+        Orientation ns;
+        if (pathingTarget.y == targetLocation.y)
+            ns = random.nextBoolean() ? Orientation.NORTH : Orientation.SOUTH;
+        else
+            ns = (pathingTarget.y > targetLocation.y) ? Orientation.SOUTH : Orientation.NORTH;
+
+        double eww = 1 + Math.abs(pathingTarget.x - targetLocation.x);
+        double nsw = 1 + Math.abs(pathingTarget.y - targetLocation.y);
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(ew);
+        if (!Constants.isWalkable(world.readDirect(tempPoint)))
+            eww = 0.001;
+        tempPoint.set(targetLocation);
+        tempPoint.move(ns);
+        if (!Constants.isWalkable(world.readDirect(tempPoint)))
+            nsw = 0.001;
+
+        double w = eww + nsw;
+        eww /= w;
+        Orientation orientation;
+        if (random.nextFloat() < eww)
+            orientation = ew;
+        else
+            orientation = ns;
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(orientation);
+        if (!Constants.isWalkable(world.readDirect(tempPoint)))
+            return false;
+
+        network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Walk, orientation));
+        return true;
+    }
+
+    public void getLocalDrawPoint(Point viewportLocation, Point result) {
+        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, result);
 
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
                 case NORTH:
-                    localPoint.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    result.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
                     break;
                 case EAST:
-                    localPoint.x += (int) (Constants.TILE_BASE_WIDTH * modeProgress);
+                    result.x += (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     break;
                 case WEST:
-                    localPoint.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
+                    result.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     break;
                 case SOUTH:
-                    localPoint.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    result.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
                     break;
             }
         }
-        return localPoint;
     }
 
+    Point localPoint = new Point();
+
     public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
-        Point localPoint = getLocalDrawPoint(viewportLocation);
+        getLocalDrawPoint(viewportLocation, localPoint);
         boolean flipAnimation = (entity.orientation == Orientation.EAST);
         if (selectedDwarf)
             p.draw(localPoint.x + Constants.DWARF_HEART_CENTER_OFFSET, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 9, 9, false);
         sprite.draw(p, localPoint.x, localPoint.y - Constants.TILE_BASE_HEIGHT - Constants.DWARF_OFFSET_ON_TILE, flipAnimation);
     }
 
-
     public Integer id() {
         return entity.id;
+    }
+
+    public void halt() {
+        aiMode = CharacterAIMode.IDLE;
+    }
+
+    public void walkTo(Point3 target) {
+        aiMode = CharacterAIMode.WALK;
+        pathingTarget.set(target);
     }
 }
