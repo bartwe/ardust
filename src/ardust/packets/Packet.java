@@ -8,7 +8,6 @@ abstract public class Packet {
     public static final byte ID_WORLD_UPDATE_PACKET = 2;
     public static final byte ID_WINDOW_PACKET = 3;
     public static final byte ID_WORLD_REGION_PACKET = 4;
-    public static final byte ID_DEBUG_CHANGE_TILE_PACKET = 5;
     public static final byte ID_ENTITIES_PACKET = 6;
     public static final byte ID_DWARF_REQUEST_PACKET = 7;
     public static final byte ID_PLAYER_UPDATE_PACKET = 8;
@@ -23,8 +22,6 @@ abstract public class Packet {
             return new WindowPacket(buffer);
         if (packetId == ID_WORLD_REGION_PACKET)
             return new WorldRegionPacket(buffer);
-        if (packetId == ID_DEBUG_CHANGE_TILE_PACKET)
-            return new DebugChangeTilePacket(buffer);
         if (packetId == ID_ENTITIES_PACKET)
             return new EntitiesPacket(buffer);
         if (packetId == ID_DWARF_REQUEST_PACKET)

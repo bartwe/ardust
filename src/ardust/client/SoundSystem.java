@@ -72,9 +72,9 @@ public class SoundSystem {
             int offset = 0;
             int remaining = databuffer.remaining();
             while (true) {
-                if (remaining <=0)
+                if (remaining <= 0)
                     throw new RuntimeException();
-                int len = f.read(databuffer.array(), databuffer.arrayOffset()+offset, remaining);
+                int len = f.read(databuffer.array(), databuffer.arrayOffset() + offset, remaining);
                 if (len < 0)
                     break;
                 remaining -= len;
@@ -90,7 +90,6 @@ public class SoundSystem {
 
         byte[] data = new byte[databuffer.remaining()];
         databuffer.get(data);
-        databuffer = null;
 
         // Decode OGG into PCM
         InputStream inputStream = new ByteArrayInputStream(data);
@@ -116,7 +115,7 @@ public class SoundSystem {
 
         int error = AL10.alGetError();
         if (error != AL10.AL_NO_ERROR) {
-            System.err.println("AL error. "+error);
+            System.err.println("AL error. " + error);
             return;
         }
 
@@ -152,7 +151,6 @@ public class SoundSystem {
 
         AL10.alSourcePlay(source.get(i));
     }
-
     public void stop(int i) {
         if (disabled)
             return;

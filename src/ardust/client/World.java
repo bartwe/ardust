@@ -128,7 +128,7 @@ public class World {
         if (!Constants.isWalkable(clientWorld.read(x, y, z)))
             return true;
         Character at = getCharacterAtTile(x, y, z);
-        if ((at != null) && (at.id() != entity.id))
+        if ((at != null) && (at.id().equals(entity.id)))
             return true;
         return false;
     }

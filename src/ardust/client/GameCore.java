@@ -77,7 +77,7 @@ public class GameCore {
                 WindowPacket spp = (WindowPacket) packet;
                 temp.setLocation(spp.x, spp.y);
                 zLayer = spp.z;
-                world.worldCoordToScreenCoord(temp, temp);
+                World.worldCoordToScreenCoord(temp, temp);
                 System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
                 parent.setViewportLocation(temp);
             } else if (packet instanceof WorldRegionPacket) {
@@ -106,7 +106,7 @@ public class GameCore {
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }
 
-        world.screenCoordToWorldCoord(parent.getViewportLocation(), temp);
+        World.screenCoordToWorldCoord(parent.getViewportLocation(), temp);
         WindowPacket wp = new WindowPacket((int) temp.getX(), (int) temp.getY(), zLayer);
         network.send(wp);
     }

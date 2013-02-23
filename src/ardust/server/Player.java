@@ -80,7 +80,6 @@ public class Player {
             }
 
 
-
         addDwarf(entities, positionalMap, x + 2, y + -2, z);
         addDwarf(entities, positionalMap, x + 2, y + 2, z);
         world.write(x, y, z, (byte) 8); // anvil

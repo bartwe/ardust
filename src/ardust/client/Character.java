@@ -103,7 +103,7 @@ public class Character {
                 break;
             case MINE:
                 if (!pathTowards(world, network, false)) {
-                    if (location.equals(pathingTarget)||(targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
+                    if (location.equals(pathingTarget) || (targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
                         System.err.println("Stopped mining, destination reached");
                         aiMode = CharacterAIMode.IDLE;
                     } else {
@@ -113,7 +113,7 @@ public class Character {
                         if (orientation == Orientation.NONE)
                             orientation = orientationToward(world, false);
 
-                        System.err.println("Mining orientation: "+orientation);
+                        System.err.println("Mining orientation: " + orientation);
 
                         tempPoint.set(location);
                         tempPoint.move(orientation);
@@ -124,11 +124,10 @@ public class Character {
                             if (world.isTileOccupied(tempPoint.x, tempPoint.y, tempPoint.z, entity)) { // don't complain about walkables, dunno why the pathing is failing on it however
                                 miningFailStrike -= 1;
                                 if (miningFailStrike <= 0) {
-                                    System.err.println("Tile not mineable "+tempPoint);
+                                    System.err.println("Tile not mineable " + tempPoint);
                                     aiMode = CharacterAIMode.IDLE;
                                 }
-                            }
-                            else
+                            } else
                                 clearFailStrikes();
                         }
                     }
@@ -155,18 +154,16 @@ public class Character {
                 ew = random.nextBoolean() ? Orientation.EAST : Orientation.WEST;
             else
                 ew = Orientation.NONE;
-        }
-        else
+        } else
             ew = (pathingTarget.x > targetLocation.x) ? Orientation.EAST : Orientation.WEST;
 
         Orientation ns;
-        if (pathingTarget.y == targetLocation.y)         {
+        if (pathingTarget.y == targetLocation.y) {
             if (goAround)
                 ns = random.nextBoolean() ? Orientation.NORTH : Orientation.SOUTH;
             else
                 ns = Orientation.NONE;
-        }
-        else
+        } else
             ns = (pathingTarget.y > targetLocation.y) ? Orientation.SOUTH : Orientation.NORTH;
 
         double eww = Math.abs(pathingTarget.x - targetLocation.x);
@@ -177,7 +174,7 @@ public class Character {
         Orientation otherOrientation;
         double w = eww + nsw;
         if (w == 0)
-            w+=1;
+            w += 1;
         eww /= w;
         if (random.nextFloat() < eww) {
             orientation = ew;
