@@ -44,7 +44,7 @@ public class Character {
         }
     }
 
-    public void animateMining( World world, Point2 targetLocation) {
+    public void animateMining(World world, Point2 targetLocation) {
         int currentFrame = sprite.currentFrame;
         switch (entity.orientation) {
             case NORTH:
@@ -58,12 +58,13 @@ public class Character {
             if (entity.playerId.intValue() == GameCore.playerId)
                 GameLoop.soundBank.playSound(SoundBank.pickaxeSound, true);
 
-            if (random.nextDouble() < .3)
-            {
+            if (random.nextDouble() < .3) {
                 Point2 miningLocation = new Point2(location.x, location.y);
                 miningLocation.move(entity.orientation);
-                   world.temporaryAnimatedSprites.add(new SolitaryAnimatedSprite(20, 4, 5,miningLocation.x * Constants.TILE_BASE_WIDTH  + random.nextInt(24) - 12,
-                           miningLocation.y * Constants.TILE_BASE_HEIGHT - 32 + random.nextInt(24) - 12));
+                if ((world.temporaryAnimatedSprites.size() < 100) || (entity.playerId.intValue() == GameCore.playerId)) {
+                    world.temporaryAnimatedSprites.add(new SolitaryAnimatedSprite(20, 4, 5, miningLocation.x * Constants.TILE_BASE_WIDTH + random.nextInt(24) - 12,
+                            miningLocation.y * Constants.TILE_BASE_HEIGHT - 32 + random.nextInt(24) - 12));
+                }
             }
         }
     }
@@ -164,7 +165,7 @@ public class Character {
                 tempPoint.set(location);
                 tempPoint.move(orientation);
                 Character character = world.getCharacterAtTile(tempPoint.x, tempPoint.y);
-                if ((character != null) && ((character.playerId() == playerId())||(character.isDead()))) {
+                if ((character != null) && ((character.playerId() == playerId()) || (character.isDead()))) {
                     character = null;
                 }
                 if ((character != null) || !pathTowards(world, network, true)) {
@@ -186,8 +187,7 @@ public class Character {
 
                 if (!pathTowards(world, network, false)) {
 
-                    if (pathingTarget.manhattanDistance(location.x, location.y) == 1 && !world.isTileOccupied(pathingTarget.x, pathingTarget.y, entity))
-                    {
+                    if (pathingTarget.manhattanDistance(location.x, location.y) == 1 && !world.isTileOccupied(pathingTarget.x, pathingTarget.y, entity)) {
                         orientTowards(pathingTarget);
                         network.send(new DwarfRequestPacket(id(), DwarfRequest.Build, entity.orientation));
                     }
@@ -206,8 +206,7 @@ public class Character {
 
     Point2 tempPoint = new Point2();
 
-    public void orientTowards(Point2 target)
-    {
+    public void orientTowards(Point2 target) {
         if (target.x < location.x) entity.orientation = Orientation.WEST;
         else if (target.x > location.x) entity.orientation = Orientation.EAST;
         else if (target.y < location.y) entity.orientation = Orientation.NORTH;
@@ -281,8 +280,7 @@ public class Character {
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
 
-        if (tempPoint.equals(pathingTarget) && aiMode == CharacterAIMode.BUILD)
-        {
+        if (tempPoint.equals(pathingTarget) && aiMode == CharacterAIMode.BUILD) {
 
             return false;
         }

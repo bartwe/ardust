@@ -1,9 +1,6 @@
 package ardust.client;
 
-import org.lwjgl.opengl.ARBDrawElementsBaseVertex;
-
 import java.awt.*;
-import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +37,6 @@ public class SolitaryAnimatedSprite extends AnimatedSprite {
 
     public void draw(Painter p, Point viewportLocation)
     {
-
         p.getSourceRectFromTileSheetIndex(currentFrame, tileSheetRect);
 
         World.globalNonTileCoordToScreenCoord(xLocation, yLocation, point, viewportLocation);
