@@ -60,33 +60,35 @@ public class Constants {
     public static final int GOLD = 3;
     public static final int IRON = 4;
 
-    public static int isWorldPieceMineable(byte index)
-    {
-        switch (index)
-        {
+    public static int isWorldPieceMineable(byte index) {
+        switch (index) {
             case 0:
-            case 2: return 500;
-            case STONE: return 1500;
-            case GOLD: return 7000;
-            case IRON: return 3000;
-            default: return 0;
+            case 2:
+                return 500;
+            case STONE:
+                return 1500;
+            case GOLD:
+                return 7000;
+            case IRON:
+                return 3000;
+            default:
+                return 0;
         }
     }
 
-    public static int getBlockModIndex(byte index)
-    {
-        switch (index)
-        {
-            case GOLD: return 13;
-            case IRON: return 14;
-            default: return -1;
+    public static int getBlockModIndex(byte index) {
+        switch (index) {
+            case GOLD:
+                return 13;
+            case IRON:
+                return 14;
+            default:
+                return -1;
         }
     }
 
-    public static int convertIndexToBaseBlockIndex(byte index)
-    {
-        switch (index)
-        {
+    public static int convertIndexToBaseBlockIndex(byte index) {
+        switch (index) {
             case GOLD:
             case IRON:
                 return 1;

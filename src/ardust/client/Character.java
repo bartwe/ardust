@@ -102,9 +102,18 @@ public class Character {
             case MINING:
                 animateMining();
                 break;
-            case RESOURCE_STONE: core.stone++; entity.mode = Entity.Mode.IDLE; break;
-            case RESOURCE_IRON: core.iron++; entity.mode = Entity.Mode.IDLE;break;
-            case RESOURCE_GOLD: core.gold++; entity.mode = Entity.Mode.IDLE;break;
+            case RESOURCE_STONE:
+                core.stone++;
+                entity.mode = Entity.Mode.IDLE;
+                break;
+            case RESOURCE_IRON:
+                core.iron++;
+                entity.mode = Entity.Mode.IDLE;
+                break;
+            case RESOURCE_GOLD:
+                core.gold++;
+                entity.mode = Entity.Mode.IDLE;
+                break;
             default:
                 showStationarySprite();
         }
