@@ -59,6 +59,7 @@ public class Constants {
     public static final int STONE = 1;
     public static final int GOLD = 3;
     public static final int IRON = 4;
+    public static final int ANVIL = 8;
 
     public static int isWorldPieceMineable(byte index) {
         switch (index) {
