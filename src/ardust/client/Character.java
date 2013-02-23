@@ -24,6 +24,7 @@ public class Character {
 
     Random random = new Random();
     private int pathingFailStrike;
+    private int miningFailStrike;
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -96,12 +97,45 @@ public class Character {
 
         switch (aiMode) {
             case WALK:
-                if (!pathTowards(world, network))
+                if (!pathTowards(world, network, true))
                     aiMode = CharacterAIMode.IDLE;
 
                 break;
+            case MINE:
+                if (!pathTowards(world, network, false)) {
+                    if (location.equals(pathingTarget)||(targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
+                        System.err.println("Stopped mining, destination reached");
+                        aiMode = CharacterAIMode.IDLE;
+                    } else {
+                        System.err.println("Stopped walking to mine site");
+
+                        Orientation orientation = orientationToward(world, false);
+                        if (orientation == Orientation.NONE)
+                            orientation = orientationToward(world, false);
+
+                        System.err.println("Mining orientation: "+orientation);
+
+                        tempPoint.set(location);
+                        tempPoint.move(orientation);
+                        if (world.isTileMineable(tempPoint)) {
+                            clearFailStrikes();
+                            network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Mine, orientation));
+                        } else {
+                            if (world.isTileOccupied(tempPoint.x, tempPoint.y, tempPoint.z, entity)) { // don't complain about walkables, dunno why the pathing is failing on it however
+                                miningFailStrike -= 1;
+                                if (miningFailStrike <= 0) {
+                                    System.err.println("Tile not mineable "+tempPoint);
+                                    aiMode = CharacterAIMode.IDLE;
+                                }
+                            }
+                            else
+                                clearFailStrikes();
+                        }
+                    }
+                }
+                break;
             case USE:
-                if (!pathTowards(world, network)) {
+                if (!pathTowards(world, network, true)) {
 
                     // if reached, use
                     aiMode = CharacterAIMode.IDLE;
@@ -114,18 +148,24 @@ public class Character {
 
     Point3 tempPoint = new Point3();
 
-    private boolean pathTowards(World world, NetworkConnection network) {
-        if (targetLocation.equals(pathingTarget))
-            return false;
+    private Orientation orientationToward(World world, boolean goAround) {
         Orientation ew;
-        if (pathingTarget.x == targetLocation.x)
-            ew = random.nextBoolean() ? Orientation.EAST : Orientation.WEST;
+        if (pathingTarget.x == targetLocation.x) {
+            if (goAround)
+                ew = random.nextBoolean() ? Orientation.EAST : Orientation.WEST;
+            else
+                ew = Orientation.NONE;
+        }
         else
             ew = (pathingTarget.x > targetLocation.x) ? Orientation.EAST : Orientation.WEST;
 
         Orientation ns;
-        if (pathingTarget.y == targetLocation.y)
-            ns = random.nextBoolean() ? Orientation.NORTH : Orientation.SOUTH;
+        if (pathingTarget.y == targetLocation.y)         {
+            if (goAround)
+                ns = random.nextBoolean() ? Orientation.NORTH : Orientation.SOUTH;
+            else
+                ns = Orientation.NONE;
+        }
         else
             ns = (pathingTarget.y > targetLocation.y) ? Orientation.SOUTH : Orientation.NORTH;
 
@@ -133,8 +173,11 @@ public class Character {
         double nsw = Math.abs(pathingTarget.y - targetLocation.y);
 
         Orientation orientation;
+        Orientation origOrientation;
         Orientation otherOrientation;
         double w = eww + nsw;
+        if (w == 0)
+            w+=1;
         eww /= w;
         if (random.nextFloat() < eww) {
             orientation = ew;
@@ -143,11 +186,32 @@ public class Character {
             orientation = ns;
             otherOrientation = ew;
         }
+        origOrientation = orientation;
+        if (orientation == Orientation.NONE)
+            return otherOrientation;
+
+        if (!goAround)
+            return orientation;
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
         if (world.isTileOccupied(tempPoint, entity))
             orientation = otherOrientation;
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(orientation);
+        if (world.isTileOccupied(tempPoint, entity))
+            return origOrientation;
+        return orientation;
+    }
+
+    private boolean pathTowards(World world, NetworkConnection network, boolean goAround) {
+        if (targetLocation.equals(pathingTarget))
+            return false;
+
+        Orientation orientation = orientationToward(world, goAround);
+        if (orientation == Orientation.NONE)
+            return false;
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
@@ -163,9 +227,8 @@ public class Character {
             pathingFailStrike -= 1;
             if (pathingFailStrike <= 0)
                 return false;
-        }
-        else
-            pathingFailStrike = Constants.WALK_LOOP_LIMIT;
+        } else
+            clearFailStrikes();
 
         network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Walk, orientation));
         return true;
@@ -187,6 +250,8 @@ public class Character {
                     break;
                 case SOUTH:
                     result.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    break;
+                default:
                     break;
             }
         }
@@ -213,12 +278,23 @@ public class Character {
     public void walkTo(Point3 target) {
         aiMode = CharacterAIMode.WALK;
         pathingTarget.set(target);
-        pathingFailStrike = Constants.WALK_LOOP_LIMIT;
+        clearFailStrikes();
+    }
+
+    public void mineTo(Point3 target) {
+        aiMode = CharacterAIMode.MINE;
+        pathingTarget.set(target);
+        clearFailStrikes();
     }
 
     public void use(Point3 target) {
         aiMode = CharacterAIMode.USE;
         pathingTarget.set(target);
+        clearFailStrikes();
+    }
+
+    private void clearFailStrikes() {
         pathingFailStrike = Constants.WALK_LOOP_LIMIT;
+        miningFailStrike = Constants.MINE_FAIL_LIMIT;
     }
 }

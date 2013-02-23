@@ -70,6 +70,8 @@ public class Point3 {
             case WEST:
                 x -= 1;
                 break;
+            default:
+                break;
         }
 
     }

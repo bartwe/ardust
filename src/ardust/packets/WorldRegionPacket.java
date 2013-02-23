@@ -26,7 +26,7 @@ public class WorldRegionPacket extends Packet {
                         int dy = Math.abs(yi - oldY);
                         int dz = Math.abs(zi - oldZ);
                         if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
-                            tileBuffer.put(world.readDirect(xi, yi, zi));
+                            tileBuffer.put(world.read(xi, yi, zi));
                         }
                     }
                 }

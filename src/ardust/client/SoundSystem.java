@@ -114,8 +114,9 @@ public class SoundSystem {
                 oggData.data,
                 oggData.rate);
 
-        if (AL10.alGetError() != AL10.AL_NO_ERROR) {
-            System.err.println("AL error.");
+        int error = AL10.alGetError();
+        if (error != AL10.AL_NO_ERROR) {
+            System.err.println("AL error. "+error);
             return;
         }
 

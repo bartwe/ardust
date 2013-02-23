@@ -66,7 +66,7 @@ public class World {
                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height, false);
 
                 //Draw Terrain Item
-                byte whatItem = clientWorld.readDirect(x, y, z);
+                byte whatItem = clientWorld.read(x, y, z);
                 int baseBlock = Constants.convertIndexToBaseBlockIndex(whatItem);
                 int blockMod = Constants.getBlockModIndex(whatItem);
                 if (whatItem != 0) {
@@ -125,7 +125,7 @@ public class World {
     }
 
     public boolean isTileOccupied(int x, int y, int z, Entity entity) {
-        if (!Constants.isWalkable(clientWorld.readDirect(x, y, z)))
+        if (!Constants.isWalkable(clientWorld.read(x, y, z)))
             return true;
         Character at = getCharacterAtTile(x, y, z);
         if ((at != null) && (at.id() != entity.id))
@@ -147,5 +147,9 @@ public class World {
 
     public boolean isTileOccupied(Point3 point, Entity entity) {
         return isTileOccupied(point.x, point.y, point.z, entity);
+    }
+
+    public boolean isTileMineable(Point3 point) {
+        return Constants.isMinable(clientWorld.read(point.x, point.y, point.z));
     }
 }

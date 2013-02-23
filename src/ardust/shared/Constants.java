@@ -61,6 +61,7 @@ public class Constants {
     public static final int IRON = 4;
     public static final int ANVIL = 8;
     public static final int WALK_LOOP_LIMIT = 5;
+    public static final int MINE_FAIL_LIMIT = 30;
 
 
     public static final int V_PLAYER_STONES = 0;
@@ -115,5 +116,9 @@ public class Constants {
         if (tile == ANVIL)
             return true;
         return false;
+    }
+
+    public static boolean isMinable(byte tile) {
+        return tile != 0;
     }
 }
