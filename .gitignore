@@ -11,3 +11,6 @@ dist/*
 
 .idea/workspace.xml
 out/*
+
+entities.dat
+world.dat
