@@ -58,6 +58,10 @@ public class Entity {
         mode = Mode.values()[values.get(Constants.V_ENTITY_MODE)];
     }
 
+    public static void dropRead(ByteBuffer buffer) {
+        Values.dropRead(buffer, Constants.V_ENTITY_VALUES_SIZE);
+    }
+
     public void postWrite() {
         values.nextTick();
     }

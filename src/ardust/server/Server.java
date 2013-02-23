@@ -133,7 +133,7 @@ public class Server {
         if (entities.write(tempBuffer, false)) {
             // could be too large...
             tempBuffer.flip();
-            EntitiesPacket entitiesPacket = new EntitiesPacket(tempBuffer, true);
+            EntitiesPacket entitiesPacket = new EntitiesPacket(tempBuffer, true, false);
             packets.add(entitiesPacket);
         }
 
@@ -181,17 +181,15 @@ public class Server {
     }
 
     private void handleWindowChange(Player player, WindowPacket packet) {
-        WindowPacket wp = (WindowPacket) packet;
         int oldX = player.getX();
         int oldY = player.getY();
         int oldZ = player.getZ();
-        player.setXYZ(wp.x, wp.y, wp.z);
-        sendWorldRegion(player, oldX, oldY, oldZ, wp.x, wp.y, wp.z);
+        player.setXYZ(packet.x, packet.y, packet.z);
+        sendWorldRegion(player, oldX, oldY, oldZ, packet.x, packet.y, packet.z);
     }
 
     private void handleHello(Player player, HelloPacket packet) {
-        HelloPacket hp = (HelloPacket) packet;
-        player.setName(hp.getName());
+        player.setName(packet.getName());
         int x = Constants.START_OFFSET;
         int y = Constants.START_OFFSET;
         int z = Constants.DEFAULT_Z;
@@ -201,6 +199,12 @@ public class Server {
         player.setXYZ(x, y, z);
         player.spawnSetup(entities, world);
         player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
+
+        tempBuffer.clear();
+        if (entities.write(tempBuffer, true)) {
+            tempBuffer.flip();
+            player.sendPacket(new EntitiesPacket(tempBuffer, true, true));
+        }
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {

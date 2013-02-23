@@ -133,8 +133,8 @@ public class World {
         return characters.getCharacterAtTile(x, y, z);
     }
 
-    public void updateEntities(ByteBuffer data) {
-        entities.read(data, false);
+    public void updateEntities(ByteBuffer data, boolean checkpoint) {
+        entities.read(data, checkpoint);
     }
 
     public Character nextCharacter(Character selectedDwarf) {

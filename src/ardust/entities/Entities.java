@@ -84,7 +84,11 @@ public class Entities {
                 if (checkpoint)
                     if (!entities.containsKey(id))
                         entities.put(id, new Entity(id));
-                entities.get(id).read(buffer);
+                Entity entity = entities.get(id);
+                if (entity != null)
+                    entity.read(buffer);
+                else
+                    Entity.dropRead(buffer);
                 count--;
             }
         }

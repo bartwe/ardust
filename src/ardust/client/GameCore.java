@@ -89,7 +89,7 @@ public class GameCore {
                 world.writeTiles(wup.locations, wup.tiles);
             } else if (packet instanceof EntitiesPacket) {
                 EntitiesPacket ep = (EntitiesPacket) packet;
-                world.updateEntities(ep.data);
+                world.updateEntities(ep.data, ep.checkpoint);
             } else
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }

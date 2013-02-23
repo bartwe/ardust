@@ -67,4 +67,15 @@ public class Values {
             }
         }
     }
+
+    public static void dropRead(ByteBuffer buffer, int size) {
+        int count = buffer.get();
+        if (count == size) {
+            buffer.position(buffer.position() + 4*count);
+            for (int i = 0; i < size; i++)
+                buffer.getInt();
+        } else {
+            buffer.position(buffer.position() + 5*count);
+        }
+    }
 }
