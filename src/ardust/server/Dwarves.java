@@ -92,9 +92,20 @@ public class Dwarves {
                 break;
             case MINING:
                 Point3 position = getPositionAfterMovement(dwarf);
-                world.writeDirect(position.x, position.y, position.z, (byte) 0);
-                dwarf.mode = Entity.Mode.IDLE;
+                byte which = world.readDirect(position.x, position.y, position.z);
+                world.writeDirect(position.x, position.y, position.z, (byte)0);
+                switch (which)
+                {
+                    case Constants.STONE: dwarf.mode = Entity.Mode.RESOURCE_STONE; dwarf.countdown = 100; break;
+                    case Constants.IRON: dwarf.mode = Entity.Mode.RESOURCE_IRON; dwarf.countdown = 100; break;
+                    case Constants.GOLD: dwarf.mode = Entity.Mode.RESOURCE_GOLD; dwarf.countdown = 100; break;
+                    default: dwarf.mode = Entity.Mode.IDLE; break;
+                }
                 break;
+
+            case RESOURCE_STONE:
+            case RESOURCE_IRON:
+            case RESOURCE_GOLD:
             case COOLDOWN:
                 dwarf.mode = Entity.Mode.IDLE;
                 break;

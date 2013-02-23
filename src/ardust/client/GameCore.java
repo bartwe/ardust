@@ -58,7 +58,7 @@ public class GameCore {
     public void tick(int deltaT) {
         processNetwork();
 
-        world.tick(deltaT, network);
+        world.tick(deltaT, network, this);
 
         mousePan();
     }

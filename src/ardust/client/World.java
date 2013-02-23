@@ -39,8 +39,8 @@ public class World {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
-    public void tick(int deltaT, NetworkConnection network) {
-        characters.tick(deltaT, clientWorld, network);
+    public void tick(int deltaT, NetworkConnection network, GameCore core) {
+        characters.tick(deltaT, clientWorld, network, core);
     }
 
     Point toDrawCoord = new Point();

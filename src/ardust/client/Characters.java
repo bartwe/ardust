@@ -15,7 +15,7 @@ public class Characters {
         this.entities = entities;
     }
 
-    public void tick(int deltaT, ClientWorld world, NetworkConnection network) {
+    public void tick(int deltaT, ClientWorld world, NetworkConnection network, GameCore core) {
         for (Integer id : entities.deleted)
             mapping.remove(id);
         for (Integer id : entities.inserted)
@@ -23,7 +23,7 @@ public class Characters {
         entities.clearDelta();
         positional.clear();
         for (Character character : mapping.values()) {
-            character.tick(deltaT, world, network);
+            character.tick(deltaT, world, network, core);
             positional.put(character.location, character);
             if (!character.targetLocation.equals(character.location))
                 positional.put(character.targetLocation, character);

@@ -13,7 +13,7 @@ public class SpriteNumber {
             int currentDigit = number % 10;
             number /= 10;
 
-            int textX = textureX + (currentDigit * digitWidth) % textureX;
+            int textX = textureX + (currentDigit * digitWidth) % digitWidth;
             int textY = textureY + ((currentDigit * digitWidth) / textureX) * digitHeight;
             p.draw(screenX - widthOffset, screenY, textX, textY, digitWidth, digitHeight, false);
             widthOffset += digitWidth;

@@ -19,7 +19,10 @@ public class Entity {
         IDLE,
         COOLDOWN, // like idle but non interruptable
         WALKING,
-        MINING
+        MINING,
+        RESOURCE_STONE,
+        RESOURCE_IRON,
+        RESOURCE_GOLD
     }
 
     public Integer id;

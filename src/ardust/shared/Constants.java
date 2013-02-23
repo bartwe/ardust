@@ -56,37 +56,39 @@ public class Constants {
 
     public static final int DWARF_HEART_CENTER_OFFSET = 11;
 
-    public static int isWorldPieceMineable(byte index) {
-        switch (index) {
+    public static final int STONE = 1;
+    public static final int GOLD = 3;
+    public static final int IRON = 4;
+
+    public static int isWorldPieceMineable(byte index)
+    {
+        switch (index)
+        {
             case 0:
-            case 2:
-                return 500;
-            case 1:
-                return 1500;
-            case 3:
-                return 7000;
-            case 4:
-                return 3000;
-            default:
-                return 0;
+            case 2: return 500;
+            case STONE: return 1500;
+            case GOLD: return 7000;
+            case IRON: return 3000;
+            default: return 0;
         }
     }
 
-    public static int getBlockModIndex(byte index) {
-        switch (index) {
-            case 3:
-                return 13;//gold
-            case 4:
-                return 14;//iron;
-            default:
-                return -1;
+    public static int getBlockModIndex(byte index)
+    {
+        switch (index)
+        {
+            case GOLD: return 13;
+            case IRON: return 14;
+            default: return -1;
         }
     }
 
-    public static int convertIndexToBaseBlockIndex(byte index) {
-        switch (index) {
-            case 3: //gold
-            case 4: //iron
+    public static int convertIndexToBaseBlockIndex(byte index)
+    {
+        switch (index)
+        {
+            case GOLD:
+            case IRON:
                 return 1;
             default:
                 return index;

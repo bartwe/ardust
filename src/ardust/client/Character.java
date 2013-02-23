@@ -67,7 +67,7 @@ public class Character {
         }
     }
 
-    public void tick(int deltaT, ClientWorld world, NetworkConnection network) {
+    public void tick(int deltaT, ClientWorld world, NetworkConnection network, GameCore core) {
         entity.countdown -= deltaT;
 
         if (entity.countdown < 0)
@@ -102,6 +102,9 @@ public class Character {
             case MINING:
                 animateMining();
                 break;
+            case RESOURCE_STONE: core.stone++; entity.mode = Entity.Mode.IDLE; break;
+            case RESOURCE_IRON: core.iron++; entity.mode = Entity.Mode.IDLE;break;
+            case RESOURCE_GOLD: core.gold++; entity.mode = Entity.Mode.IDLE;break;
             default:
                 showStationarySprite();
         }
