@@ -7,13 +7,8 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class SoundSystem {
@@ -79,23 +74,28 @@ public class SoundSystem {
         SoundObject obj = soundBank.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
-        Path path = Paths.get(System.getProperty("user.dir") + obj.filename);
-        byte[] data = new byte[0];
+        File file = new File(System.getProperty("user.dir") + obj.filename);
+        byte[] data;
 
         try {
-            data = Files.readAllBytes(path);
+            RandomAccessFile f = new RandomAccessFile(file, "r");
+            data = new byte[(int) f.length()];
+            f.read(data);
+            f.close();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            return;
         }
 
         // Decode OGG into PCM
         InputStream inputStream = new ByteArrayInputStream(data);
 
-        OggData oggData = null;
+        OggData oggData;
         try {
             oggData = oggDecoder.getData(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            return;
         }
 
         int sourceID = source.get(i);
@@ -110,7 +110,8 @@ public class SoundSystem {
                 oggData.rate);
 
         if (AL10.alGetError() != AL10.AL_NO_ERROR) {
-            //Error check
+            System.err.println("AL error.");
+            return;
         }
 
         AL10.alSourcei(sourceID, AL10.AL_BUFFER, bufferID);
