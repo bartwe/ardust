@@ -123,8 +123,9 @@ public class Player {
         System.out.println(Math.sin(around));
         //
         // Convert 'around' and 'away' to X and Y.
-        this.x = (int) (centerX + Math.cos(around) * away);
-        this.y = (int) (centerY + Math.sin(around) * away);
+        int x = (int) (centerX + Math.cos(around) * away);
+        int y = (int) (centerY + Math.sin(around) * away);
+        setXY(x, y);
 
         System.out.println(this.x);
         System.out.println(this.y);

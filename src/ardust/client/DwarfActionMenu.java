@@ -13,19 +13,27 @@ public class DwarfActionMenu {
     private static final int MINE = 2;
     private static final int USE = 3;
 
+
+    public enum Mode {
+        Normal,
+        Crafting,
+        Fight
+    }
+
     Point2 location = new Point2();
     ArrayList<Rectangle> buttons;
-    boolean craftingMenu;
+    Mode mode;
 
-    public DwarfActionMenu(Point2 location, boolean craftingMenu) {
+    public DwarfActionMenu(Point2 location, Mode mode) {
         this.location.set(location);
-        this.craftingMenu = craftingMenu;
+        this.mode = mode;
 
         buttons = new ArrayList<Rectangle>();
-        buttons.add(new Rectangle(32, 12, 32, 32)); //0 -- WALK
-        buttons.add(new Rectangle(0, 46, 32, 32));  //1 -- HALT
-        buttons.add(new Rectangle(64, 46, 32, 32)); //2  -- MINE (Yes it's ugly but we're short on time)
-        if (!craftingMenu) buttons.add(new Rectangle(32, 80, 32, 32)); // 3 -- USE
+
+        buttons.add(new Rectangle(32, 12, 32, 32)); //0 -- WALK/ARMOR
+        buttons.add(new Rectangle(0, 46, 32, 32));  //1 -- HALT/SWORD
+        buttons.add(new Rectangle(64, 46, 32, 32)); //2  -- MINE/ATTACK/GOLDSWORD (Yes it's ugly but we're short on time)
+
     }
 
     public GameCore.UserInputState isButtonHere(int x, int y, Point viewportLocation) {
@@ -34,12 +42,19 @@ public class DwarfActionMenu {
         int localY = (y - p.y * Constants.PIXEL_SCALE) / Constants.PIXEL_SCALE;
 
         if (buttons.get(WALK).contains(localX, localY))
-            return craftingMenu ? GameCore.UserInputState.ATTEMPTING_ARMOR_PURCHASE : GameCore.UserInputState.WALK;
+            return (mode == Mode.Crafting) ? GameCore.UserInputState.ATTEMPTING_ARMOR_PURCHASE : GameCore.UserInputState.WALK;
         if (buttons.get(HALT).contains(localX, localY))
-            return craftingMenu ? GameCore.UserInputState.ATTEMPTING_SWORD_PURCHASE : GameCore.UserInputState.HALT;
-        if (buttons.get(MINE).contains(localX, localY))
-            return craftingMenu ? GameCore.UserInputState.ATTEMPTING_GOLD_SWORD_PURCHASE : GameCore.UserInputState.MINE;
-        if (!craftingMenu && buttons.get(USE).contains(localX, localY)) return GameCore.UserInputState.USE;
+            return (mode == Mode.Crafting) ? GameCore.UserInputState.ATTEMPTING_SWORD_PURCHASE : GameCore.UserInputState.HALT;
+        if (buttons.get(MINE).contains(localX, localY)) {
+            switch (mode) {
+                case Normal:
+                    return GameCore.UserInputState.MINE;
+                case Crafting:
+                    return GameCore.UserInputState.ATTEMPTING_GOLD_SWORD_PURCHASE;
+                case Fight:
+                    return GameCore.UserInputState.FIGHT;
+            }
+        }
 
         return GameCore.UserInputState.NONE;
     }
@@ -55,8 +70,16 @@ public class DwarfActionMenu {
         p.start();
         Point drawPoint = getDrawPoint(viewportLocation);
 
-        p.draw(drawPoint.x, drawPoint.y, (craftingMenu ? 96 : 0), 240, 96, 112, false);
+        int tx = 0;
+        int ty = 240;
+        if (mode == Mode.Crafting)
+            tx = 96;
+        if (mode == Mode.Fight) {
+            tx = 0;
+            ty = 512;
+        }
+
+        p.draw(drawPoint.x, drawPoint.y, tx, ty, 96, 112, false);
         p.flush();
     }
-
 }

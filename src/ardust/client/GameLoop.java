@@ -36,7 +36,6 @@ public class GameLoop {
     private long prevT;
     private static SoundSystem soundsys;
     public static SoundBank soundBank;
-    private int musicSourceID;
 
     public GameLoop() {
         soundsys = new SoundSystem();
