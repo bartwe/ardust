@@ -10,7 +10,7 @@ public class GameMenu extends JPanel implements ActionListener {
 
     private JButton hostGameButton, joinGameButton, quitGameButton;
     private final GameLoop parent;
-    private int buttonSoundID;
+    public static int buttonSoundID;
 
     public GameMenu(GameLoop parent) {
         this.parent = parent;

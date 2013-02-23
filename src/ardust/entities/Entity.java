@@ -18,7 +18,8 @@ public class Entity {
     public enum Mode {
         IDLE,
         COOLDOWN, // like idle but non interruptable
-        WALKING
+        WALKING,
+        MINING
     }
 
     public Integer id;

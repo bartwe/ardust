@@ -2,6 +2,7 @@ package ardust.client;
 
 import ardust.entities.Entities;
 import ardust.shared.Constants;
+import ardust.shared.NetworkConnection;
 import ardust.shared.Point3;
 import org.lwjgl.opengl.GL11;
 
@@ -38,8 +39,8 @@ public class World {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
-    public void tick(int deltaT) {
-        characters.tick(deltaT, clientWorld);
+    public void tick(int deltaT, NetworkConnection network) {
+        characters.tick(deltaT, clientWorld, network);
     }
 
     Point toDrawCoord = new Point();

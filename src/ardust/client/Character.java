@@ -1,9 +1,8 @@
 package ardust.client;
 
 import ardust.entities.Entity;
-import ardust.shared.Constants;
-import ardust.shared.Orientation;
-import ardust.shared.Point3;
+import ardust.packets.DwarfRequestPacket;
+import ardust.shared.*;
 
 import java.awt.*;
 
@@ -17,6 +16,8 @@ public class Character {
 
     private final Entity entity;
     Entity.Mode prevMode = Entity.Mode.IDLE;
+
+    public boolean isHalting;
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -45,6 +46,14 @@ public class Character {
         }
     }
 
+    public void halt()
+    {
+        if (entity.mode == Entity.Mode.WALKING)
+        {
+            isHalting = true;
+        }
+    }
+
     public void showStationarySprite() {
         switch (entity.orientation) {
             case NORTH:
@@ -56,7 +65,7 @@ public class Character {
         }
     }
 
-    public void tick(int deltaT, ClientWorld world) {
+    public void tick(int deltaT, ClientWorld world, NetworkConnection network) {
         entity.countdown -= deltaT;
 
         if (entity.countdown < 0)
@@ -88,11 +97,22 @@ public class Character {
                         break;
                 }
                 break;
-//            case MINING:
-//                animateMining();
-//                break;
+            case MINING:
+                animateMining();
+                break;
             default:
                 showStationarySprite();
+        }
+
+        if (modeProgress >= 1 && entity.mode == Entity.Mode.WALKING)
+        {
+            if (!isHalting)
+            {
+                network.send(new DwarfRequestPacket(id(), DwarfRequest.Walk, entity.orientation));
+            }  else {
+                isHalting = false;
+                entity.mode = Entity.Mode.IDLE;
+            }
         }
     }
 

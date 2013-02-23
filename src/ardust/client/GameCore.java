@@ -56,7 +56,7 @@ public class GameCore {
     public void tick(int deltaT) {
         processNetwork();
 
-        world.tick(deltaT);
+        world.tick(deltaT, network);
 
         mousePan();
     }
@@ -131,6 +131,7 @@ public class GameCore {
                 // dwarf interaction stuffs
                 switch (currentInputState) {
                     case DWARF_SELECTED:
+
                         if (currentActionMenu != null)
                             currentInputState = currentActionMenu.isButtonHere(input.getX(), input.getY(), parent.getViewportLocation());
 
@@ -138,22 +139,26 @@ public class GameCore {
                         {
                             selectedDwarf = null;
                             currentActionMenu = null;
+                        } else if (currentInputState == UserInputState.HALT) {
+                            selectedDwarf.halt();
+                            deselectCurrentDwarf();
+                            parent.getSoundSys().play(GameMenu.buttonSoundID);
                         } else {
-                             parent.setCurrentMouseCursor(Constants.ACTION_CURSOR);
+                            parent.setCurrentMouseCursor(Constants.ACTION_CURSOR);
+                            parent.getSoundSys().play(GameMenu.buttonSoundID);
                         }
+
                         break;
 
                     case WALK:
 
-                        setDwarfMovingViaMouse();
-
-                        break;
-
-                    case HALT:
+                        sendNetworkRequestInMouseClickDirection(DwarfRequest.Walk);
 
                         break;
 
                     case MINE:
+
+                        sendNetworkRequestInMouseClickDirection(DwarfRequest.Mine);
 
                         break;
                 }
@@ -161,30 +166,46 @@ public class GameCore {
         }
 
         if (selectedDwarf != null) {
-            if (input.isKeyDown(Keyboard.KEY_W, false) || input.isKeyDown(Keyboard.KEY_UP, false))
+            if (input.isKeyDown(Keyboard.KEY_W, false) || input.isKeyDown(Keyboard.KEY_UP, false))    {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.NORTH));
-            if (input.isKeyDown(Keyboard.KEY_D, false) || input.isKeyDown(Keyboard.KEY_RIGHT, false))
+                deselectCurrentDwarf();
+            }
+            if (input.isKeyDown(Keyboard.KEY_D, false) || input.isKeyDown(Keyboard.KEY_RIGHT, false))        {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.EAST));
-            if (input.isKeyDown(Keyboard.KEY_S, false) || input.isKeyDown(Keyboard.KEY_DOWN, false))
+                deselectCurrentDwarf();
+            }
+            if (input.isKeyDown(Keyboard.KEY_S, false) || input.isKeyDown(Keyboard.KEY_DOWN, false))          {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.SOUTH));
-            if (input.isKeyDown(Keyboard.KEY_A, false) || input.isKeyDown(Keyboard.KEY_LEFT, false))
+                 deselectCurrentDwarf();
+            }
+            if (input.isKeyDown(Keyboard.KEY_A, false) || input.isKeyDown(Keyboard.KEY_LEFT, false))           {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.WEST));
+                deselectCurrentDwarf();
+            }
         }
     }
 
-    public void setDwarfMovingViaMouse()
+    public void deselectCurrentDwarf()
+    {
+        selectedDwarf = null;
+        currentActionMenu = null;
+        currentInputState = UserInputState.NO_DWARF_SELECTED;
+        parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
+    }
+
+    public void sendNetworkRequestInMouseClickDirection(DwarfRequest request)
     {
         Point tile = new Point(0,0);
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), tile);
 
-        if (tile.x > selectedDwarf.location.x && Math.abs(tile.x - selectedDwarf.location.x) < Math.abs(tile.y - selectedDwarf.location.y)) {
-            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.EAST));
-        } else if (tile.x < selectedDwarf.location.x && Math.abs(tile.x - selectedDwarf.location.x) < Math.abs(tile.y - selectedDwarf.location.y)) {
-            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.WEST));
+        if (tile.x > selectedDwarf.location.x && Math.abs(tile.x - selectedDwarf.location.x) >Math.abs(tile.y - selectedDwarf.location.y)) {
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.EAST));
+        } else if (tile.x < selectedDwarf.location.x && Math.abs(tile.x - selectedDwarf.location.x) > Math.abs(tile.y - selectedDwarf.location.y)) {
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.WEST));
         }  else if (tile.y < selectedDwarf.location.y) {
-            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.NORTH));
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.NORTH));
         } else {
-            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.SOUTH));
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.SOUTH));
         }
     }
 

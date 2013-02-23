@@ -3,9 +3,10 @@ package ardust.server;
 import ardust.entities.Entity;
 import ardust.packets.DwarfRequestPacket;
 import ardust.shared.Constants;
+import ardust.shared.Point3;
 
 public class Dwarves {
-    public static void handle(Entity entity, DwarfRequestPacket packet) {
+    public static void handle(Entity entity, DwarfRequestPacket packet, ServerWorld world) {
         if (entity.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
 
@@ -17,16 +18,47 @@ public class Dwarves {
         //pick mode
         switch (packet.request) {
             case Walk:
-                entity.mode = Entity.Mode.WALKING;
-                entity.countdown = Constants.WALKING_COUNTDOWN;
+
+                Point3 nextPosition = getPositionAfterMovement(entity);
+                if (world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z) == 0)
+                {
+                    entity.mode = Entity.Mode.WALKING;
+                    entity.countdown = Constants.WALKING_COUNTDOWN;
+                }
+
                 break;
+
+            case Mine:
+
+                nextPosition = getPositionAfterMovement(entity);
+                int mineable = Constants.isWorldPieceMineable(world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z));
+                if (mineable > 0)
+                {
+                    entity.mode = Entity.Mode.MINING;
+                    entity.countdown = mineable;
+                }
+
+                break;
+
             default:
                 entity.mode = Entity.Mode.IDLE;
                 break;
         }
     }
 
-    public static void tick(int deltaT, Entity dwarf) {
+    public static Point3  getPositionAfterMovement(Entity entity)
+    {
+        switch (entity.orientation)
+        {
+            case NORTH: return new Point3(entity.position.x, entity.position.y - 1, entity.position.z);
+            case EAST: return new Point3(entity.position.x + 1, entity.position.y, entity.position.z);
+            case SOUTH: return new Point3(entity.position.x, entity.position.y + 1, entity.position.z);
+            case WEST: return new Point3(entity.position.x - 1, entity.position.y, entity.position.z);
+        }
+        throw new RuntimeException();
+    }
+
+    public static void tick(int deltaT, Entity dwarf, ServerWorld world) {
         if (dwarf.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
 
@@ -56,6 +88,12 @@ public class Dwarves {
                         dwarf.position.x -= 1;
                         break;
                 }
+                dwarf.mode = Entity.Mode.IDLE;
+                break;
+            case MINING:
+
+                Point3 position = getPositionAfterMovement(dwarf);
+                world.writeDirect(position.x, position.y, position.z, (byte)0);
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
             case COOLDOWN:

@@ -52,4 +52,19 @@ public class Constants {
     public static final int START_OFFSET = 1000000;
 
     public static final int WALKING_COUNTDOWN = 500;
+
+    public static int isWorldPieceMineable(byte index)
+    {
+        switch (index)
+        {
+            case 0:
+            case 2: return 500;
+            case 1: return 1500;
+            case 3: return 3000;
+            default: return 0;
+        }
+
+    }
+
+
 }
