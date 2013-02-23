@@ -62,20 +62,7 @@ public class SoundSystem {
         }
     }
 
-    public int registerFile(String filename, SoundType type) {
-        soundBank.add(new SoundObject(filename, type));
-
-        return soundBank.size() - 1;
-    }
-
-    public void updateSource(int i, String filename) {
-        soundBank.get(i).filename = filename;
-    }
-
-    public void play(int i) {
-        if (disabled)
-            return;
-
+    private void setSourceBuffer(int i) {
         SoundObject obj = soundBank.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
@@ -141,8 +128,30 @@ public class SoundSystem {
         } else {
             AL10.alSourcei(sourceID, AL10.AL_LOOPING, AL10.AL_FALSE);
         }
+    }
 
-        AL10.alSourcePlay(sourceID);
+    public int registerFile(String filename, SoundType type) {
+        soundBank.add(new SoundObject(filename, type));
+
+        int bankID = soundBank.size() - 1;
+
+        setSourceBuffer(bankID);
+
+        return bankID;
+    }
+
+    public void updateSource(int i, String filename) {
+        soundBank.get(i).filename = filename;
+        setSourceBuffer(i);
+    }
+
+    public void play(int i) {
+        if (disabled)
+            return;
+
+
+
+        AL10.alSourcePlay(source.get(i));
     }
 
     public void killAL() {
