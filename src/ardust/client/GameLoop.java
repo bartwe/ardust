@@ -34,11 +34,13 @@ public class GameLoop {
     private GameMenu menu;
     private Server server;
     private long prevT;
-    private SoundSystem soundsys;
+    private static SoundSystem soundsys;
+    public static SoundBank soundBank;
     private int musicSourceID;
 
     public GameLoop() {
         soundsys = new SoundSystem();
+        soundBank = new SoundBank(soundsys);
         menu = new GameMenu(this);
     }
 
