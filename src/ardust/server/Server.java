@@ -222,7 +222,7 @@ public class Server {
         player.spawnSetup(entities, world, positionalMap);
         player.sendPacket(new WindowPacket(player.getX(), player.getY()));
 
-        this.playerCount++;
+        playerCount++;
 
         tempBuffer.clear();
         if (entities.write(tempBuffer, true, false)) {

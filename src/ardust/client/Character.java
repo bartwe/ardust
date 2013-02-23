@@ -25,6 +25,7 @@ public class Character {
     Random random = new Random();
     private int pathingFailStrike;
     private int miningFailStrike;
+    private int fightFailStrike;
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -61,10 +62,10 @@ public class Character {
         int currentFrame = sprite.currentFrame;
         switch (entity.orientation) {
             case NORTH:
-                sprite.animate(68, 4, Constants.DWARF_ANIMATION_SPEED / 2);
+                sprite.animate(90, 3, Constants.DWARF_ANIMATION_SPEED / 2);
                 break;
             default:
-                sprite.animate(64, 4, Constants.DWARF_ANIMATION_SPEED / 2);
+                sprite.animate(88, 3, Constants.DWARF_ANIMATION_SPEED / 2);
                 break;
         }
         if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
@@ -141,11 +142,28 @@ public class Character {
                     }
                 }
                 break;
-            case USE:
-                if (!pathTowards(world, network, true)) {
-
-                    // if reached, use
-                    aiMode = CharacterAIMode.IDLE;
+            case FIGHT:
+                Orientation orientation = orientationToward(world, false);
+                tempPoint.set(location);
+                tempPoint.move(orientation);
+                Character character = world.getCharacterAtTile(tempPoint.x, tempPoint.y);
+                if ((character != null) && (character.playerId() == playerId())) {
+                    character = null;
+                }
+                if ((character != null) || !pathTowards(world, network, false)) {
+                    if (location.equals(pathingTarget) || (targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
+                        aiMode = CharacterAIMode.IDLE;
+                    } else {
+                        if (character == null) {
+                            fightFailStrike -= 1;
+                            if (fightFailStrike <= 0) {
+                                aiMode = CharacterAIMode.IDLE;
+                            }
+                        } else {
+                            clearFailStrikes();
+                            network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Attack, orientation));
+                        }
+                    }
                 }
                 break;
             case IDLE:
@@ -292,8 +310,8 @@ public class Character {
         clearFailStrikes();
     }
 
-    public void use(Point2 target) {
-        aiMode = CharacterAIMode.USE;
+    public void fightTo(Point2 target) {
+        aiMode = CharacterAIMode.FIGHT;
         pathingTarget.set(target);
         clearFailStrikes();
     }
@@ -301,6 +319,7 @@ public class Character {
     private void clearFailStrikes() {
         pathingFailStrike = Constants.WALK_LOOP_LIMIT;
         miningFailStrike = Constants.MINE_FAIL_LIMIT;
+        fightFailStrike = Constants.MINE_FAIL_LIMIT;
     }
 
     public int playerId() {

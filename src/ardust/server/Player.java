@@ -119,8 +119,9 @@ public class Player {
 
         //
         // Convert 'around' and 'away' to X and Y.
-        this.x = (int) (centerX + Math.cos(around) * away);
-        this.y = (int) (centerY + Math.sin(around) * away);
+        int x = (int) (centerX + Math.cos(around) * away);
+        int y = (int) (centerY + Math.sin(around) * away);
+        setXY(x, y);
         //
         // Now that you know it, do it.
 

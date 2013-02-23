@@ -31,10 +31,10 @@ public class GameCore {
         WALK,
         HALT,
         MINE,
-        USE,
         ATTEMPTING_SWORD_PURCHASE,
         ATTEMPTING_ARMOR_PURCHASE,
-        ATTEMPTING_GOLD_SWORD_PURCHASE
+        ATTEMPTING_GOLD_SWORD_PURCHASE,
+        FIGHT
     }
 
     public GameCore(GameLoop parent, NetworkConnection network, Input input, Painter painter) {
@@ -187,8 +187,8 @@ public class GameCore {
                         case MINE:
                             selectedDwarf.mineTo(currentActionMenu.location);
                             break;
-                        case USE:
-                            selectedDwarf.use(currentActionMenu.location);
+                        case FIGHT:
+                            selectedDwarf.fightTo(currentActionMenu.location);
                             break;
                         case ATTEMPTING_ARMOR_PURCHASE:
                             network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftArmor, Orientation.NORTH));
@@ -218,8 +218,19 @@ public class GameCore {
                 if (!consumeEvent && (selectedDwarf != null) && (currentActionMenu == null)) {
                     temp3.set(temp.x, temp.y);
 
+                    DwarfActionMenu.Mode mode = DwarfActionMenu.Mode.Normal;
+
                     boolean crafting = Constants.hasCraftingInteraction(world.clientWorld.read(temp.x, temp.y));
-                    currentActionMenu = new DwarfActionMenu(temp3, crafting);
+                    if (crafting)
+                        mode = DwarfActionMenu.Mode.Crafting;
+
+                    Character enemy = world.getCharacterAtTile(temp.x, temp.y);
+                    if ((enemy != null) && (enemy.playerId() == playerId))
+                        enemy = null;
+                    if (enemy != null)
+                        mode = DwarfActionMenu.Mode.Fight;
+
+                    currentActionMenu = new DwarfActionMenu(temp3, mode);
                     consumeEvent = true;
                 }
 

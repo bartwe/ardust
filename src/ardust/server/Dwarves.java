@@ -68,6 +68,8 @@ public class Dwarves {
 
             case Attack:
 
+                System.err.println("Attack mode engaged.");
+
                 nextPosition = getPositionAfterMovement(entity);
                 Entity targetEntity = positionalMap.getEntity(nextPosition);
                 if (targetEntity != null) {
@@ -77,7 +79,6 @@ public class Dwarves {
                     }
                 }
 
-                entity.mode = Entity.Mode.IDLE;
                 break;
 
             default:
