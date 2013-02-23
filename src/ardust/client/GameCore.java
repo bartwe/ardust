@@ -208,7 +208,7 @@ public class GameCore {
 
                 if (!consumeEvent && ((selectedDwarf == null) || world.getCharacterAtTile(temp.x, temp.y) != null)) {
                     Character option = world.getCharacterAtTile(temp.x, temp.y);
-                    if (option.playerId() == playerId) {
+                    if ((option != null) && (option.playerId() == playerId)) {
                         selectedDwarf = option;
                         consumeEvent = true;
                     }

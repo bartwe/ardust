@@ -15,7 +15,7 @@ public class Entities {
     public ArrayList<Integer> inserted = new ArrayList<Integer>();
     public ArrayList<Integer> deleted = new ArrayList<Integer>();
 
-    public boolean write(ByteBuffer buffer, boolean checkpoint) {
+    public boolean write(ByteBuffer buffer, boolean checkpoint, boolean tick) {
         int mode = 0;
         int modePosition = buffer.position();
         buffer.put((byte) 0);
@@ -43,7 +43,8 @@ public class Entities {
                 size++;
             else
                 buffer.position(idPosition);
-            entity.postWrite();
+            if (tick)
+                entity.postWrite();
         }
         if (size > 0) {
             buffer.putShort(sizePosition, (short) size);
@@ -151,7 +152,7 @@ public class Entities {
         FileOutputStream out;
         try {
             ByteBuffer buffer = ByteBufferBuffer.alloc(4 * 1024 * 1024);
-            write(buffer, true);
+            write(buffer, true, false);
             buffer.flip();
             out = new FileOutputStream(file);
             out.write(buffer.array(), buffer.arrayOffset(), buffer.remaining());

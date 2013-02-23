@@ -23,7 +23,6 @@ public class WorldRegionPacket extends Packet {
                 if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS)) {
                     tileBuffer.put(world.read(xi, yi));
                 }
-
             }
     }
 

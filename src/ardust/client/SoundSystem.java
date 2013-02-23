@@ -63,6 +63,8 @@ public class SoundSystem {
     }
 
     private void setSourceBuffer(int i) {
+        if (disabled)
+            return;
         SoundObject obj = soundObjects.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
