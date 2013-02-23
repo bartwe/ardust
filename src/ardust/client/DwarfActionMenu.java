@@ -2,7 +2,7 @@ package ardust.client;
 
 
 import ardust.shared.Constants;
-import ardust.shared.Point3;
+import ardust.shared.Point2;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,11 +13,11 @@ public class DwarfActionMenu {
     private static final int MINE = 2;
     private static final int USE = 3;
 
-    Point3 location = new Point3();
+    Point2 location = new Point2();
     ArrayList<Rectangle> buttons;
     boolean craftingMenu;
 
-    public DwarfActionMenu(Point3 location, boolean craftingMenu) {
+    public DwarfActionMenu(Point2 location, boolean craftingMenu) {
         this.location.set(location);
         this.craftingMenu = craftingMenu;
 
@@ -47,7 +47,7 @@ public class DwarfActionMenu {
     Point tempPoint = new Point();
 
     public Point getDrawPoint(Point viewportLocation) {
-        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, tempPoint);
+        World.globalTileToLocalCoord(location.x, location.y, viewportLocation, tempPoint);
         return new Point(tempPoint.x - 32, tempPoint.y - Constants.TILE_DRAW_HEIGHT - 24);
     }
 

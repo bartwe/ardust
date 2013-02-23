@@ -2,14 +2,14 @@ package ardust.client;
 
 import ardust.entities.Entities;
 import ardust.shared.NetworkConnection;
-import ardust.shared.Point3;
+import ardust.shared.Point2;
 
 import java.util.*;
 
 public class Characters {
     HashMap<Integer, Character> mapping = new HashMap<Integer, Character>();
     private final Entities entities;
-    HashMap<Point3, Character> positional = new HashMap<Point3, Character>();
+    HashMap<Point2, Character> positional = new HashMap<Point2, Character>();
 
     public Characters(Entities entities) {
         this.entities = entities;
@@ -30,14 +30,14 @@ public class Characters {
         }
     }
 
-    Point3 tempPoint = new Point3();
+    Point2 tempPoint = new Point2();
 
-    public Character getCharacterAtTile(int x, int y, int z) {
-        tempPoint.set(x, y, z);
+    public Character getCharacterAtTile(int x, int y) {
+        tempPoint.set(x, y);
         return positional.get(tempPoint);
     }
 
-    public HashMap<Point3, Character> charactersByPosition() {
+    public HashMap<Point2, Character> charactersByPosition() {
         return positional;
     }
 

@@ -17,7 +17,7 @@ public class ServerWorld {
     // z, lower is down
 
     ServerWorld() {
-        world = new byte[Constants.WORLD_LENGTH * Constants.WORLD_LENGTH * Constants.WORLD_DEPTH];
+        world = new byte[Constants.WORLD_LENGTH * Constants.WORLD_LENGTH];
     }
 
     public void load() {
@@ -34,7 +34,7 @@ public class ServerWorld {
                 }
             }
             int off = 0;
-            int rem = Constants.WORLD_LENGTH * Constants.WORLD_LENGTH * Constants.WORLD_DEPTH;
+            int rem = Constants.WORLD_LENGTH * Constants.WORLD_LENGTH;
             while (rem > 0) {
                 int len = in.read(world, off, rem);
                 if (len == -1)
@@ -51,10 +51,9 @@ public class ServerWorld {
     private void generateWorld() {
         Random random = new Random();
 
-        for (int z = 0; z < Constants.WORLD_DEPTH; z++)
             for (int y = 0; y < Constants.WORLD_LENGTH; y++)
                 for (int x = 0; x < Constants.WORLD_LENGTH; x++)
-                    write(x, y, z, (byte) (2 + random.nextInt(3)));
+                    write(x, y, (byte) (2 + random.nextInt(3)));
         clearPendingUpdates();
     }
 
@@ -68,8 +67,8 @@ public class ServerWorld {
         }
     }
 
-    private void appendUpdate(int x, int y, int z) {
-        int l = x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH;
+    private void appendUpdate(int x, int y) {
+        int l = x + y * Constants.WORLD_LENGTH;
         if (updates.length == updatesIndex) {
             updates = Arrays.copyOf(updates, updates.length * 2);
         }
@@ -103,27 +102,21 @@ public class ServerWorld {
             tiles[i] = world[locations[i]];
     }
 
-    public byte read(int x, int y, int z) {
-        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
-            return 0;
+    public byte read(int x, int y) {
         x = normalizeAxis(x);
         y = normalizeAxis(y);
 
-        return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
+        return world[x + y * Constants.WORLD_LENGTH];
     }
 
-    public void write(int x, int y, int z, byte tile) {
-        if ((z < 0) || (z >= Constants.WORLD_DEPTH)) {
-            // return;
-            throw new RuntimeException("writing outside of the world ?");
-        }
+    public void write(int x, int y, byte tile) {
         x = normalizeAxis(x);
         y = normalizeAxis(y);
 
-        byte current = world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
+        byte current = world[x + y * Constants.WORLD_LENGTH];
         if (current != tile) {
-            world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH] = tile;
-            appendUpdate(x, y, z);
+            world[x + y  * Constants.WORLD_LENGTH] = tile;
+            appendUpdate(x, y);
         }
     }
 }

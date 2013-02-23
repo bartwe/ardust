@@ -192,9 +192,8 @@ public class Server {
             return;
         int oldX = player.getX();
         int oldY = player.getY();
-        int oldZ = player.getZ();
-        player.setXYZ(packet.x, packet.y, packet.z);
-        sendWorldRegion(player, oldX, oldY, oldZ, packet.x, packet.y, packet.z);
+        player.setXY(packet.x, packet.y);
+        sendWorldRegion(player, oldX, oldY, packet.x, packet.y);
     }
 
     private void handleHello(Player player, HelloPacket packet) {
@@ -209,13 +208,12 @@ public class Server {
 
         int x = Constants.START_OFFSET;
         int y = Constants.START_OFFSET;
-        int z = Constants.DEFAULT_Z;
         Random random = new Random();
         x += random.nextInt(Constants.WORLD_LENGTH);
         y += random.nextInt(Constants.WORLD_LENGTH);
-        player.setXYZ(x, y, z);
+        player.setXY(x, y);
         player.spawnSetup(entities, world, positionalMap);
-        player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
+        player.sendPacket(new WindowPacket(player.getX(), player.getY()));
 
         tempBuffer.clear();
         if (entities.write(tempBuffer, true)) {
@@ -223,11 +221,11 @@ public class Server {
             player.sendPacket(new EntitiesPacket(tempBuffer, true, true));
         }
 
-        sendWorldRegion(player, Constants.BAD_AXIS, Constants.BAD_AXIS, Constants.BAD_AXIS, x, y, z);
+        sendWorldRegion(player, Constants.BAD_AXIS, Constants.BAD_AXIS, x, y);
     }
 
-    private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {
-        WorldRegionPacket wrp = new WorldRegionPacket(world, oldX, oldY, oldZ, x, y, z);
+    private void sendWorldRegion(Player player, int oldX, int oldY, int x, int y) {
+        WorldRegionPacket wrp = new WorldRegionPacket(world, oldX, oldY, x, y);
         player.sendPacket(wrp);
     }
 

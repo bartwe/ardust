@@ -17,7 +17,6 @@ public class GameCore {
     Character selectedDwarf;
     String name;
     private final GameLoop parent;
-    int zLayer;
     DwarfActionMenu currentActionMenu;
 
     Values values = new Values(Constants.V_PLAYER_VALUES_SIZE);
@@ -70,7 +69,7 @@ public class GameCore {
     }
 
     Point temp = new Point();
-    Point3 temp3 = new Point3();
+    Point2 temp3 = new Point2();
 
     private void processNetwork() {
         if (!network.isValid())
@@ -81,9 +80,8 @@ public class GameCore {
             if (packet instanceof WindowPacket) {
                 WindowPacket spp = (WindowPacket) packet;
                 temp.setLocation(spp.x, spp.y);
-                zLayer = spp.z;
                 World.worldCoordToScreenCoord(temp, temp);
-                System.err.println("Force viewport " + spp.x + ":" + spp.y + ":" + spp.z + " " + temp);
+                System.err.println("Force viewport " + spp.x + ":" + spp.y + " " + temp);
                 parent.setViewportLocation(temp);
             } else if (packet instanceof WorldRegionPacket) {
                 WorldRegionPacket wrp = (WorldRegionPacket) packet;
@@ -113,7 +111,7 @@ public class GameCore {
         }
 
         World.screenCoordToWorldCoord(parent.getViewportLocation(), temp);
-        WindowPacket wp = new WindowPacket((int) temp.getX(), (int) temp.getY(), zLayer);
+        WindowPacket wp = new WindowPacket((int) temp.getX(), (int) temp.getY());
         network.send(wp);
     }
 
@@ -210,16 +208,16 @@ public class GameCore {
                     consumeEvent = true;
                 }
 
-                if (!consumeEvent && ((selectedDwarf == null) || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null)) {
-                    selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
+                if (!consumeEvent && ((selectedDwarf == null) || world.getCharacterAtTile(temp.x, temp.y) != null)) {
+                    selectedDwarf = world.getCharacterAtTile(temp.x, temp.y);
                     consumeEvent = true;
                 }
 
 
                 if (!consumeEvent && (selectedDwarf != null) && (currentActionMenu == null)) {
-                    temp3.set(temp.x, temp.y, zLayer);
+                    temp3.set(temp.x, temp.y);
 
-                    boolean crafting = Constants.hasCraftingInteraction(world.clientWorld.read(temp.x, temp.y, zLayer));
+                    boolean crafting = Constants.hasCraftingInteraction(world.clientWorld.read(temp.x, temp.y));
                     currentActionMenu = new DwarfActionMenu(temp3, crafting);
                     consumeEvent = true;
                 }
@@ -261,7 +259,7 @@ public class GameCore {
 
     public void render() {
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
-        world.draw(painter, parent.getViewportLocation(), zLayer, painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, zLayer);
+        world.draw(painter, parent.getViewportLocation(), painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y);
         if (currentActionMenu != null)
             currentActionMenu.draw(painter, parent.getViewportLocation());
 

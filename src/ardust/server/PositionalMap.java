@@ -2,12 +2,12 @@ package ardust.server;
 
 import ardust.entities.Entities;
 import ardust.entities.Entity;
-import ardust.shared.Point3;
+import ardust.shared.Point2;
 
 import java.util.HashMap;
 
 public class PositionalMap {
-    HashMap<Point3, Entity> occupiedSpace = new HashMap<Point3, Entity>();
+    HashMap<Point2, Entity> occupiedSpace = new HashMap<Point2, Entity>();
 
     public void updateEntities(Entities entities) {
         occupiedSpace.clear();
@@ -15,7 +15,7 @@ public class PositionalMap {
             addEntity(entity);
     }
 
-    public boolean isOccupied(Point3 position, Entity entity) {
+    public boolean isOccupied(Point2 position, Entity entity) {
         Entity at = occupiedSpace.get(position);
         return (at != null) && (at != entity);
     }
@@ -26,13 +26,13 @@ public class PositionalMap {
     }
 
     public void addEntity(Entity entity) {
-        Point3 current = new Point3();
+        Point2 current = new Point2();
         current.set(entity.position);
         occupiedSpace.put(current, entity);
         switch (entity.mode) {
             case WALKING:
             case MINING:
-                Point3 next = new Point3();
+                Point2 next = new Point2();
                 next.set(entity.position);
                 next.move(entity.orientation);
                 occupiedSpace.put(current, entity);

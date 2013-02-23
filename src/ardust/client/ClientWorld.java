@@ -5,19 +5,15 @@ import ardust.shared.Constants;
 public class ClientWorld {
     byte[] world;
 
-    // z, lower is down
-
     ClientWorld() {
-        world = new byte[Constants.WORLD_LENGTH * Constants.WORLD_LENGTH * Constants.WORLD_DEPTH];
+        world = new byte[Constants.WORLD_LENGTH * Constants.WORLD_LENGTH];
     }
 
-    public byte read(int x, int y, int z) {
-        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
-            return 0;
+    public byte read(int x, int y) {
         x = normalizeAxis(x);
         y = normalizeAxis(y);
 
-        return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
+        return world[x + y * Constants.WORLD_LENGTH];
     }
 
     private int normalizeAxis(int axis) {

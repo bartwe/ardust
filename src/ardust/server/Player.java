@@ -18,7 +18,6 @@ public class Player {
     NetworkConnection connection;
     private int x;
     private int y;
-    private int z;
     Values values;
     public HashMap<Integer, Entity> dwarfs = new HashMap<Integer, Entity>();
 
@@ -63,14 +62,9 @@ public class Player {
         return y;
     }
 
-    public void setXYZ(int x, int y, int z) {
+    public void setXY(int x, int y) {
         this.x = x;
         this.y = y;
-        this.z = z;
-    }
-
-    public int getZ() {
-        return z;
     }
 
     public void spawnSetup(Entities entities, ServerWorld world, PositionalMap positionalMap) {
@@ -81,19 +75,19 @@ public class Player {
                 byte tile = 0;
                 if ((yy == b) || (yy == -b) || (xx == b) || (xx == -b))
                     tile = 2;
-                world.write(xx + x, yy + y, z, tile);
+                world.write(xx + x, yy + y, tile);
             }
 
 
-        addDwarf(entities, positionalMap, x + 2, y + -2, z);
-        addDwarf(entities, positionalMap, x + 2, y + 2, z);
-        world.write(x, y, z, (byte) 8); // anvil
-        addDwarf(entities, positionalMap, x + -2, y + 2, z);
-        addDwarf(entities, positionalMap, x + -2, y + -2, z);
+        addDwarf(entities, positionalMap, x + 2, y + -2);
+        addDwarf(entities, positionalMap, x + 2, y + 2);
+        world.write(x, y, (byte) 8); // anvil
+        addDwarf(entities, positionalMap, x + -2, y + 2);
+        addDwarf(entities, positionalMap, x + -2, y + -2);
     }
 
-    public void addDwarf(Entities entities, PositionalMap positionalMap, int x, int y, int z) {
-        Entity entity = new Entity(id, Entity.Kind.DWARF, x, y, z);
+    public void addDwarf(Entities entities, PositionalMap positionalMap, int x, int y) {
+        Entity entity = new Entity(id, Entity.Kind.DWARF, x, y);
         entities.addEntity(entity);
         positionalMap.addEntity(entity);
         dwarfs.put(entity.id, entity);

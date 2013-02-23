@@ -6,7 +6,6 @@ public class Constants {
     public static final int PORT = 0xba57;
     public static final long MILLIS_PER_SERVER_TICK = 200;
 
-    public static final int WORLD_DEPTH = 16;
     public static final int WORLD_LENGTH = 1024;
 
     public static final int DWARF_ANIMATION_SPEED = 10;
@@ -14,7 +13,6 @@ public class Constants {
 
     // client get this radius of data around the screen center from the server
     public static final int RADIUS = 32;
-    public static final int ZRADIUS = 2;
 
     public static int PIXEL_SCALE = 1;
     public static final int MAX_PIXEL_SCALE = 6;
@@ -33,19 +31,16 @@ public class Constants {
     public static final int PANNING_CURSOR = 1;
     public static final int ACTION_CURSOR = 2;
 
-    public static final int DEFAULT_Z = 5;
-
     public static final int V_ENTITY_POS_X = 0;
     public static final int V_ENTITY_POS_Y = 1;
-    public static final int V_ENTITY_POS_Z = 2;
-    public static final int V_ENTITY_KIND = 3;
-    public static final int V_ENTITY_ORIENTATION = 4;
-    public static final int V_ENTITY_MODE = 5;
-    public static final int V_ENTITY_HEALTH = 6;
-    public static final int V_ENTITY_ARMOR = 7;
-    public static final int V_ENTITY_SWORD = 8;
-    public static final int V_ENTITY_PLAYER = 9;
-    public static final int V_ENTITY_VALUES_SIZE = 10;
+    public static final int V_ENTITY_KIND = 2;
+    public static final int V_ENTITY_ORIENTATION = 3;
+    public static final int V_ENTITY_MODE = 4;
+    public static final int V_ENTITY_HEALTH = 5;
+    public static final int V_ENTITY_ARMOR = 6;
+    public static final int V_ENTITY_SWORD = 7;
+    public static final int V_ENTITY_PLAYER = 8;
+    public static final int V_ENTITY_VALUES_SIZE = 9;
 
     public static final int CURSOR_TILE_NORMAL = 4;
 
