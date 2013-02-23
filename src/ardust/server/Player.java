@@ -68,7 +68,7 @@ public class Player {
         return z;
     }
 
-    public void spawnSetup(Entities entities, ServerWorld world) {
+    public void spawnSetup(Entities entities, ServerWorld world, PositionalMap positionalMap) {
 
         final int b = 5;
         for (int yy = -b; yy <= b; yy++)
@@ -81,16 +81,17 @@ public class Player {
 
 
 
-        addDwarf(entities, x + 2, y + -2, z);
-        addDwarf(entities, x + 2, y + 2, z);
+        addDwarf(entities, positionalMap, x + 2, y + -2, z);
+        addDwarf(entities, positionalMap, x + 2, y + 2, z);
         world.writeDirect(x, y, z, (byte) 8); // anvil
-        addDwarf(entities, x + -2, y + 2, z);
-        addDwarf(entities, x + -2, y + -2, z);
+        addDwarf(entities, positionalMap, x + -2, y + 2, z);
+        addDwarf(entities, positionalMap, x + -2, y + -2, z);
     }
 
-    public void addDwarf(Entities entities, int x, int y, int z) {
+    public void addDwarf(Entities entities, PositionalMap positionalMap, int x, int y, int z) {
         Entity entity = new Entity(Entity.Kind.DWARF, x, y, z);
         entities.addEntity(entity);
+        positionalMap.addEntity(entity);
         dwarfs.put(entity.id, entity);
     }
 

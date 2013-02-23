@@ -6,7 +6,7 @@ import ardust.shared.Constants;
 import ardust.shared.Point3;
 
 public class Dwarves {
-    public static void handle(Entity entity, DwarfRequestPacket packet, ServerWorld world) {
+    public static void handle(Entity entity, DwarfRequestPacket packet, ServerWorld world, PositionalMap positionalMap) {
         if (entity.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
 
@@ -20,7 +20,8 @@ public class Dwarves {
             case Walk:
 
                 Point3 nextPosition = getPositionAfterMovement(entity);
-                if (world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z) == 0) {
+                if (!positionalMap.isOccupied(nextPosition, null) &&
+                        Constants.isWalkable(world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z))) {
                     entity.mode = Entity.Mode.WALKING;
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 }
@@ -58,7 +59,9 @@ public class Dwarves {
         throw new RuntimeException();
     }
 
-    public static void tick(int deltaT, Player player, Entity dwarf, ServerWorld world) {
+    static Point3 tempPosition = new Point3();
+
+    public static void tick(int deltaT, Player player, Entity dwarf, ServerWorld world, PositionalMap positionalMap) {
         if (dwarf.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
 
@@ -74,20 +77,11 @@ public class Dwarves {
 
         switch (dwarf.mode) {
             case WALKING:
-                switch (dwarf.orientation) {
-                    case NORTH:
-                        dwarf.position.y -= 1;
-                        break;
-                    case EAST:
-                        dwarf.position.x += 1;
-                        break;
-                    case SOUTH:
-                        dwarf.position.y += 1;
-                        break;
-                    case WEST:
-                        dwarf.position.x -= 1;
-                        break;
-                }
+                tempPosition.set(dwarf.position);
+                tempPosition.move(dwarf.orientation);
+                if (!positionalMap.isOccupied(tempPosition, dwarf))
+                    if (Constants.isWalkable(world.readDirect(tempPosition.x, tempPosition.y, tempPosition.z)))
+                        dwarf.position.move(dwarf.orientation);
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
             case MINING:

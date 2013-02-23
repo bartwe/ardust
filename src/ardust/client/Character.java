@@ -67,7 +67,7 @@ public class Character {
         }
     }
 
-    public void tick(int deltaT, ClientWorld world, NetworkConnection network, GameCore core) {
+    public void tick(int deltaT, World world, NetworkConnection network, GameCore core) {
         entity.countdown -= deltaT;
 
         if (entity.countdown < 0)
@@ -114,7 +114,7 @@ public class Character {
 
     Point3 tempPoint = new Point3();
 
-    private boolean pathTowards(ClientWorld world, NetworkConnection network) {
+    private boolean pathTowards(World world, NetworkConnection network) {
         if (targetLocation.equals(pathingTarget))
             return false;
         Orientation ew;
@@ -145,16 +145,17 @@ public class Character {
         }
 
         tempPoint.set(targetLocation);
-        tempPoint.move(ew);
-        if (!Constants.isWalkable(world.readDirect(tempPoint)))
+        tempPoint.move(orientation);
+        if (world.isTileOccupied(tempPoint, entity))
             orientation = otherOrientation;
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
-        if (!Constants.isWalkable(world.readDirect(tempPoint))) {
+        if (world.isTileOccupied(tempPoint, entity)) {
             pathingFailStrike -= 1;
-            if (pathingFailStrike <= 0)
+            if (pathingFailStrike <= 0) {
                 return false;
+            }
             return true;
         }
 

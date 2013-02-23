@@ -24,6 +24,7 @@ public class Server {
     private long saveDeadline;
     private ArrayList<Player> playersTemp = new ArrayList<Player>();
     long prevT;
+    PositionalMap positionalMap = new PositionalMap();
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -94,10 +95,12 @@ public class Server {
         int deltaT = (int) (currentT - prevT);
         prevT += deltaT;
 
+        updatePositionalMap();
         fetchClientCommands();
         evaluateDwarves(deltaT);
         executeCommands();
         sendUpdates();
+
 
         if (System.currentTimeMillis() > saveDeadline) {
             saveDeadline = System.currentTimeMillis() + 15 * 60 * 1000;
@@ -108,12 +111,16 @@ public class Server {
         }
     }
 
+    private void updatePositionalMap() {
+        positionalMap.updateEntities(entities);
+    }
+
     ArrayList<Entity> entitiesTemp = new ArrayList<Entity>();
 
     private void evaluateDwarves(int deltaT) {
         entities.getDwarves(entitiesTemp);
         for (Entity dwarf : entitiesTemp)
-            Dwarves.tick(deltaT, findPlayerForDwarf(dwarf), dwarf, world);
+            Dwarves.tick(deltaT, findPlayerForDwarf(dwarf), dwarf, world, positionalMap);
         entitiesTemp.clear();
     }
 
@@ -185,7 +192,7 @@ public class Server {
         if (entity.kind != Entity.Kind.DWARF)
             return;
         // todo: ownership check
-        Dwarves.handle(entity, packet, world);
+        Dwarves.handle(entity, packet, world, positionalMap);
     }
 
     private void handleWindowChange(Player player, WindowPacket packet) {
@@ -205,7 +212,7 @@ public class Server {
         x += random.nextInt(Constants.WORLD_LENGTH);
         y += random.nextInt(Constants.WORLD_LENGTH);
         player.setXYZ(x, y, z);
-        player.spawnSetup(entities, world);
+        player.spawnSetup(entities, world, positionalMap);
         player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
 
         tempBuffer.clear();

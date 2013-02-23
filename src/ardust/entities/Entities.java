@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class Entities {
     Integer nextId = 0;
-    HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
+    public HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     public ArrayList<Integer> inserted = new ArrayList<Integer>();
     public ArrayList<Integer> deleted = new ArrayList<Integer>();
 
