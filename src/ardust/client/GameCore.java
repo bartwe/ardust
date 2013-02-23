@@ -19,6 +19,8 @@ public class GameCore {
     DwarfActionMenu currentActionMenu;
     UserInputState currentInputState = UserInputState.NO_DWARF_SELECTED;
     int soundID;
+    int stone, iron, gold;
+
 
     public enum UserInputState {
         NO_DWARF_SELECTED,
@@ -214,5 +216,6 @@ public class GameCore {
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
         world.draw(painter, parent.getViewportLocation(), zLayer, painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, zLayer);
         if (currentActionMenu != null && currentInputState == UserInputState.DWARF_SELECTED) currentActionMenu.draw(painter, parent.getViewportLocation());
+
     }
 }

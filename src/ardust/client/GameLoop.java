@@ -278,9 +278,21 @@ public class GameLoop {
 
                 }
 
-
                 painter.start();
+                //on screen display
+                if (gameState != GameState.MENU_STATE)
+                {
 
+                painter.draw(width / Constants.PIXEL_SCALE - 16, height/ Constants.PIXEL_SCALE - 48, 112, 40, 16, 16, false);
+                SpriteNumber.drawNumber(core.stone, width/ Constants.PIXEL_SCALE - 28, height/ Constants.PIXEL_SCALE - 48 + 2, painter);
+                painter.draw(width/ Constants.PIXEL_SCALE - 16, height/ Constants.PIXEL_SCALE - 32, 96, 56, 16, 16, false);
+                SpriteNumber.drawNumber(core.iron, width/ Constants.PIXEL_SCALE - 28, height/ Constants.PIXEL_SCALE - 32 + 2, painter);
+                painter.draw(width/ Constants.PIXEL_SCALE - 16, height/ Constants.PIXEL_SCALE - 16, 112, 56, 16, 16, false);
+                SpriteNumber.drawNumber(core.gold, width/ Constants.PIXEL_SCALE - 28, height/ Constants.PIXEL_SCALE - 16 + 2, painter);
+                }
+
+
+                //cursor
                 painter.draw(input.getX() / Constants.PIXEL_SCALE, input.getY() / Constants.PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
                         getCurrentMouseCursorTileSheetPoint().y, Constants.TILE_BASE_WIDTH / 2, Constants.TILE_BASE_WIDTH / 2, false);
 

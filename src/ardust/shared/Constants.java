@@ -60,10 +60,31 @@ public class Constants {
             case 0:
             case 2: return 500;
             case 1: return 1500;
-            case 3: return 3000;
+            case 3: return 7000;
+            case 4: return 3000;
             default: return 0;
         }
+    }
 
+    public static int getBlockModIndex(byte index)
+    {
+        switch (index)
+        {
+            case 3: return 13;//gold
+            case 4: return 14;//iron;
+            default: return -1;
+        }
+    }
+
+    public static int convertIndexToBaseBlockIndex(byte index)
+    {
+        switch (index)
+        {
+            case 3: //gold
+            case 4: //iron
+                return 1;
+            default: return index;
+        }
     }
 
 
