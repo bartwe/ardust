@@ -66,7 +66,7 @@ public class SoundSystem {
         SoundObject obj = soundBank.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
-        ByteBuffer databuffer = ByteBufferBuffer.alloc(1024 * 1024);
+        ByteBuffer databuffer = ByteBufferBuffer.alloc(2048 * 2048);
         try {
             InputStream f = Loader.getRequiredResourceAsStream(obj.filename);
             int offset = 0;
@@ -150,9 +150,14 @@ public class SoundSystem {
         if (disabled)
             return;
 
-
-
         AL10.alSourcePlay(source.get(i));
+    }
+
+    public void stop(int i) {
+        if (disabled)
+            return;
+
+        AL10.alSourceStop(source.get(i));
     }
 
     public void killAL() {

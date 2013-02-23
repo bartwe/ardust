@@ -11,6 +11,7 @@ public class GameCore {
     private final Input input;
     private Painter painter;
     private final World world;
+    private boolean musicOn = true;
 
     Character selectedDwarf;
     String name;
@@ -119,6 +120,16 @@ public class GameCore {
         if (input.isKeyDown(Keyboard.KEY_TAB, true)) {
             selectedDwarf = world.nextCharacter(selectedDwarf);
             currentActionMenu = null;
+        }
+
+        if (input.isKeyDown(Keyboard.KEY_M, true)) {
+            int musicID = parent.getMusicSourceID();
+            if (musicOn)
+                parent.getSoundSys().stop(musicID);
+            else
+                parent.getSoundSys().play(musicID);
+
+            musicOn = !musicOn;
         }
 
         if (selectedDwarf == null)
