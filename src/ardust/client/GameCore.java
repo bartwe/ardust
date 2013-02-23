@@ -23,7 +23,7 @@ public class GameCore {
     int stone;
     int iron;
     int gold;
-    private int playerId;
+    public static int playerId;
 
 
     public enum UserInputState {

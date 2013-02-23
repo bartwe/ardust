@@ -55,7 +55,8 @@ public class Character {
                 break;
         }
         if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
-            GameLoop.soundBank.playSound(SoundBank.pickaxeSound, true);
+            if (entity.playerId.intValue() == GameCore.playerId)
+                GameLoop.soundBank.playSound(SoundBank.pickaxeSound, true);
 
             if (random.nextDouble() < .3)
             {
