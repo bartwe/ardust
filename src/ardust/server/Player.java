@@ -132,5 +132,6 @@ public class Player {
             return;
         buffer.flip();
         sendPacket(new PlayerUpdatePacket(buffer, true));
+        values.nextTick();
     }
 }

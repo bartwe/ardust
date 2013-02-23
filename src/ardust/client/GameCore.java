@@ -130,7 +130,7 @@ public class GameCore {
             if (musicOn)
                 parent.soundBank.stopSound(parent.soundBank.mainMusic);
             else
-                parent.soundBank.playSound(parent.soundBank.mainMusic);
+                parent.soundBank.playSound(parent.soundBank.mainMusic, false);
 
             musicOn = !musicOn;
         }
@@ -157,8 +157,6 @@ public class GameCore {
                // parent.centerViewportAroundMouse();
             }
         }
-
-
 
         if (input.isMouseButtonDown(1, false) || input.isMouseButtonDown(2, false)) {
             currentActionMenu = null;
@@ -209,8 +207,11 @@ public class GameCore {
                 }
 
                 if (!consumeEvent && ((selectedDwarf == null) || world.getCharacterAtTile(temp.x, temp.y) != null)) {
-                    selectedDwarf = world.getCharacterAtTile(temp.x, temp.y);
-                    consumeEvent = true;
+                    Character option = world.getCharacterAtTile(temp.x, temp.y);
+                    if ((option != null) && (option.playerId() == playerId)) {
+                        selectedDwarf = option;
+                        consumeEvent = true;
+                    }
                 }
 
 

@@ -1,5 +1,7 @@
 package ardust.shared;
 
+import ardust.entities.Entity;
+
 public class Constants {
     public static final boolean DEVELOPER = true;
 
@@ -50,6 +52,7 @@ public class Constants {
     public static final int START_OFFSET = 1000000;
 
     public static final int WALKING_COUNTDOWN = 500;
+    public static final int FIGHT_COUNTDOWN = 100;
 
     public static final int DWARF_HEART_CENTER_OFFSET = 11;
 
@@ -118,5 +121,18 @@ public class Constants {
 
     public static boolean isMinable(byte tile) {
         return tile != 0;
+    }
+
+    public static int damageForWeapon(Entity.Weapon weapon) {
+        switch (weapon) {
+            case NONE:
+                return 1;
+            case IRON_SWORD:
+                return 2;
+            case GOLD_SWORD:
+                return 3;
+            default:
+                throw new RuntimeException();
+        }
     }
 }

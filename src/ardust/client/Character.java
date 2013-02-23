@@ -53,7 +53,22 @@ public class Character {
                 break;
         }
         if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
-            GameLoop.soundBank.playSound(SoundBank.pickaxeSound);
+            GameLoop.soundBank.playSound(SoundBank.pickaxeSound, true);
+        }
+    }
+
+    public void animateFighting() {
+        int currentFrame = sprite.currentFrame;
+        switch (entity.orientation) {
+            case NORTH:
+                sprite.animate(68, 4, Constants.DWARF_ANIMATION_SPEED / 2);
+                break;
+            default:
+                sprite.animate(64, 4, Constants.DWARF_ANIMATION_SPEED / 2);
+                break;
+        }
+        if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
+            GameLoop.soundBank.playSound(SoundBank.fightSound, true);
         }
     }
 
@@ -90,6 +105,9 @@ public class Character {
                 break;
             case MINING:
                 animateMining();
+                break;
+            case ATTACK:
+                animateFighting();
                 break;
             default:
                 showStationarySprite();

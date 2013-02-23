@@ -43,11 +43,11 @@ public class GameMenu extends JPanel implements ActionListener {
     }
 
     private void activateGameMusic() {
-        parent.soundBank.playSound(parent.soundBank.mainMusic);
+        parent.soundBank.playSound(parent.soundBank.mainMusic, false);
     }
 
     public void actionPerformed(ActionEvent e) {
-        parent.soundBank.playSound(parent.soundBank.buttonSound);
+        parent.soundBank.playSound(parent.soundBank.buttonSound, true);
         if (e.getSource() == hostGameButton) {
             parent.startServer();
             this.setEnabled(false);

@@ -138,7 +138,7 @@ public class Server {
             packets.add(updatePacket);
         }
         tempBuffer.clear();
-        if (entities.write(tempBuffer, false)) {
+        if (entities.write(tempBuffer, false, true)) {
             // could be too large...
             tempBuffer.flip();
             EntitiesPacket entitiesPacket = new EntitiesPacket(tempBuffer, true, false);
@@ -209,14 +209,14 @@ public class Server {
         int x = Constants.START_OFFSET;
         int y = Constants.START_OFFSET;
         Random random = new Random();
-        x += random.nextInt(Constants.WORLD_LENGTH);
-        y += random.nextInt(Constants.WORLD_LENGTH);
+//        x += random.nextInt(Constants.WORLD_LENGTH);
+//        y += random.nextInt(Constants.WORLD_LENGTH);
         player.setXY(x, y);
         player.spawnSetup(entities, world, positionalMap);
         player.sendPacket(new WindowPacket(player.getX(), player.getY()));
 
         tempBuffer.clear();
-        if (entities.write(tempBuffer, true)) {
+        if (entities.write(tempBuffer, true, false)) {
             tempBuffer.flip();
             player.sendPacket(new EntitiesPacket(tempBuffer, true, true));
         }
