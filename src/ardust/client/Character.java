@@ -7,6 +7,7 @@ import ardust.shared.*;
 import java.awt.*;
 import java.util.Random;
 
+
 public class Character {
 
     double modeProgress;
@@ -22,6 +23,7 @@ public class Character {
     Point3 pathingTarget = new Point3();
 
     Random random = new Random();
+    private int pathingFailStrike;
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -74,6 +76,7 @@ public class Character {
         boolean setCountdown = (prevMode != entity.mode) || (!location.equals(entity.position));
         prevMode = entity.mode;
 
+
         // detect if just started moving
         location.set(entity.position);
         targetLocation.set(location);
@@ -109,6 +112,13 @@ public class Character {
                     aiMode = CharacterAIMode.IDLE;
 
                 break;
+            case USE:
+                if (!pathTowards(world, network)) {
+
+                    // if reached, use
+                    aiMode = CharacterAIMode.IDLE;
+                }
+                break;
             case IDLE:
                 break;
         }
@@ -131,30 +141,42 @@ public class Character {
         else
             ns = (pathingTarget.y > targetLocation.y) ? Orientation.SOUTH : Orientation.NORTH;
 
-        double eww = 1 + Math.abs(pathingTarget.x - targetLocation.x);
-        double nsw = 1 + Math.abs(pathingTarget.y - targetLocation.y);
+        double eww = Math.abs(pathingTarget.x - targetLocation.x);
+        double nsw = Math.abs(pathingTarget.y - targetLocation.y);
+
+        Orientation orientation;
+        Orientation otherOrientation;
+        double w = eww + nsw;
+        eww /= w;
+        if (random.nextFloat() < eww) {
+            orientation = ew;
+            otherOrientation = ns;
+        } else {
+            orientation = ns;
+            otherOrientation = ew;
+        }
 
         tempPoint.set(targetLocation);
         tempPoint.move(ew);
         if (!Constants.isWalkable(world.readDirect(tempPoint)))
-            eww = 0.001;
-        tempPoint.set(targetLocation);
-        tempPoint.move(ns);
-        if (!Constants.isWalkable(world.readDirect(tempPoint)))
-            nsw = 0.001;
-
-        double w = eww + nsw;
-        eww /= w;
-        Orientation orientation;
-        if (random.nextFloat() < eww)
-            orientation = ew;
-        else
-            orientation = ns;
+            orientation = otherOrientation;
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
-        if (!Constants.isWalkable(world.readDirect(tempPoint)))
-            return false;
+        if (!Constants.isWalkable(world.readDirect(tempPoint))) {
+            pathingFailStrike -= 1;
+            if (pathingFailStrike <= 0)
+                return false;
+            return true;
+        }
+
+        if (location.equals(tempPoint)) {
+            pathingFailStrike -= 1;
+            if (pathingFailStrike <= 0)
+                return false;
+        }
+        else
+            pathingFailStrike = Constants.WALK_LOOP_LIMIT;
 
         network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Walk, orientation));
         return true;
@@ -202,5 +224,12 @@ public class Character {
     public void walkTo(Point3 target) {
         aiMode = CharacterAIMode.WALK;
         pathingTarget.set(target);
+        pathingFailStrike = Constants.WALK_LOOP_LIMIT;
+    }
+
+    public void use(Point3 target) {
+        aiMode = CharacterAIMode.USE;
+        pathingTarget.set(target);
+        pathingFailStrike = Constants.WALK_LOOP_LIMIT;
     }
 }

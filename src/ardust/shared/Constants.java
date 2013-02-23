@@ -59,6 +59,8 @@ public class Constants {
     public static final int STONE = 1;
     public static final int GOLD = 3;
     public static final int IRON = 4;
+    public static final int ANVIL = 8;
+    public static final int WALK_LOOP_LIMIT = 5;
 
     public static int isWorldPieceMineable(byte index) {
         switch (index) {
@@ -100,5 +102,11 @@ public class Constants {
 
     public static boolean isWalkable(byte tile) {
         return tile == 0;
+    }
+
+    public static boolean hasCraftingInteraction(byte tile) {
+        if (tile == ANVIL)
+            return true;
+        return false;
     }
 }

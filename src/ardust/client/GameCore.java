@@ -25,7 +25,11 @@ public class GameCore {
         NONE,
         WALK,
         HALT,
-        MINE
+        MINE,
+        USE,
+        ATTEMPTING_SWORD_PURCHASE,
+        ATTEMPTING_ARMOR_PURCHASE,
+        ATTEMPTING_GOLD_SWORD_PURCHASE
     }
 
     public GameCore(GameLoop parent, NetworkConnection network, Input input, Painter painter) {
@@ -130,17 +134,6 @@ public class GameCore {
                 parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
                 World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
 
-                if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {
-                    selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
-                    consumeEvent = true;
-                }
-
-                if (!consumeEvent && (selectedDwarf != null) && (currentActionMenu == null)) {
-                    temp3.set(temp.x, temp.y, zLayer);
-                    currentActionMenu = new DwarfActionMenu(temp3);
-                    consumeEvent = true;
-                }
-
                 if (!consumeEvent && (currentActionMenu != null)) {
                     GameCore.UserInputState menuState = currentActionMenu.isButtonHere(input.getX(), input.getY(), parent.getViewportLocation());
                     switch (menuState) {
@@ -152,10 +145,28 @@ public class GameCore {
                             break;
                         case MINE:
                             // todo
+                            break;
+                        case USE:
+                            selectedDwarf.use(currentActionMenu.location);
+                            break;
                         default:
                             break;
                     }
                     currentActionMenu = null;
+                    consumeEvent = true;
+                }
+
+                if (!consumeEvent && ((selectedDwarf == null) || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null)) {
+                    selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
+                    consumeEvent = true;
+                }
+
+
+                if (!consumeEvent && (selectedDwarf != null) && (currentActionMenu == null)) {
+                    temp3.set(temp.x, temp.y, zLayer);
+
+                    boolean crafting = Constants.hasCraftingInteraction(world.clientWorld.readDirect(temp.x, temp.y, zLayer));
+                    currentActionMenu = new DwarfActionMenu(temp3, crafting);
                     consumeEvent = true;
                 }
 
