@@ -11,6 +11,7 @@ import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class World {
     public static final int tilesBeyondViewportToRender = 3;
@@ -18,7 +19,7 @@ public class World {
     ClientWorld clientWorld;
     Entities entities;
     Characters characters;
-    ArrayList<SolitaryAnimatedSprite> temporaryAnimatedSprites = new ArrayList<SolitaryAnimatedSprite>();
+    HashSet<SolitaryAnimatedSprite> temporaryAnimatedSprites = new HashSet<SolitaryAnimatedSprite>();
 
 
     public World() {
@@ -33,13 +34,17 @@ public class World {
 
     public void tick(int deltaT, NetworkConnection network, GameCore core) {
         characters.tick(deltaT, this, network, core);
-        for (int i = temporaryAnimatedSprites.size() - 1; i >= 0; i--)
-        {
-            if (temporaryAnimatedSprites.get(i).animate())
-            {
-                temporaryAnimatedSprites.remove(i);
+        ArrayList<SolitaryAnimatedSprite> d = null;
+        for (SolitaryAnimatedSprite sprite : temporaryAnimatedSprites) {
+            if (sprite.animate()) {
+                if (d == null)
+                    d = new ArrayList<SolitaryAnimatedSprite>();
+                d.add(sprite);
             }
         }
+        if (d != null)
+            for (SolitaryAnimatedSprite sprite : d)
+                temporaryAnimatedSprites.remove(sprite);
     }
 
     Point toDrawCoord = new Point();
@@ -94,8 +99,7 @@ public class World {
                 }
 
                 //Draw Animations
-                for (SolitaryAnimatedSprite sprite : temporaryAnimatedSprites)
-                {
+                for (SolitaryAnimatedSprite sprite : temporaryAnimatedSprites) {
 
                     sprite.draw(p, viewportLocation);
                 }
@@ -132,9 +136,8 @@ public class World {
         result.setLocation(x, y);
     }
 
-    public static void globalNonTileCoordToScreenCoord(int x, int y, Point result, Point viewportLocation)
-    {
-      result.setLocation(x - viewportLocation.x, y - viewportLocation.y);
+    public static void globalNonTileCoordToScreenCoord(int x, int y, Point result, Point viewportLocation) {
+        result.setLocation(x - viewportLocation.x, y - viewportLocation.y);
 
     }
 
@@ -169,7 +172,7 @@ public class World {
     }
 
     public boolean isTileOccupied(Point2 point, Entity entity) {
-        return isTileOccupied(point.x, point.y,  entity);
+        return isTileOccupied(point.x, point.y, entity);
     }
 
     public boolean isTileMineable(Point2 point) {

@@ -2,7 +2,6 @@ package ardust.client;
 
 import ardust.entities.Entity;
 import ardust.packets.DwarfRequestPacket;
-import ardust.packets.WorldUpdatesPacket;
 import ardust.shared.*;
 
 import java.awt.*;
@@ -62,7 +61,7 @@ public class Character {
             {
                 Point2 miningLocation = new Point2(location.x, location.y);
                 miningLocation.move(entity.orientation);
-                   world.temporaryAnimatedSprites.add(new SolitaryAnimatedSprite(16, 4, 5,miningLocation.x * Constants.TILE_BASE_WIDTH  + random.nextInt(24) - 12,
+                   world.temporaryAnimatedSprites.add(new SolitaryAnimatedSprite(20, 4, 5,miningLocation.x * Constants.TILE_BASE_WIDTH  + random.nextInt(24) - 12,
                            miningLocation.y * Constants.TILE_BASE_HEIGHT - 32 + random.nextInt(24) - 12));
             }
         }
@@ -181,6 +180,7 @@ public class Character {
                             network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Attack, orientation));
                         }
                     }
+                }
             case BUILD:
 
                 if (!pathTowards(world, network, false)) {

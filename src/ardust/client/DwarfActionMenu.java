@@ -32,8 +32,8 @@ public class DwarfActionMenu {
 
         buttons.add(new Rectangle(32, 12, 32, 32)); //0 -- WALK/ARMOR
         buttons.add(new Rectangle(0, 46, 32, 32));  //1 -- HALT/SWORD
-        buttons.add(new Rectangle(64, 46, 32, 32)); //2  -- MINE/ATTACK/GOLDSWORD (Yes it's ugly but we're short on time)
-
+        buttons.add(new Rectangle(64, 46, 32, 32)); //2  -- MINE/ATTACK/GOLDSWORD
+        buttons.add(new Rectangle(32, 80, 32, 32)); //3  -- USE/BUILD
     }
 
     public GameCore.UserInputState isButtonHere(int x, int y, Point viewportLocation) {
@@ -55,7 +55,9 @@ public class DwarfActionMenu {
                     return GameCore.UserInputState.FIGHT;
             }
         }
-        if ((mode != Mode.Crafting) && buttons.get(USE).contains(localX, localY)) return GameCore.UserInputState.BUILD;
+        if ((mode != Mode.Crafting) && buttons.get(USE).contains(localX, localY)) {
+            return GameCore.UserInputState.BUILD;
+        }
 
         return GameCore.UserInputState.NONE;
     }
