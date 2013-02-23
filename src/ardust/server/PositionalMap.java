@@ -40,4 +40,8 @@ public class PositionalMap {
                 break;
         }
     }
+
+    public Entity getEntity(Point2 nextPosition) {
+        return occupiedSpace.get(nextPosition);
+    }
 }

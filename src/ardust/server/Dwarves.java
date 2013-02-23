@@ -48,6 +48,20 @@ public class Dwarves {
 
                 break;
 
+            case Attack:
+
+                nextPosition = getPositionAfterMovement(entity);
+                Entity targetEntity = positionalMap.getEntity(nextPosition);
+                if (targetEntity != null) {
+                    if (targetEntity.playerId != entity.playerId) {
+                        entity.mode = Entity.Mode.ATTACK;
+                        entity.countdown = Constants.FIGHT_COUNTDOWN;
+                    }
+                }
+
+                entity.mode = Entity.Mode.IDLE;
+                break;
+
             default:
                 entity.mode = Entity.Mode.IDLE;
                 break;
@@ -113,6 +127,19 @@ public class Dwarves {
                             break;
                     }
                 }
+                dwarf.mode = Entity.Mode.IDLE;
+                break;
+
+            case ATTACK:
+
+                position = getPositionAfterMovement(dwarf);
+                Entity targetEntity = positionalMap.getEntity(position);
+                if (targetEntity != null) {
+                    if (targetEntity.playerId != dwarf.playerId) {
+                        targetEntity.takeDamage(Constants.damageForWeapon(dwarf.weapon));
+                    }
+                }
+
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
 

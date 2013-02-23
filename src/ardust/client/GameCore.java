@@ -158,8 +158,6 @@ public class GameCore {
             }
         }
 
-
-
         if (input.isMouseButtonDown(1, false) || input.isMouseButtonDown(2, false)) {
             currentActionMenu = null;
             int refKey = (input.isMouseButtonDown(2, false)) ? 2 : 1;
@@ -209,8 +207,11 @@ public class GameCore {
                 }
 
                 if (!consumeEvent && ((selectedDwarf == null) || world.getCharacterAtTile(temp.x, temp.y) != null)) {
-                    selectedDwarf = world.getCharacterAtTile(temp.x, temp.y);
-                    consumeEvent = true;
+                    Character option = world.getCharacterAtTile(temp.x, temp.y);
+                    if (option.playerId() == playerId) {
+                        selectedDwarf = option;
+                        consumeEvent = true;
+                    }
                 }
 
 

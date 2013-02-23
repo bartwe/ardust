@@ -19,7 +19,8 @@ public class Entity {
         IDLE,
         COOLDOWN, // like idle but non interruptable
         WALKING,
-        MINING
+        MINING,
+        ATTACK
     }
 
     public enum Armor
@@ -93,4 +94,7 @@ public class Entity {
         values.nextTick();
     }
 
+    public void takeDamage(int damage) {
+        //todo
+    }
 }

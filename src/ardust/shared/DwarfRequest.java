@@ -3,6 +3,7 @@ package ardust.shared;
 public enum DwarfRequest {
     Walk,
     Mine,
+    Attack,
     CraftSword,
     CraftArmor,
     CraftGoldSword

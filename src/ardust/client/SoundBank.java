@@ -6,6 +6,7 @@ public class SoundBank {
 
     public static int buttonSound;
     public static int pickaxeSound;
+    public static int fightSound;
     public static int mainMusic;
     public static int menuMusic;
 
@@ -19,6 +20,7 @@ public class SoundBank {
     public void registerSoundEffects() {
         pickaxeSound = system.registerFile("resources/audio/effects/pick.ogg", SoundSystem.SoundType.Effect);
         buttonSound = system.registerFile("resources/audio/effects/button.ogg", SoundSystem.SoundType.Effect);
+        fightSound = system.registerFile("resources/audio/effects/fight.ogg", SoundSystem.SoundType.Effect);
         mainMusic = system.registerFile("resources/audio/music/main.ogg", SoundSystem.SoundType.Music);
         menuMusic = system.registerFile("resources/audio/music/menu.ogg", SoundSystem.SoundType.Music);
     }
