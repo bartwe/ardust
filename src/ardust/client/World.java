@@ -2,6 +2,7 @@ package ardust.client;
 
 import ardust.entities.Entities;
 import ardust.shared.Constants;
+import ardust.shared.NetworkConnection;
 import ardust.shared.Point3;
 import org.lwjgl.opengl.GL11;
 
@@ -38,8 +39,8 @@ public class World {
         result.setLocation(tileX * Constants.TILE_BASE_WIDTH - viewportLocation.x, tileY * Constants.TILE_BASE_HEIGHT - viewportLocation.y);
     }
 
-    public void tick(int deltaT) {
-        characters.tick(deltaT, clientWorld);
+    public void tick(int deltaT, NetworkConnection network) {
+        characters.tick(deltaT, clientWorld, network);
     }
 
     Point toDrawCoord = new Point();
@@ -76,14 +77,23 @@ public class World {
 
                 //Draw Terrain Item
                 byte whatItem = clientWorld.readDirect(x, y, z);
+                int baseBlock = Constants.convertIndexToBaseBlockIndex(whatItem);
+                int blockMod = Constants.getBlockModIndex(whatItem);
                 if (whatItem != 0) {
                     if ((x == cursorX) && (y == cursorY) && (z == cursorZ))
                         GL11.glColor4f(r, g, b, 1);
-                    p.getSourceRectFromTileSheetIndex(whatItem, tileSheetRect);
+                    p.getSourceRectFromTileSheetIndex(baseBlock, tileSheetRect);
                     p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT),
                             tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height, false);
                     if ((x == cursorX) && (y == cursorY) && (z == cursorZ))
                         GL11.glColor4f(1, 1, 1, 1);
+
+                    if (blockMod != -1)
+                    {
+                        p.getSourceRectFromTileSheetIndex(blockMod, tileSheetRect);
+                        p.draw(toDrawCoord.x, toDrawCoord.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT),
+                                tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height, false);
+                    }
                 }
                 //Draw Character
                 tilePoint.set(x, y, z);

@@ -2,8 +2,10 @@
   <library name="jar">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lwjgl/jar/lwjgl.jar!/" />
+      <root url="file://$PROJECT_DIR$/vorbis" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/vorbis" recursive="false" />
   </library>
 </component>

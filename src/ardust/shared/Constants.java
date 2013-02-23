@@ -31,6 +31,7 @@ public class Constants {
     public static final int CURSOR_Y_IN_TILESHEET = 40;
     public static final int DEFAULT_CURSOR = 0;
     public static final int PANNING_CURSOR = 1;
+    public static final int ACTION_CURSOR = 2;
 
     public static final int DEFAULT_Z = 5;
 
@@ -51,4 +52,40 @@ public class Constants {
     public static final int START_OFFSET = 1000000;
 
     public static final int WALKING_COUNTDOWN = 500;
+
+    public static int isWorldPieceMineable(byte index)
+    {
+        switch (index)
+        {
+            case 0:
+            case 2: return 500;
+            case 1: return 1500;
+            case 3: return 7000;
+            case 4: return 3000;
+            default: return 0;
+        }
+    }
+
+    public static int getBlockModIndex(byte index)
+    {
+        switch (index)
+        {
+            case 3: return 13;//gold
+            case 4: return 14;//iron;
+            default: return -1;
+        }
+    }
+
+    public static int convertIndexToBaseBlockIndex(byte index)
+    {
+        switch (index)
+        {
+            case 3: //gold
+            case 4: //iron
+                return 1;
+            default: return index;
+        }
+    }
+
+
 }

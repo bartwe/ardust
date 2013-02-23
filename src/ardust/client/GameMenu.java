@@ -10,6 +10,7 @@ public class GameMenu extends JPanel implements ActionListener {
 
     private JButton hostGameButton, joinGameButton, quitGameButton;
     private final GameLoop parent;
+    public static int buttonSoundID;
 
     public GameMenu(GameLoop parent) {
         this.parent = parent;
@@ -28,6 +29,12 @@ public class GameMenu extends JPanel implements ActionListener {
         this.setVisible(true);
         this.setPreferredSize(new Dimension(100, 200));
         this.setBackground(Color.LIGHT_GRAY);
+
+        SoundSystem soundsys = this.parent.getSoundSys();
+        parent.setMusicSourceID(soundsys.registerFile("/resources/audio/music/menu.ogg", SoundSystem.SoundType.Music));
+        soundsys.play(parent.getMusicSourceID());
+
+        buttonSoundID = soundsys.registerFile("/resources/audio/effects/button.ogg", SoundSystem.SoundType.Effect);
     }
 
     private JButton initializeButton(String buttonName) {
@@ -42,6 +49,7 @@ public class GameMenu extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        parent.getSoundSys().play(buttonSoundID);
         if (e.getSource() == hostGameButton) {
             parent.startServer();
             this.setEnabled(false);
@@ -53,6 +61,7 @@ public class GameMenu extends JPanel implements ActionListener {
             parent.setGameState(GameLoop.GameState.CLIENT_STATE);
         } else if (e.getSource() == quitGameButton) {
             //Does openGL need to do something here?
+            parent.getSoundSys().killAL();
             System.exit(0);
         }
     }

@@ -34,8 +34,13 @@ public class GameLoop {
     private GameMenu menu;
     private Server server;
     private long prevT;
+    private static SoundSystem soundsys;
+    public static SoundBank soundBank;
+    private int musicSourceID;
 
     public GameLoop() {
+        soundsys = new SoundSystem();
+        soundBank = new SoundBank(soundsys);
         menu = new GameMenu(this);
     }
 
@@ -85,7 +90,7 @@ public class GameLoop {
 
     public Point getCurrentMouseCursorTileSheetPoint() {
         return new Point(Constants.CURSOR_X_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) % Constants.TILE_BASE_WIDTH),
-                Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH);
+                Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH / 2);
     }
 
     public void setCurrentMouseCursor(int which) {
@@ -275,9 +280,21 @@ public class GameLoop {
 
                 }
 
-
                 painter.start();
+                //on screen display
+                if (gameState != GameState.MENU_STATE)
+                {
 
+                painter.draw(width / Constants.PIXEL_SCALE - 16, height/ Constants.PIXEL_SCALE - 48, 112, 40, 16, 16, false);
+                SpriteNumber.drawNumber(core.stone, width/ Constants.PIXEL_SCALE - 28, height/ Constants.PIXEL_SCALE - 48 + 2, painter);
+                painter.draw(width/ Constants.PIXEL_SCALE - 16, height/ Constants.PIXEL_SCALE - 32, 96, 56, 16, 16, false);
+                SpriteNumber.drawNumber(core.iron, width/ Constants.PIXEL_SCALE - 28, height/ Constants.PIXEL_SCALE - 32 + 2, painter);
+                painter.draw(width/ Constants.PIXEL_SCALE - 16, height/ Constants.PIXEL_SCALE - 16, 112, 56, 16, 16, false);
+                SpriteNumber.drawNumber(core.gold, width/ Constants.PIXEL_SCALE - 28, height/ Constants.PIXEL_SCALE - 16 + 2, painter);
+                }
+
+
+                //cursor
                 painter.draw(input.getX() / Constants.PIXEL_SCALE, input.getY() / Constants.PIXEL_SCALE, getCurrentMouseCursorTileSheetPoint().x,
                         getCurrentMouseCursorTileSheetPoint().y, Constants.TILE_BASE_WIDTH / 2, Constants.TILE_BASE_WIDTH / 2, false);
 
@@ -317,6 +334,19 @@ public class GameLoop {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public SoundSystem getSoundSys() {
+        return soundsys;
+    }
+
+    public int getMusicSourceID() {
+        return musicSourceID;
+    }
+
+    public void setMusicSourceID(int id)
+    {
+        musicSourceID = id;
     }
 
     public enum GameState {

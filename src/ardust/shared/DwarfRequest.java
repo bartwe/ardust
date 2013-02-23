@@ -1,7 +1,8 @@
 package ardust.shared;
 
 public enum DwarfRequest {
-    Walk
+    Walk,
+    Mine
 //    Stop interruption isn't supported, repeating stuff is clientside, stop it there
     // etc
 }

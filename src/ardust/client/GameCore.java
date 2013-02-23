@@ -18,6 +18,9 @@ public class GameCore {
     int zLayer;
     DwarfActionMenu currentActionMenu;
     UserInputState currentInputState = UserInputState.NO_DWARF_SELECTED;
+    int soundID;
+    int stone, iron, gold;
+
 
     public enum UserInputState {
         NO_DWARF_SELECTED,
@@ -55,7 +58,7 @@ public class GameCore {
     public void tick(int deltaT) {
         processNetwork();
 
-        world.tick(deltaT);
+        world.tick(deltaT, network);
 
         mousePan();
     }
@@ -107,7 +110,7 @@ public class GameCore {
             int yPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(1).y) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
 
             parent.setViewportLocation(new Point(parent.getViewportLocation().x + xPan, parent.getViewportLocation().y + yPan));
-        } else
+        } else if (currentInputState == UserInputState.NO_DWARF_SELECTED)
             parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
 
         if (input.isKeyDown(Keyboard.KEY_TAB, true)) {
@@ -115,6 +118,7 @@ public class GameCore {
         }
 
         if (input.isMouseButtonDown(0, true)) {
+            parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
             World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
             if (selectedDwarf == null || world.getCharacterAtTile(temp.x, temp.y, zLayer) != null) {
                 selectedDwarf = world.getCharacterAtTile(temp.x, temp.y, zLayer);
@@ -129,19 +133,34 @@ public class GameCore {
                 // dwarf interaction stuffs
                 switch (currentInputState) {
                     case DWARF_SELECTED:
+
                         if (currentActionMenu != null)
                             currentInputState = currentActionMenu.isButtonHere(input.getX(), input.getY(), parent.getViewportLocation());
+
+                        if (currentInputState == UserInputState.NO_DWARF_SELECTED)
+                        {
+                            selectedDwarf = null;
+                            currentActionMenu = null;
+                        } else if (currentInputState == UserInputState.HALT) {
+                            selectedDwarf.halt();
+                            deselectCurrentDwarf();
+                            parent.getSoundSys().play(GameMenu.buttonSoundID);
+                        } else {
+                            parent.setCurrentMouseCursor(Constants.ACTION_CURSOR);
+                            parent.getSoundSys().play(GameMenu.buttonSoundID);
+                        }
+
                         break;
 
                     case WALK:
 
-                        break;
-
-                    case HALT:
+                        sendNetworkRequestInMouseClickDirection(DwarfRequest.Walk);
 
                         break;
 
                     case MINE:
+
+                        sendNetworkRequestInMouseClickDirection(DwarfRequest.Mine);
 
                         break;
                 }
@@ -149,19 +168,54 @@ public class GameCore {
         }
 
         if (selectedDwarf != null) {
-            if (input.isKeyDown(Keyboard.KEY_W, false) || input.isKeyDown(Keyboard.KEY_UP, false))
+            if (input.isKeyDown(Keyboard.KEY_W, false) || input.isKeyDown(Keyboard.KEY_UP, false))    {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.NORTH));
-            if (input.isKeyDown(Keyboard.KEY_D, false) || input.isKeyDown(Keyboard.KEY_RIGHT, false))
+                deselectCurrentDwarf();
+            }
+            if (input.isKeyDown(Keyboard.KEY_D, false) || input.isKeyDown(Keyboard.KEY_RIGHT, false))        {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.EAST));
-            if (input.isKeyDown(Keyboard.KEY_S, false) || input.isKeyDown(Keyboard.KEY_DOWN, false))
+                deselectCurrentDwarf();
+            }
+            if (input.isKeyDown(Keyboard.KEY_S, false) || input.isKeyDown(Keyboard.KEY_DOWN, false))          {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.SOUTH));
-            if (input.isKeyDown(Keyboard.KEY_A, false) || input.isKeyDown(Keyboard.KEY_LEFT, false))
+                 deselectCurrentDwarf();
+            }
+            if (input.isKeyDown(Keyboard.KEY_A, false) || input.isKeyDown(Keyboard.KEY_LEFT, false))           {
                 network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.Walk, Orientation.WEST));
+                deselectCurrentDwarf();
+            }
         }
     }
+
+    public void deselectCurrentDwarf()
+    {
+        selectedDwarf = null;
+        currentActionMenu = null;
+        currentInputState = UserInputState.NO_DWARF_SELECTED;
+        parent.setCurrentMouseCursor(Constants.DEFAULT_CURSOR);
+    }
+
+    public void sendNetworkRequestInMouseClickDirection(DwarfRequest request)
+    {
+        Point tile = new Point(0,0);
+        World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), tile);
+
+        if (tile.x > selectedDwarf.location.x && Math.abs(tile.x - selectedDwarf.location.x) >Math.abs(tile.y - selectedDwarf.location.y)) {
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.EAST));
+        } else if (tile.x < selectedDwarf.location.x && Math.abs(tile.x - selectedDwarf.location.x) > Math.abs(tile.y - selectedDwarf.location.y)) {
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.WEST));
+        }  else if (tile.y < selectedDwarf.location.y) {
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.NORTH));
+        } else {
+            network.send(new DwarfRequestPacket(selectedDwarf.id(), request, Orientation.SOUTH));
+        }
+    }
+
 
     public void render() {
         World.localCoordToGlobalTile(input.getX(), input.getY(), parent.getViewportLocation(), temp);
         world.draw(painter, parent.getViewportLocation(), zLayer, painter.getDrawableWidth(), painter.getDrawableHeight(), selectedDwarf, temp.x, temp.y, zLayer);
+        if (currentActionMenu != null && currentInputState == UserInputState.DWARF_SELECTED) currentActionMenu.draw(painter, parent.getViewportLocation());
+
     }
 }

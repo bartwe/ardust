@@ -59,7 +59,7 @@ public class ServerWorld {
         for (int z = 0; z < Constants.WORLD_DEPTH; z++)
             for (int y = 0; y < Constants.WORLD_LENGTH; y++)
                 for (int x = 0; x < Constants.WORLD_LENGTH; x++)
-                    write(x, y, z, tiles[random.nextInt(3)]);
+                    write(x, y, z, tiles[random.nextInt(5)]);
         clearPendingUpdates();
     }
 

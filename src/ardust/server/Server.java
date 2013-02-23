@@ -113,7 +113,7 @@ public class Server {
     private void evaluateDwarves(int deltaT) {
         entities.getDwarves(entitiesTemp);
         for (Entity dwarf : entitiesTemp)
-            Dwarves.tick(deltaT, dwarf);
+            Dwarves.tick(deltaT, dwarf, world);
         entitiesTemp.clear();
     }
 
@@ -177,7 +177,7 @@ public class Server {
         if (entity.kind != Entity.Kind.DWARF)
             return;
         // todo: ownership check
-        Dwarves.handle(entity, packet);
+        Dwarves.handle(entity, packet, world);
     }
 
     private void handleWindowChange(Player player, WindowPacket packet) {

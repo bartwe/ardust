@@ -1,9 +1,8 @@
 package ardust.client;
 
 import ardust.entities.Entity;
-import ardust.shared.Constants;
-import ardust.shared.Orientation;
-import ardust.shared.Point3;
+import ardust.packets.DwarfRequestPacket;
+import ardust.shared.*;
 
 import java.awt.*;
 
@@ -17,6 +16,8 @@ public class Character {
 
     private final Entity entity;
     Entity.Mode prevMode = Entity.Mode.IDLE;
+
+    public boolean isHalting;
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -35,6 +36,7 @@ public class Character {
     }
 
     public void animateMining() {
+        int currentFrame = sprite.currentFrame;
         switch (entity.orientation) {
             case NORTH:
                 sprite.animate(36, 4, Constants.DWARF_ANIMATION_SPEED / 2);
@@ -42,6 +44,18 @@ public class Character {
             default:
                 sprite.animate(32, 4, Constants.DWARF_ANIMATION_SPEED / 2);
                 break;
+        }
+        if (sprite.currentFrame != currentFrame && sprite.currentFrame % 3 == 0)
+        {
+           GameLoop.soundBank.playSound(SoundBank.pickaxeSound);
+        }
+    }
+
+    public void halt()
+    {
+        if (entity.mode == Entity.Mode.WALKING)
+        {
+            isHalting = true;
         }
     }
 
@@ -56,7 +70,7 @@ public class Character {
         }
     }
 
-    public void tick(int deltaT, ClientWorld world) {
+    public void tick(int deltaT, ClientWorld world, NetworkConnection network) {
         entity.countdown -= deltaT;
 
         if (entity.countdown < 0)
@@ -88,11 +102,22 @@ public class Character {
                         break;
                 }
                 break;
-//            case MINING:
-//                animateMining();
-//                break;
+            case MINING:
+                animateMining();
+                break;
             default:
                 showStationarySprite();
+        }
+
+        if (modeProgress >= 1 && entity.mode == Entity.Mode.WALKING)
+        {
+            if (!isHalting)
+            {
+                network.send(new DwarfRequestPacket(id(), DwarfRequest.Walk, entity.orientation));
+            }  else {
+                isHalting = false;
+                entity.mode = Entity.Mode.IDLE;
+            }
         }
     }
 
@@ -122,8 +147,8 @@ public class Character {
     public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
         Point localPoint = getLocalDrawPoint(viewportLocation);
         boolean flipAnimation = (entity.orientation == Orientation.EAST);
-        if (selectedDwarf)
-            p.draw(localPoint.x, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 43, 7, false);//sorry
+        //if (selectedDwarf)
+       //    p.draw(localPoint.x, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 43, 10, false);//sorry
         sprite.draw(p, localPoint.x, localPoint.y - Constants.TILE_BASE_HEIGHT - Constants.DWARF_OFFSET_ON_TILE, flipAnimation);
     }
 

@@ -1,6 +1,7 @@
 package ardust.client;
 
 import ardust.entities.Entities;
+import ardust.shared.NetworkConnection;
 import ardust.shared.Point3;
 
 import java.util.*;
@@ -14,7 +15,7 @@ public class Characters {
         this.entities = entities;
     }
 
-    public void tick(int deltaT, ClientWorld world) {
+    public void tick(int deltaT, ClientWorld world, NetworkConnection network) {
         for (Integer id : entities.deleted)
             mapping.remove(id);
         for (Integer id : entities.inserted)
@@ -22,7 +23,7 @@ public class Characters {
         entities.clearDelta();
         positional.clear();
         for (Character character : mapping.values()) {
-            character.tick(deltaT, world);
+            character.tick(deltaT, world, network);
             positional.put(character.location, character);
             if (!character.targetLocation.equals(character.location))
                 positional.put(character.targetLocation, character);
