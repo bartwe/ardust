@@ -189,6 +189,15 @@ public class GameCore {
                         case USE:
                             selectedDwarf.use(currentActionMenu.location);
                             break;
+                        case ATTEMPTING_ARMOR_PURCHASE:
+                            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftArmor, Orientation.NORTH));
+                            break;
+                        case ATTEMPTING_SWORD_PURCHASE:
+                            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftSword, Orientation.NORTH));
+                            break;
+                        case ATTEMPTING_GOLD_SWORD_PURCHASE:
+                            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftGoldSword, Orientation.NORTH));
+                            break;
                         default:
                             break;
                     }

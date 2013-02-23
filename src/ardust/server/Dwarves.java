@@ -38,6 +38,15 @@ public class Dwarves {
                 }
 
                 break;
+            case CraftArmor:
+                entity.
+                break;
+            case CraftSword:
+
+                break;
+            case CraftGoldSword:
+
+                break;
 
             default:
                 entity.mode = Entity.Mode.IDLE;
