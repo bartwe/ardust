@@ -24,6 +24,7 @@ public class Server {
     private long saveDeadline;
     private ArrayList<Player> playersTemp = new ArrayList<Player>();
     long prevT;
+    PositionalMap positionalMap = new PositionalMap();
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -94,10 +95,12 @@ public class Server {
         int deltaT = (int) (currentT - prevT);
         prevT += deltaT;
 
+        updatePositionalMap();
         fetchClientCommands();
         evaluateDwarves(deltaT);
         executeCommands();
         sendUpdates();
+
 
         if (System.currentTimeMillis() > saveDeadline) {
             saveDeadline = System.currentTimeMillis() + 15 * 60 * 1000;
@@ -108,13 +111,24 @@ public class Server {
         }
     }
 
+    private void updatePositionalMap() {
+        positionalMap.updateEntities(entities);
+    }
+
     ArrayList<Entity> entitiesTemp = new ArrayList<Entity>();
 
     private void evaluateDwarves(int deltaT) {
         entities.getDwarves(entitiesTemp);
         for (Entity dwarf : entitiesTemp)
-            Dwarves.tick(deltaT, dwarf, world);
+            Dwarves.tick(deltaT, findPlayerForDwarf(dwarf), dwarf, world, positionalMap);
         entitiesTemp.clear();
+    }
+
+    private Player findPlayerForDwarf(Entity dwarf) {
+        for (Player player : players)
+            if (player.dwarfs.containsKey(dwarf.id))
+                return player;
+        return null;
     }
 
     private void sendUpdates() {
@@ -139,6 +153,7 @@ public class Server {
 
         //TODO: sends updates outside of the players world range, perf thingy
         for (Player player : players) {
+            player.sendUpdates();
             for (Packet packet : packets)
                 player.sendPacket(packet);
         }
@@ -158,14 +173,6 @@ public class Server {
             handleWindowChange(player, (WindowPacket) packet);
         } else if (packet instanceof DwarfRequestPacket) {
             handleDwarfRequest(player, (DwarfRequestPacket) packet);
-        } else if (packet instanceof DebugChangeTilePacket) {
-            DebugChangeTilePacket wp = (DebugChangeTilePacket) packet;
-            byte tile = world.readDirect(wp.x, wp.y, wp.z);
-            tile += 1;
-            if (tile >= 3)
-                tile = 0;
-            System.err.println("changetile: " + wp.x + "," + wp.y + "," + wp.z + "  " + tile);
-            world.writeDirect(wp.x, wp.y, wp.z, tile);
         } else
             throw new RuntimeException("Unknown packet: " + packet.packetId());
     }
@@ -177,7 +184,7 @@ public class Server {
         if (entity.kind != Entity.Kind.DWARF)
             return;
         // todo: ownership check
-        Dwarves.handle(entity, packet, world);
+        Dwarves.handle(entity, packet, world, positionalMap);
     }
 
     private void handleWindowChange(Player player, WindowPacket packet) {
@@ -197,7 +204,7 @@ public class Server {
         x += random.nextInt(Constants.WORLD_LENGTH);
         y += random.nextInt(Constants.WORLD_LENGTH);
         player.setXYZ(x, y, z);
-        player.spawnSetup(entities, world);
+        player.spawnSetup(entities, world, positionalMap);
         player.sendPacket(new WindowPacket(player.getX(), player.getY(), player.getZ()));
 
         tempBuffer.clear();
@@ -205,6 +212,9 @@ public class Server {
             tempBuffer.flip();
             player.sendPacket(new EntitiesPacket(tempBuffer, true, true));
         }
+
+        sendWorldRegion(player, Constants.BAD_AXIS, Constants.BAD_AXIS, Constants.BAD_AXIS, x, y, z);
+
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {

@@ -14,6 +14,7 @@ default:
 	rm release/basicapplet.html
 	cp src/index.html release/
 	rm -f release/lwjgl-debug.jar.*
+	cp vorbis/*.jar release/
 
 
 

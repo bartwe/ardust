@@ -55,4 +55,24 @@ public class Point3 {
     public String toString() {
         return "{" + x + ", " + y + ", " + z + "}";
     }
+
+    public void move(Orientation orientation) {
+        switch (orientation) {
+            case NORTH:
+                y -= 1;
+                break;
+            case EAST:
+                x += 1;
+                break;
+            case SOUTH:
+                y += 1;
+                break;
+            case WEST:
+                x -= 1;
+                break;
+            default:
+                break;
+        }
+
+    }
 }

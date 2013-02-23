@@ -1,5 +1,7 @@
 package ardust.client;
 
+import ardust.shared.ByteBufferBuffer;
+import ardust.shared.Loader;
 import com.jcraft.oggdecoder.OggData;
 import com.jcraft.oggdecoder.OggDecoder;
 import org.lwjgl.BufferUtils;
@@ -10,10 +12,8 @@ import org.lwjgl.openal.AL10;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class SoundSystem {
@@ -43,7 +43,7 @@ public class SoundSystem {
      */
     private IntBuffer source;
 
-    private ArrayList<SoundObject> soundBank;
+    private ArrayList<SoundObject> soundObjects;
     private boolean disabled;
 
     public SoundSystem() {
@@ -53,7 +53,7 @@ public class SoundSystem {
             disabled = true;
             e.printStackTrace();
         }
-        soundBank = new ArrayList<SoundObject>();
+        soundObjects = new ArrayList<SoundObject>();
         buffer = BufferUtils.createIntBuffer(5);
         source = BufferUtils.createIntBuffer(5);
         if (!disabled) {
@@ -62,40 +62,44 @@ public class SoundSystem {
         }
     }
 
-    public int registerFile(String filename, SoundType type) {
-        soundBank.add(new SoundObject(filename, type));
-
-        return soundBank.size() - 1;
-    }
-
-    public void updateSource(int i, String filename) {
-        soundBank.get(i).filename = filename;
-    }
-
-    public void play(int i) {
-        if (disabled)
-            return;
-
-        SoundObject obj = soundBank.get(i);
+    private void setSourceBuffer(int i) {
+        SoundObject obj = soundObjects.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
-        Path path = Paths.get(System.getProperty("user.dir") + obj.filename);
-        byte[] data = new byte[0];
-
+        ByteBuffer databuffer = ByteBufferBuffer.alloc(2048 * 2048);
         try {
-            data = Files.readAllBytes(path);
+            InputStream f = Loader.getRequiredResourceAsStream(obj.filename);
+            int offset = 0;
+            int remaining = databuffer.remaining();
+            while (true) {
+                if (remaining <= 0)
+                    throw new RuntimeException();
+                int len = f.read(databuffer.array(), databuffer.arrayOffset() + offset, remaining);
+                if (len < 0)
+                    break;
+                remaining -= len;
+                offset += len;
+            }
+            databuffer.position(offset);
+            databuffer.flip();
+            f.close();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            return;
         }
+
+        byte[] data = new byte[databuffer.remaining()];
+        databuffer.get(data);
 
         // Decode OGG into PCM
         InputStream inputStream = new ByteArrayInputStream(data);
 
-        OggData oggData = null;
+        OggData oggData;
         try {
             oggData = oggDecoder.getData(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            return;
         }
 
         int sourceID = source.get(i);
@@ -109,8 +113,10 @@ public class SoundSystem {
                 oggData.data,
                 oggData.rate);
 
-        if (AL10.alGetError() != AL10.AL_NO_ERROR) {
-            //Error check
+        int error = AL10.alGetError();
+        if (error != AL10.AL_NO_ERROR) {
+            System.err.println("AL error. " + error);
+            return;
         }
 
         AL10.alSourcei(sourceID, AL10.AL_BUFFER, bufferID);
@@ -122,8 +128,34 @@ public class SoundSystem {
         } else {
             AL10.alSourcei(sourceID, AL10.AL_LOOPING, AL10.AL_FALSE);
         }
+    }
 
-        AL10.alSourcePlay(sourceID);
+    public int registerFile(String filename, SoundType type) {
+        soundObjects.add(new SoundObject(filename, type));
+
+        int bankID = soundObjects.size() - 1;
+
+        setSourceBuffer(bankID);
+
+        return bankID;
+    }
+
+    public void updateSource(int i, String filename) {
+        soundObjects.get(i).filename = filename;
+        setSourceBuffer(i);
+    }
+
+    public void play(int i) {
+        if (disabled)
+            return;
+
+        AL10.alSourcePlay(source.get(i));
+    }
+    public void stop(int i) {
+        if (disabled)
+            return;
+
+        AL10.alSourceStop(source.get(i));
     }
 
     public void killAL() {

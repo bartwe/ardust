@@ -1,6 +1,7 @@
 package ardust.client;
 
 import ardust.entities.Entities;
+import ardust.entities.Entity;
 import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
 import ardust.shared.Point3;
@@ -10,17 +11,6 @@ import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-/* I chose to store the "terrainItems" (any stationary object that exists in the world... like stones, structures, etc.)  in a byte array to save on memory (the bytes would presumably
-correspond to an index in the tile sheet).
-This might be a bad choice, but I figured there wouldn't be too many possible types in a game of this size, and they wouldn't really need to store any data about themselves.
-I'm also not sure how complex the interactions will be with these structures, but I figured that we might able to do something like Minecraft,
-so each dwarf can really only affect one block at a time (if you are mining a block and then switch to another block
-your "damage" to the initial block just goes away). So we could just have each dwarf keep track of the terrainItem he is currently
-working with, and pull info (health, effect on adjacent dwarves) from a couple of switch statements somewhere.
-I dunno.. it's something to discuss.
-
-
-*/
 public class World {
     public static final int tilesBeyondViewportToRender = 3;
 
@@ -40,7 +30,7 @@ public class World {
     }
 
     public void tick(int deltaT, NetworkConnection network, GameCore core) {
-        characters.tick(deltaT, clientWorld, network, core);
+        characters.tick(deltaT, this, network, core);
     }
 
     Point toDrawCoord = new Point();
@@ -76,7 +66,7 @@ public class World {
                         tileSheetFloorRect.x, tileSheetFloorRect.y, tileSheetFloorRect.width, tileSheetFloorRect.height, false);
 
                 //Draw Terrain Item
-                byte whatItem = clientWorld.readDirect(x, y, z);
+                byte whatItem = clientWorld.read(x, y, z);
                 int baseBlock = Constants.convertIndexToBaseBlockIndex(whatItem);
                 int blockMod = Constants.getBlockModIndex(whatItem);
                 if (whatItem != 0) {
@@ -134,8 +124,13 @@ public class World {
         clientWorld.writeTiles(locations, tiles);
     }
 
-    public boolean isTileOccupied(int x, int y, int z) {
-        return (clientWorld.readDirect(x, y, z) != 0);
+    public boolean isTileOccupied(int x, int y, int z, Entity entity) {
+        if (!Constants.isWalkable(clientWorld.read(x, y, z)))
+            return true;
+        Character at = getCharacterAtTile(x, y, z);
+        if ((at != null) && (at.id().equals(entity.id)))
+            return true;
+        return false;
     }
 
     public Character getCharacterAtTile(int x, int y, int z) {
@@ -148,5 +143,13 @@ public class World {
 
     public Character nextCharacter(Character selectedDwarf) {
         return characters.nextCharacter(selectedDwarf);
+    }
+
+    public boolean isTileOccupied(Point3 point, Entity entity) {
+        return isTileOccupied(point.x, point.y, point.z, entity);
+    }
+
+    public boolean isTileMineable(Point3 point) {
+        return Constants.isMinable(clientWorld.read(point.x, point.y, point.z));
     }
 }

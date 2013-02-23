@@ -5,6 +5,7 @@ public class SpriteNumber {
     private static final int textureY = 40;
     private static final int digitWidth = 8;
     private static final int digitHeight = 12;
+    private static final int groupWidth = 32;
 
     //draws the number... but screenX is the RIGHT side of the number... didn't want to waste time doing it other way
     public static void drawNumber(int number, int screenX, int screenY, Painter p) {
@@ -13,8 +14,8 @@ public class SpriteNumber {
             int currentDigit = number % 10;
             number /= 10;
 
-            int textX = textureX + (currentDigit * digitWidth) % digitWidth;
-            int textY = textureY + ((currentDigit * digitWidth) / textureX) * digitHeight;
+            int textX = textureX + (currentDigit * digitWidth) % groupWidth;
+            int textY = textureY + ((currentDigit * digitWidth) / groupWidth) * digitHeight;
             p.draw(screenX - widthOffset, screenY, textX, textY, digitWidth, digitHeight, false);
             widthOffset += digitWidth;
 

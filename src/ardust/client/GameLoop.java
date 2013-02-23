@@ -335,18 +335,6 @@ public class GameLoop {
         }
     }
 
-    public SoundSystem getSoundSys() {
-        return soundsys;
-    }
-
-    public int getMusicSourceID() {
-        return musicSourceID;
-    }
-
-    public void setMusicSourceID(int id) {
-        musicSourceID = id;
-    }
-
     public enum GameState {
         MENU_STATE,
         CLIENT_STATE,

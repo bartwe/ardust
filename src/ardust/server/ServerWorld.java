@@ -1,7 +1,6 @@
 package ardust.server;
 
 import ardust.shared.Constants;
-import ardust.shared.Tile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +11,6 @@ import java.util.Random;
 
 public class ServerWorld {
     byte[] world;
-    Tile[] tiles;
     int[] updates = new int[1024];
     int updatesIndex;
 
@@ -20,9 +18,6 @@ public class ServerWorld {
 
     ServerWorld() {
         world = new byte[Constants.WORLD_LENGTH * Constants.WORLD_LENGTH * Constants.WORLD_DEPTH];
-        tiles = new Tile[256];
-        for (int i = 0; i < tiles.length; i++)
-            tiles[i] = new Tile((byte) i);
     }
 
     public void load() {
@@ -59,7 +54,7 @@ public class ServerWorld {
         for (int z = 0; z < Constants.WORLD_DEPTH; z++)
             for (int y = 0; y < Constants.WORLD_LENGTH; y++)
                 for (int x = 0; x < Constants.WORLD_LENGTH; x++)
-                    write(x, y, z, tiles[random.nextInt(5)]);
+                    write(x, y, z, (byte) (2 + random.nextInt(3)));
         clearPendingUpdates();
     }
 
@@ -70,31 +65,6 @@ public class ServerWorld {
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public Tile read(int x, int y, int z) {
-        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
-            return tiles[0];
-        x = normalizeAxis(x);
-        y = normalizeAxis(y);
-
-        return tiles[((int) world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH]) & 0xff];
-    }
-
-    public void write(int x, int y, int z, Tile tile) {
-        if ((z < 0) || (z >= Constants.WORLD_DEPTH)) {
-            // return;
-            throw new RuntimeException("writing outside of the world ?");
-        }
-        x = normalizeAxis(x);
-        y = normalizeAxis(y);
-
-        byte current = world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
-        byte value = tile.value();
-        if (current != value) {
-            world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH] = tile.value();
-            appendUpdate(x, y, z);
         }
     }
 
@@ -133,7 +103,7 @@ public class ServerWorld {
             tiles[i] = world[locations[i]];
     }
 
-    public byte readDirect(int x, int y, int z) {
+    public byte read(int x, int y, int z) {
         if ((z < 0) || (z >= Constants.WORLD_DEPTH))
             return 0;
         x = normalizeAxis(x);
@@ -142,7 +112,7 @@ public class ServerWorld {
         return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
     }
 
-    public void writeDirect(int x, int y, int z, byte tile) {
+    public void write(int x, int y, int z, byte tile) {
         if ((z < 0) || (z >= Constants.WORLD_DEPTH)) {
             // return;
             throw new RuntimeException("writing outside of the world ?");

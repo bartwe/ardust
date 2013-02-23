@@ -12,13 +12,11 @@ public class Constants {
     public static final int DWARF_ANIMATION_SPEED = 10;
     public static final int DWARF_OFFSET_ON_TILE = 8;
 
-    public static final int BUTTON_SIZE = 32;
-
     // client get this radius of data around the screen center from the server
     public static final int RADIUS = 32;
     public static final int ZRADIUS = 2;
 
-    public static final int PIXEL_SCALE = 3;
+    public static final int PIXEL_SCALE = 1;
     public static final int TILE_BASE_WIDTH = 32;
     public static final int TILE_BASE_HEIGHT = 16; //the height of an in-game tile.
     public static final int TILE_DRAW_HEIGHT = 40; //the actual height of the graphic assets
@@ -45,7 +43,6 @@ public class Constants {
     public static final int V_ENTITY_VALUES_SIZE = 7;
 
     public static final int CURSOR_TILE_NORMAL = 4;
-    public static final int CURSOR_TILE_PROBLEM = 5;
 
     public static final int MOUSE_TO_TILE_YSHIFT = 8;
 
@@ -60,6 +57,15 @@ public class Constants {
     public static final int GOLD = 3;
     public static final int IRON = 4;
     public static final int ANVIL = 8;
+    public static final int WALK_LOOP_LIMIT = 5;
+    public static final int MINE_FAIL_LIMIT = 30;
+
+
+    public static final int V_PLAYER_STONES = 0;
+    public static final int V_PLAYER_IRON = 1;
+    public static final int V_PLAYER_GOLD = 2;
+    public static final int V_PLAYER_VALUES_SIZE = 3;
+    public static final int BAD_AXIS = -1000000;
 
     public static int isWorldPieceMineable(byte index) {
         switch (index) {
@@ -99,4 +105,17 @@ public class Constants {
     }
 
 
+    public static boolean isWalkable(byte tile) {
+        return tile == 0;
+    }
+
+    public static boolean hasCraftingInteraction(byte tile) {
+        if (tile == ANVIL)
+            return true;
+        return false;
+    }
+
+    public static boolean isMinable(byte tile) {
+        return tile != 0;
+    }
 }

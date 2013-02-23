@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class Entities {
     Integer nextId = 0;
-    HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
+    public HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     public ArrayList<Integer> inserted = new ArrayList<Integer>();
     public ArrayList<Integer> deleted = new ArrayList<Integer>();
 
@@ -122,7 +122,7 @@ public class Entities {
         File file = new File("entities.dat");
         if (!file.canRead())
             return;
-        FileInputStream in = null;
+        FileInputStream in;
         try {
             in = new FileInputStream(file);
             int rem = (int) file.length();
@@ -148,7 +148,7 @@ public class Entities {
 
     public void save() {
         File file = new File("entities.dat");
-        FileOutputStream out = null;
+        FileOutputStream out;
         try {
             ByteBuffer buffer = ByteBufferBuffer.alloc(4 * 1024 * 1024);
             write(buffer, true);

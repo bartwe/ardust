@@ -5,6 +5,8 @@ import ardust.packets.DwarfRequestPacket;
 import ardust.shared.*;
 
 import java.awt.*;
+import java.util.Random;
+
 
 public class Character {
 
@@ -17,7 +19,12 @@ public class Character {
     private final Entity entity;
     Entity.Mode prevMode = Entity.Mode.IDLE;
 
-    public boolean isHalting;
+    CharacterAIMode aiMode = CharacterAIMode.IDLE;
+    Point3 pathingTarget = new Point3();
+
+    Random random = new Random();
+    private int pathingFailStrike;
+    private int miningFailStrike;
 
     public Character(Entity entity) {
         this.entity = entity;
@@ -50,12 +57,6 @@ public class Character {
         }
     }
 
-    public void halt() {
-        if (entity.mode == Entity.Mode.WALKING) {
-            isHalting = true;
-        }
-    }
-
     public void showStationarySprite() {
         switch (entity.orientation) {
             case NORTH:
@@ -67,7 +68,7 @@ public class Character {
         }
     }
 
-    public void tick(int deltaT, ClientWorld world, NetworkConnection network, GameCore core) {
+    public void tick(int deltaT, World world, NetworkConnection network, GameCore core) {
         entity.countdown -= deltaT;
 
         if (entity.countdown < 0)
@@ -75,6 +76,7 @@ public class Character {
 
         boolean setCountdown = (prevMode != entity.mode) || (!location.equals(entity.position));
         prevMode = entity.mode;
+
 
         // detect if just started moving
         location.set(entity.position);
@@ -84,83 +86,212 @@ public class Character {
                 if (setCountdown)
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 animateWalk();
-                switch (entity.orientation) {
-                    case NORTH:
-                        targetLocation.y -= 1;
-                        break;
-                    case EAST:
-                        targetLocation.x += 1;
-                        break;
-                    case SOUTH:
-                        targetLocation.y += 1;
-                        break;
-                    case WEST:
-                        targetLocation.x -= 1;
-                        break;
-                }
+                targetLocation.move(entity.orientation);
                 break;
             case MINING:
                 animateMining();
-                break;
-            case RESOURCE_STONE:
-                core.stone++;
-                entity.mode = Entity.Mode.IDLE;
-                break;
-            case RESOURCE_IRON:
-                core.iron++;
-                entity.mode = Entity.Mode.IDLE;
-                break;
-            case RESOURCE_GOLD:
-                core.gold++;
-                entity.mode = Entity.Mode.IDLE;
                 break;
             default:
                 showStationarySprite();
         }
 
-        if (modeProgress >= 1 && entity.mode == Entity.Mode.WALKING) {
-            if (!isHalting) {
-                network.send(new DwarfRequestPacket(id(), DwarfRequest.Walk, entity.orientation));
-            } else {
-                isHalting = false;
-                entity.mode = Entity.Mode.IDLE;
-            }
+        switch (aiMode) {
+            case WALK:
+                if (!pathTowards(world, network, true))
+                    aiMode = CharacterAIMode.IDLE;
+
+                break;
+            case MINE:
+                if (!pathTowards(world, network, false)) {
+                    if (location.equals(pathingTarget) || (targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
+                        System.err.println("Stopped mining, destination reached");
+                        aiMode = CharacterAIMode.IDLE;
+                    } else {
+                        System.err.println("Stopped walking to mine site");
+
+                        Orientation orientation = orientationToward(world, false);
+                        if (orientation == Orientation.NONE)
+                            orientation = orientationToward(world, false);
+
+                        System.err.println("Mining orientation: " + orientation);
+
+                        tempPoint.set(location);
+                        tempPoint.move(orientation);
+                        if (world.isTileMineable(tempPoint)) {
+                            clearFailStrikes();
+                            network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Mine, orientation));
+                        } else {
+                            if (world.isTileOccupied(tempPoint.x, tempPoint.y, tempPoint.z, entity)) { // don't complain about walkables, dunno why the pathing is failing on it however
+                                miningFailStrike -= 1;
+                                if (miningFailStrike <= 0) {
+                                    System.err.println("Tile not mineable " + tempPoint);
+                                    aiMode = CharacterAIMode.IDLE;
+                                }
+                            } else
+                                clearFailStrikes();
+                        }
+                    }
+                }
+                break;
+            case USE:
+                if (!pathTowards(world, network, true)) {
+
+                    // if reached, use
+                    aiMode = CharacterAIMode.IDLE;
+                }
+                break;
+            case IDLE:
+                break;
         }
     }
 
-    public Point getLocalDrawPoint(Point viewportLocation) {
-        Point localPoint = new Point(0, 0);
-        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, localPoint);
+    Point3 tempPoint = new Point3();
+
+    private Orientation orientationToward(World world, boolean goAround) {
+        Orientation ew;
+        if (pathingTarget.x == targetLocation.x) {
+            if (goAround)
+                ew = random.nextBoolean() ? Orientation.EAST : Orientation.WEST;
+            else
+                ew = Orientation.NONE;
+        } else
+            ew = (pathingTarget.x > targetLocation.x) ? Orientation.EAST : Orientation.WEST;
+
+        Orientation ns;
+        if (pathingTarget.y == targetLocation.y) {
+            if (goAround)
+                ns = random.nextBoolean() ? Orientation.NORTH : Orientation.SOUTH;
+            else
+                ns = Orientation.NONE;
+        } else
+            ns = (pathingTarget.y > targetLocation.y) ? Orientation.SOUTH : Orientation.NORTH;
+
+        double eww = Math.abs(pathingTarget.x - targetLocation.x);
+        double nsw = Math.abs(pathingTarget.y - targetLocation.y);
+
+        Orientation orientation;
+        Orientation origOrientation;
+        Orientation otherOrientation;
+        double w = eww + nsw;
+        if (w == 0)
+            w += 1;
+        eww /= w;
+        if (random.nextFloat() < eww) {
+            orientation = ew;
+            otherOrientation = ns;
+        } else {
+            orientation = ns;
+            otherOrientation = ew;
+        }
+        origOrientation = orientation;
+        if (orientation == Orientation.NONE)
+            return otherOrientation;
+
+        if (!goAround)
+            return orientation;
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(orientation);
+        if (world.isTileOccupied(tempPoint, entity))
+            orientation = otherOrientation;
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(orientation);
+        if (world.isTileOccupied(tempPoint, entity))
+            return origOrientation;
+        return orientation;
+    }
+
+    private boolean pathTowards(World world, NetworkConnection network, boolean goAround) {
+        if (targetLocation.equals(pathingTarget))
+            return false;
+
+        Orientation orientation = orientationToward(world, goAround);
+        if (orientation == Orientation.NONE)
+            return false;
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(orientation);
+        if (world.isTileOccupied(tempPoint, entity)) {
+            pathingFailStrike -= 1;
+            if (pathingFailStrike <= 0) {
+                return false;
+            }
+            return true;
+        }
+
+        if (location.equals(tempPoint)) {
+            pathingFailStrike -= 1;
+            if (pathingFailStrike <= 0)
+                return false;
+        } else
+            clearFailStrikes();
+
+        network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Walk, orientation));
+        return true;
+    }
+
+    public void getLocalDrawPoint(Point viewportLocation, Point result) {
+        World.globalTileToLocalCoord(location.x, location.y, location.z, viewportLocation, result);
 
         if (entity.mode == Entity.Mode.WALKING) {
             switch (entity.orientation) {
                 case NORTH:
-                    localPoint.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    result.y -= (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
                     break;
                 case EAST:
-                    localPoint.x += (int) (Constants.TILE_BASE_WIDTH * modeProgress);
+                    result.x += (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     break;
                 case WEST:
-                    localPoint.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
+                    result.x -= (int) (Constants.TILE_BASE_WIDTH * modeProgress);
                     break;
                 case SOUTH:
-                    localPoint.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    result.y += (int) (Constants.TILE_BASE_HEIGHT * modeProgress);
+                    break;
+                default:
                     break;
             }
         }
-        return localPoint;
     }
 
+    Point localPoint = new Point();
+
     public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
-        Point localPoint = getLocalDrawPoint(viewportLocation);
+        getLocalDrawPoint(viewportLocation, localPoint);
         boolean flipAnimation = (entity.orientation == Orientation.EAST);
         if (selectedDwarf)
             p.draw(localPoint.x + Constants.DWARF_HEART_CENTER_OFFSET, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 9, 9, false);
         sprite.draw(p, localPoint.x, localPoint.y - Constants.TILE_BASE_HEIGHT - Constants.DWARF_OFFSET_ON_TILE, flipAnimation);
     }
 
-
     public Integer id() {
         return entity.id;
+    }
+
+    public void halt() {
+        aiMode = CharacterAIMode.IDLE;
+    }
+
+    public void walkTo(Point3 target) {
+        aiMode = CharacterAIMode.WALK;
+        pathingTarget.set(target);
+        clearFailStrikes();
+    }
+
+    public void mineTo(Point3 target) {
+        aiMode = CharacterAIMode.MINE;
+        pathingTarget.set(target);
+        clearFailStrikes();
+    }
+
+    public void use(Point3 target) {
+        aiMode = CharacterAIMode.USE;
+        pathingTarget.set(target);
+        clearFailStrikes();
+    }
+
+    private void clearFailStrikes() {
+        pathingFailStrike = Constants.WALK_LOOP_LIMIT;
+        miningFailStrike = Constants.MINE_FAIL_LIMIT;
     }
 }

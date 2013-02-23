@@ -15,7 +15,7 @@ public class Characters {
         this.entities = entities;
     }
 
-    public void tick(int deltaT, ClientWorld world, NetworkConnection network, GameCore core) {
+    public void tick(int deltaT, World world, NetworkConnection network, GameCore core) {
         for (Integer id : entities.deleted)
             mapping.remove(id);
         for (Integer id : entities.inserted)
@@ -70,5 +70,9 @@ public class Characters {
         idx = (idx + 1) % options.size();
 
         return options.get(idx);
+    }
+
+    public boolean containsId(Integer id) {
+        return mapping.containsKey(id);
     }
 }

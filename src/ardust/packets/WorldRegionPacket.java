@@ -1,6 +1,7 @@
 package ardust.packets;
 
 import ardust.server.ServerWorld;
+import ardust.shared.ByteBufferBuffer;
 import ardust.shared.Constants;
 
 import java.nio.ByteBuffer;
@@ -16,7 +17,7 @@ public class WorldRegionPacket extends Packet {
         this.x = x;
         this.y = y;
         this.z = z;
-        tileBuffer = ByteBuffer.allocate((Constants.ZRADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1));
+        tileBuffer = ByteBufferBuffer.alloc((Constants.ZRADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1) * (Constants.RADIUS * 2 + 1));
         for (int zi = z - Constants.ZRADIUS; zi <= z + Constants.ZRADIUS; zi++)
             for (int yi = y - Constants.RADIUS; yi <= y + Constants.RADIUS; yi++)
                 for (int xi = x - Constants.RADIUS; xi <= x + Constants.RADIUS; xi++) {
@@ -25,7 +26,7 @@ public class WorldRegionPacket extends Packet {
                         int dy = Math.abs(yi - oldY);
                         int dz = Math.abs(zi - oldZ);
                         if ((dx > Constants.RADIUS) || (dy > Constants.RADIUS) || (dz > Constants.ZRADIUS)) {
-                            tileBuffer.put(world.readDirect(xi, yi, zi));
+                            tileBuffer.put(world.read(xi, yi, zi));
                         }
                     }
                 }
@@ -39,7 +40,7 @@ public class WorldRegionPacket extends Packet {
         y = buffer.getInt();
         z = buffer.getInt();
         int size = buffer.getShort();
-        tileBuffer = ByteBuffer.allocate(size);
+        tileBuffer = ByteBufferBuffer.alloc(size);
         tileBuffer.put(buffer);
     }
 

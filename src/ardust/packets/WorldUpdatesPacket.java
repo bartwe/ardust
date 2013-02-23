@@ -28,8 +28,7 @@ public class WorldUpdatesPacket extends Packet {
     public void write(ByteBuffer buffer) {
         buffer.put(packetId());
         buffer.putShort((short) locations.length);
-        for (int i = 0; i < locations.length; i++)
-            buffer.putInt(locations[i]);
+        for (int location : locations) buffer.putInt(location);
         buffer.put(tiles);
     }
 
