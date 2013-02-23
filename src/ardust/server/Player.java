@@ -68,7 +68,6 @@ public class Player {
     }
 
     public void spawnSetup(Entities entities, ServerWorld world, PositionalMap positionalMap) {
-
         final int b = 5;
         for (int yy = -b; yy <= b; yy++)
             for (int xx = -b; xx <= b; xx++) {
@@ -84,6 +83,54 @@ public class Player {
         world.write(x, y, (byte) 8); // anvil
         addDwarf(entities, positionalMap, x + -2, y + 2);
         addDwarf(entities, positionalMap, x + -2, y + -2);
+    }
+
+    public void setLocation(int sequence, float distance)
+    {
+        float rotation = 0;
+        float centerX = Constants.START_OFFSET;
+        float centerY = Constants.START_OFFSET;
+        //
+        // How far to step away from center for each side.
+        float awayStep = distance;
+        //
+        // How far to rotate around center for each side.
+
+        float aroundStep = (0.25f);// 0 to 1 based.
+        //
+        // Convert aroundStep to radians.
+        double aroundRadians = aroundStep * 2 * Math.PI;
+        //
+        // Convert rotation to radians.
+        rotation *= 2 * Math.PI;
+        //
+        // For every side, step around and away from center.
+
+        //
+        // How far away from center
+        float away;
+
+        if (sequence > 0)
+            away = ((sequence / 4) + 1) * awayStep;
+        else
+            away = 0;
+        //float away = Math.ceil((double)sequence / 4.0) * awayStep;
+        //
+        // How far around the center.
+        double around = sequence * aroundRadians + rotation;
+
+        System.out.println(around);
+        System.out.println(Math.sin(around));
+        //
+        // Convert 'around' and 'away' to X and Y.
+        this.x = (int) (centerX + Math.cos(around) * away);
+        this.y = (int) (centerY + Math.sin(around) * away);
+
+        System.out.println(this.x);
+        System.out.println(this.y);
+        System.out.println(sequence);
+        //
+        // Now that you know it, do it.
     }
 
     public void addDwarf(Entities entities, PositionalMap positionalMap, int x, int y) {

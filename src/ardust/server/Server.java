@@ -26,6 +26,7 @@ public class Server {
     private long saveDeadline;
     long prevT;
     PositionalMap positionalMap = new PositionalMap();
+    int playerCount = 0;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -211,9 +212,12 @@ public class Server {
         Random random = new Random();
 //        x += random.nextInt(Constants.WORLD_LENGTH);
 //        y += random.nextInt(Constants.WORLD_LENGTH);
-        player.setXY(x, y);
+        //player.setXY(x, y);
+        player.setLocation(playerCount,20);
         player.spawnSetup(entities, world, positionalMap);
         player.sendPacket(new WindowPacket(player.getX(), player.getY()));
+
+        this.playerCount++;
 
         tempBuffer.clear();
         if (entities.write(tempBuffer, true, false)) {
