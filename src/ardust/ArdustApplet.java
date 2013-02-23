@@ -59,7 +59,9 @@ public class ArdustApplet extends java.applet.Applet {
             display_parent.setFocusable(true);
             display_parent.requestFocus();
             display_parent.setIgnoreRepaint(true);
+            setIgnoreRepaint(true);
             setVisible(true);
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);
