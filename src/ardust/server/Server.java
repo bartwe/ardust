@@ -122,7 +122,7 @@ public class Server {
     private void evaluateDwarves(int deltaT) {
         entities.getDwarves(entitiesTemp);
         for (Entity dwarf : entitiesTemp)
-            Dwarves.tick(deltaT, players.get(dwarf.playerId), dwarf, world, positionalMap);
+            Dwarves.tick(deltaT, players.get(dwarf.playerId), dwarf, world, positionalMap, entities);
         entitiesTemp.clear();
     }
 

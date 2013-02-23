@@ -184,4 +184,9 @@ public class Entities {
             if (entity.kind == Entity.Kind.DWARF)
                 dwarves.add(entity);
     }
+
+    public void removeEntity(Entity dwarf) {
+        if (entities.remove(dwarf.id) != null)
+            deleted.add(dwarf.id);
+    }
 }

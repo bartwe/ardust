@@ -53,6 +53,7 @@ public class Constants {
 
     public static final int WALKING_COUNTDOWN = 500;
     public static final int FIGHT_COUNTDOWN = 400;
+    public static final int DEAD_COUNTDOWN = 5000;
 
     public static final int DWARF_HEART_CENTER_OFFSET = 11;
 

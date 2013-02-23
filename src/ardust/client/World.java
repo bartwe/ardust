@@ -128,6 +128,7 @@ public class World {
             return true;
         Character at = getCharacterAtTile(x, y);
         if ((at != null) && (at.id().equals(entity.id)))
+//        if ((at != null) && (!at.id().equals(entity.id)) && (at.entity.mode != Entity.Mode.DEAD)) // why does this fix break stuff ?
             return true;
         return false;
     }

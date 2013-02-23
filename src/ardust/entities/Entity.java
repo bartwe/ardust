@@ -20,7 +20,8 @@ public class Entity {
         COOLDOWN, // like idle but non interruptable
         WALKING,
         MINING,
-        ATTACK
+        ATTACK,
+        DEAD
     }
 
     public enum Armor
@@ -94,6 +95,12 @@ public class Entity {
     }
 
     public void takeDamage(int damage) {
-        //todo
+        if (armor == Armor.IRON)
+            damage /= 2;
+        health -= damage;
+        if (health < 0)
+            health = 0;
+        mode = Mode.DEAD;
+        countdown = Constants.DEAD_COUNTDOWN;
     }
 }

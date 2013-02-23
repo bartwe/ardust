@@ -16,7 +16,7 @@ public class Character {
     public Point2 location = new Point2();
     public Point2 targetLocation = new Point2();
 
-    private final Entity entity;
+    public final Entity entity;
     Entity.Mode prevMode = Entity.Mode.IDLE;
 
     CharacterAIMode aiMode = CharacterAIMode.IDLE;
@@ -73,6 +73,10 @@ public class Character {
         }
     }
 
+    public void animateDead() {
+        sprite.animate(16, 1, Constants.DWARF_ANIMATION_SPEED / 2);
+    }
+
     public void showStationarySprite() {
         switch (entity.orientation) {
             case NORTH:
@@ -109,6 +113,9 @@ public class Character {
                 break;
             case ATTACK:
                 animateFighting();
+                break;
+            case DEAD:
+                animateDead();
                 break;
             default:
                 showStationarySprite();
@@ -147,10 +154,10 @@ public class Character {
                 tempPoint.set(location);
                 tempPoint.move(orientation);
                 Character character = world.getCharacterAtTile(tempPoint.x, tempPoint.y);
-                if ((character != null) && (character.playerId() == playerId())) {
+                if ((character != null) && ((character.playerId() == playerId())||(character.isDead()))) {
                     character = null;
                 }
-                if ((character != null) || !pathTowards(world, network, false)) {
+                if ((character != null) || !pathTowards(world, network, true)) {
                     if (location.equals(pathingTarget) || (targetLocation.equals(pathingTarget) && entity.mode == Entity.Mode.WALKING)) {
                         aiMode = CharacterAIMode.IDLE;
                     } else {
@@ -169,6 +176,10 @@ public class Character {
             case IDLE:
                 break;
         }
+    }
+
+    private boolean isDead() {
+        return entity.mode == Entity.Mode.DEAD;
     }
 
     Point2 tempPoint = new Point2();

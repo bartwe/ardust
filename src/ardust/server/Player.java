@@ -10,7 +10,6 @@ import ardust.shared.NetworkConnection;
 import ardust.shared.Values;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 
 public class Player {
     Integer id;
@@ -19,7 +18,6 @@ public class Player {
     private int x;
     private int y;
     Values values;
-    public HashMap<Integer, Entity> dwarfs = new HashMap<Integer, Entity>();
 
     public Player(NetworkConnection networkConnection) {
         connection = networkConnection;
@@ -138,7 +136,6 @@ public class Player {
         Entity entity = new Entity(id, Entity.Kind.DWARF, x, y);
         entities.addEntity(entity);
         positionalMap.addEntity(entity);
-        dwarfs.put(entity.id, entity);
     }
 
     public void disconnect() {

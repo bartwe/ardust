@@ -1,5 +1,6 @@
 package ardust.server;
 
+import ardust.entities.Entities;
 import ardust.entities.Entity;
 import ardust.packets.DwarfRequestPacket;
 import ardust.shared.Constants;
@@ -104,9 +105,12 @@ public class Dwarves {
 
     static Point2 tempPosition = new Point2();
 
-    public static void tick(int deltaT, Player player, Entity dwarf, ServerWorld world, PositionalMap positionalMap) {
+    public static void tick(int deltaT, Player player, Entity dwarf, ServerWorld world, PositionalMap positionalMap, Entities entities) {
         if (dwarf.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
+
+        if (player == null)
+            dwarf.mode = Entity.Mode.DEAD;
 
         if (dwarf.mode == Entity.Mode.IDLE)
             return;
@@ -150,7 +154,6 @@ public class Dwarves {
                 break;
 
             case ATTACK:
-
                 position = getPositionAfterMovement(dwarf);
                 Entity targetEntity = positionalMap.getEntity(position);
                 if (targetEntity != null) {
@@ -160,6 +163,10 @@ public class Dwarves {
                 }
 
                 dwarf.mode = Entity.Mode.IDLE;
+                break;
+
+            case DEAD:
+                entities.removeEntity(dwarf);
                 break;
 
             case COOLDOWN:
