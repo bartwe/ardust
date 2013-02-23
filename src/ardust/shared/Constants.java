@@ -42,7 +42,9 @@ public class Constants {
     public static final int V_ENTITY_ORIENTATION = 4;
     public static final int V_ENTITY_MODE = 5;
     public static final int V_ENTITY_HEALTH = 6;
-    public static final int V_ENTITY_VALUES_SIZE = 7;
+    public static final int V_ENTITY_ARMOR = 7;
+    public static final int V_ENTITY_SWORD = 8;
+    public static final int V_ENTITY_VALUES_SIZE = 9;
 
     public static final int CURSOR_TILE_NORMAL = 4;
 
