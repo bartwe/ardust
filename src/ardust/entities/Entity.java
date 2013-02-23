@@ -22,7 +22,19 @@ public class Entity {
         MINING
     }
 
+    public enum Armor
+    {
+        NONE,
+        IRON
+    }
 
+
+    public enum Weapon
+    {
+       NONE,
+       IRON_SWORD,
+       GOLD_SWORD
+    }
 
     public Integer id;
     public Integer playerId;
@@ -55,6 +67,8 @@ public class Entity {
         values.set(Constants.V_ENTITY_HEALTH, health);
         values.set(Constants.V_ENTITY_PLAYER, playerId);
 
+        values.set(Constants.V_ENTITY_ARMOR, armor.ordinal());
+        values.set(Constants.V_ENTITY_SWORD, weapon.ordinal());
         return values.write(buffer, all);
     }
 
@@ -66,6 +80,8 @@ public class Entity {
         mode = Mode.values()[values.get(Constants.V_ENTITY_MODE)];
         health = values.get(Constants.V_ENTITY_HEALTH);
         playerId = values.get(Constants.V_ENTITY_PLAYER);
+        armor = Armor.values()[values.get(Constants.V_ENTITY_ARMOR)];
+        weapon = Weapon.values()[values.get(Constants.V_ENTITY_SWORD)];
     }
 
     public static void dropRead(ByteBuffer buffer) {
