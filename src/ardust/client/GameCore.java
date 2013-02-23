@@ -3,6 +3,7 @@ package ardust.client;
 import ardust.packets.*;
 import ardust.shared.*;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
@@ -139,12 +140,34 @@ public class GameCore {
         if (selectedDwarf == null)
             currentActionMenu = null;
 
+
+        int dWheel = Mouse.getDWheel();
+        if (dWheel > 0)
+        {
+           int tmp = Constants.PIXEL_SCALE;
+           painter.setScale(Constants.PIXEL_SCALE + 1);
+           if (Constants.PIXEL_SCALE != tmp)
+           {
+               //parent.centerViewportAroundMouse();
+           }
+        } else if (dWheel < 0)
+        {
+            int tmp = Constants.PIXEL_SCALE;
+            painter.setScale(Constants.PIXEL_SCALE - 1);
+            if (Constants.PIXEL_SCALE != tmp)
+            {
+               // parent.centerViewportAroundMouse();
+            }
+        }
+
+
+
         if (input.isMouseButtonDown(1, false) || input.isMouseButtonDown(2, false)) {
             currentActionMenu = null;
             int refKey = (input.isMouseButtonDown(2, false)) ? 2 : 1;
             parent.setCurrentMouseCursor(Constants.PANNING_CURSOR);
-            int xPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getX() - input.getMostRecentClick(refKey).x) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
-            int yPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED, Math.min(((input.getY() - input.getMostRecentClick(refKey).y) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED));
+            int xPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED / Constants.PIXEL_SCALE, Math.min(((input.getX() - input.getMostRecentClick(refKey).x) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED/ Constants.PIXEL_SCALE));
+            int yPan = (int) Math.max(-Constants.MAP_PAN_MAX_SPEED/ Constants.PIXEL_SCALE, Math.min(((input.getY() - input.getMostRecentClick(refKey).y) / (double) Constants.MAP_PAN_SENSITIVITY) * Constants.MAP_PAN_MAX_SPEED, Constants.MAP_PAN_MAX_SPEED)/ Constants.PIXEL_SCALE);
 
             parent.setViewportLocation(new Point(parent.getViewportLocation().x + xPan, parent.getViewportLocation().y + yPan));
         } else {
@@ -170,6 +193,15 @@ public class GameCore {
                             break;
                         case USE:
                             selectedDwarf.use(currentActionMenu.location);
+                            break;
+                        case ATTEMPTING_ARMOR_PURCHASE:
+                            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftArmor, Orientation.NORTH));
+                            break;
+                        case ATTEMPTING_SWORD_PURCHASE:
+                            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftSword, Orientation.NORTH));
+                            break;
+                        case ATTEMPTING_GOLD_SWORD_PURCHASE:
+                            network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftGoldSword, Orientation.NORTH));
                             break;
                         default:
                             break;

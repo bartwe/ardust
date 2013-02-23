@@ -16,12 +16,14 @@ public class Constants {
     public static final int RADIUS = 32;
     public static final int ZRADIUS = 2;
 
-    public static final int PIXEL_SCALE = 1;
+    public static int PIXEL_SCALE = 1;
+    public static final int MAX_PIXEL_SCALE = 6;
+    public static final int MIN_PIXEL_SCALE = 1;
     public static final int TILE_BASE_WIDTH = 32;
     public static final int TILE_BASE_HEIGHT = 16; //the height of an in-game tile.
     public static final int TILE_DRAW_HEIGHT = 40; //the actual height of the graphic assets
     public static final int FLOOR_TILE_THICKNESS = 4;
-    public static final int MAP_PAN_MAX_SPEED = 3;
+    public static final int MAP_PAN_MAX_SPEED = 9;
     public static final int MAP_PAN_SENSITIVITY = 256; //distance to drag away from click to reach max panning speed
 
     //mouse cursors

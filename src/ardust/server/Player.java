@@ -115,6 +115,20 @@ public class Player {
         values.set(Constants.V_PLAYER_GOLD, values.get(Constants.V_PLAYER_GOLD) + q);
     }
 
+    public int getStone()
+    {
+        return values.get(Constants.V_PLAYER_STONES);
+    }
+
+    public int getIron()
+    {
+        return values.get(Constants.V_PLAYER_IRON);
+    }
+
+    public int getGold()
+    {
+        return values.get(Constants.V_PLAYER_GOLD);
+    }
 
     ByteBuffer buffer = ByteBufferBuffer.alloc(16000);
 

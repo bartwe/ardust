@@ -52,7 +52,7 @@ public class Character {
                 sprite.animate(32, 4, Constants.DWARF_ANIMATION_SPEED / 2);
                 break;
         }
-        if (sprite.currentFrame != currentFrame && sprite.currentFrame % 3 == 0) {
+        if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
             GameLoop.soundBank.playSound(SoundBank.pickaxeSound);
         }
     }

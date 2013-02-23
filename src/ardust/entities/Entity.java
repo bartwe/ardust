@@ -22,6 +22,8 @@ public class Entity {
         MINING
     }
 
+
+
     public Integer id;
     public Integer playerId;
     public Point3 position = new Point3();
@@ -29,6 +31,7 @@ public class Entity {
     public Orientation orientation = Orientation.SOUTH;
     public Mode mode = Mode.IDLE;
     public int health = 3;
+    public boolean armor, sword, goldSword;
     Values values;
 
     public Entity(Integer id) {
