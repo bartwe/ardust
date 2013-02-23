@@ -48,8 +48,7 @@ public class Values {
             return false;
         buffer.put((byte) count);
         if (count == entries.length) {
-            for (int i = 0; i < entries.length; i++)
-                buffer.putInt(entries[i]);
+            for (int entry : entries) buffer.putInt(entry);
         } else {
             for (int i = 0; i < entries.length; i++) {
                 if (revision[i] == currentTick) {

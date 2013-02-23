@@ -125,7 +125,7 @@ public class Server {
     }
 
     private Player findPlayerForDwarf(Entity dwarf) {
-        for (Player player: players)
+        for (Player player : players)
             if (player.dwarfs.containsKey(dwarf.id))
                 return player;
         return null;
@@ -173,14 +173,6 @@ public class Server {
             handleWindowChange(player, (WindowPacket) packet);
         } else if (packet instanceof DwarfRequestPacket) {
             handleDwarfRequest(player, (DwarfRequestPacket) packet);
-        } else if (packet instanceof DebugChangeTilePacket) {
-            DebugChangeTilePacket wp = (DebugChangeTilePacket) packet;
-            byte tile = world.read(wp.x, wp.y, wp.z);
-            tile += 1;
-            if (tile >= 3)
-                tile = 0;
-            System.err.println("changetile: " + wp.x + "," + wp.y + "," + wp.z + "  " + tile);
-            world.write(wp.x, wp.y, wp.z, tile);
         } else
             throw new RuntimeException("Unknown packet: " + packet.packetId());
     }

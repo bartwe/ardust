@@ -1,7 +1,6 @@
 package ardust.client;
 
 import ardust.shared.Constants;
-import ardust.shared.Point3;
 
 public class ClientWorld {
     byte[] world;
@@ -21,15 +20,6 @@ public class ClientWorld {
         return world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH];
     }
 
-    public void debugWriteDirect(int x, int y, int z, byte tile) {
-        if ((z < 0) || (z >= Constants.WORLD_DEPTH))
-            return;
-        x = normalizeAxis(x);
-        y = normalizeAxis(y);
-
-        world[x + (y + z * Constants.WORLD_LENGTH) * Constants.WORLD_LENGTH] = tile;
-    }
-
     private int normalizeAxis(int axis) {
         //sure, modulo should do the job too
         while (axis < 0)
@@ -43,9 +33,5 @@ public class ClientWorld {
     public void writeTiles(int[] locations, byte[] tiles) {
         for (int i = 0; i < locations.length; i++)
             world[locations[i]] = tiles[i];
-    }
-
-    public byte readDirect(Point3 point) {
-        return read(point.x, point.y, point.z);
     }
 }
