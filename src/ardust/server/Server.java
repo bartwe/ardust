@@ -175,12 +175,12 @@ public class Server {
             handleDwarfRequest(player, (DwarfRequestPacket) packet);
         } else if (packet instanceof DebugChangeTilePacket) {
             DebugChangeTilePacket wp = (DebugChangeTilePacket) packet;
-            byte tile = world.readDirect(wp.x, wp.y, wp.z);
+            byte tile = world.read(wp.x, wp.y, wp.z);
             tile += 1;
             if (tile >= 3)
                 tile = 0;
             System.err.println("changetile: " + wp.x + "," + wp.y + "," + wp.z + "  " + tile);
-            world.writeDirect(wp.x, wp.y, wp.z, tile);
+            world.write(wp.x, wp.y, wp.z, tile);
         } else
             throw new RuntimeException("Unknown packet: " + packet.packetId());
     }

@@ -76,14 +76,14 @@ public class Player {
                 byte tile = 0;
                 if ((yy == b) || (yy == -b) || (xx == b) || (xx == -b))
                     tile = 2;
-                world.writeDirect(xx + x, yy + y, z, tile);
+                world.write(xx + x, yy + y, z, tile);
             }
 
 
 
         addDwarf(entities, positionalMap, x + 2, y + -2, z);
         addDwarf(entities, positionalMap, x + 2, y + 2, z);
-        world.writeDirect(x, y, z, (byte) 8); // anvil
+        world.write(x, y, z, (byte) 8); // anvil
         addDwarf(entities, positionalMap, x + -2, y + 2, z);
         addDwarf(entities, positionalMap, x + -2, y + -2, z);
     }

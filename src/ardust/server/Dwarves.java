@@ -21,7 +21,7 @@ public class Dwarves {
 
                 Point3 nextPosition = getPositionAfterMovement(entity);
                 if (!positionalMap.isOccupied(nextPosition, null) &&
-                        Constants.isWalkable(world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z))) {
+                        Constants.isWalkable(world.read(nextPosition.x, nextPosition.y, nextPosition.z))) {
                     entity.mode = Entity.Mode.WALKING;
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 }
@@ -31,7 +31,7 @@ public class Dwarves {
             case Mine:
 
                 nextPosition = getPositionAfterMovement(entity);
-                int mineable = Constants.isWorldPieceMineable(world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z));
+                int mineable = Constants.isWorldPieceMineable(world.read(nextPosition.x, nextPosition.y, nextPosition.z));
                 if (mineable > 0) {
                     entity.mode = Entity.Mode.MINING;
                     entity.countdown = mineable;
@@ -80,14 +80,14 @@ public class Dwarves {
                 tempPosition.set(dwarf.position);
                 tempPosition.move(dwarf.orientation);
                 if (!positionalMap.isOccupied(tempPosition, dwarf))
-                    if (Constants.isWalkable(world.readDirect(tempPosition.x, tempPosition.y, tempPosition.z)))
+                    if (Constants.isWalkable(world.read(tempPosition.x, tempPosition.y, tempPosition.z)))
                         dwarf.position.move(dwarf.orientation);
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
             case MINING:
                 Point3 position = getPositionAfterMovement(dwarf);
-                byte which = world.readDirect(position.x, position.y, position.z);
-                world.writeDirect(position.x, position.y, position.z, (byte) 0);
+                byte which = world.read(position.x, position.y, position.z);
+                world.write(position.x, position.y, position.z, (byte) 0);
                 switch (which) {
                     case Constants.STONE:
                         player.addStone(1);

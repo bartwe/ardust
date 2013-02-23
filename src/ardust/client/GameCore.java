@@ -172,7 +172,7 @@ public class GameCore {
                 if (!consumeEvent && (selectedDwarf != null) && (currentActionMenu == null)) {
                     temp3.set(temp.x, temp.y, zLayer);
 
-                    boolean crafting = Constants.hasCraftingInteraction(world.clientWorld.readDirect(temp.x, temp.y, zLayer));
+                    boolean crafting = Constants.hasCraftingInteraction(world.clientWorld.read(temp.x, temp.y, zLayer));
                     currentActionMenu = new DwarfActionMenu(temp3, crafting);
                     consumeEvent = true;
                 }

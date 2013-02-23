@@ -116,4 +116,8 @@ public class Constants {
             return true;
         return false;
     }
+
+    public static boolean isMinable(byte tile) {
+        return tile != 0;
+    }
 }

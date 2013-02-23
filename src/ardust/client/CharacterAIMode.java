@@ -2,5 +2,7 @@ package ardust.client;
 
 public enum CharacterAIMode {
     IDLE,
-    USE, WALK
+    USE,
+    WALK,
+    MINE
 }

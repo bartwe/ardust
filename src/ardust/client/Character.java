@@ -100,6 +100,18 @@ public class Character {
                     aiMode = CharacterAIMode.IDLE;
 
                 break;
+            case MINE:
+                if (!pathTowards(world, network)) {
+                    Orientation orientation = orientationToward(world);
+                    tempPoint.set(location);
+                    tempPoint.move(orientation);
+                    if (world.isTileMineable(tempPoint)) {
+                        network.send(new DwarfRequestPacket(entity.id, DwarfRequest.Mine, orientation));
+                    }
+                    else
+                        aiMode = CharacterAIMode.IDLE;
+                }
+                break;
             case USE:
                 if (!pathTowards(world, network)) {
 
@@ -114,9 +126,7 @@ public class Character {
 
     Point3 tempPoint = new Point3();
 
-    private boolean pathTowards(World world, NetworkConnection network) {
-        if (targetLocation.equals(pathingTarget))
-            return false;
+    private Orientation orientationToward(World world) {
         Orientation ew;
         if (pathingTarget.x == targetLocation.x)
             ew = random.nextBoolean() ? Orientation.EAST : Orientation.WEST;
@@ -133,6 +143,7 @@ public class Character {
         double nsw = Math.abs(pathingTarget.y - targetLocation.y);
 
         Orientation orientation;
+        Orientation origOrientation;
         Orientation otherOrientation;
         double w = eww + nsw;
         eww /= w;
@@ -143,11 +154,25 @@ public class Character {
             orientation = ns;
             otherOrientation = ew;
         }
+        origOrientation = orientation;
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
         if (world.isTileOccupied(tempPoint, entity))
             orientation = otherOrientation;
+
+        tempPoint.set(targetLocation);
+        tempPoint.move(orientation);
+        if (world.isTileOccupied(tempPoint, entity))
+            return origOrientation;
+        return orientation;
+    }
+
+    private boolean pathTowards(World world, NetworkConnection network) {
+        if (targetLocation.equals(pathingTarget))
+            return false;
+
+        Orientation orientation =orientationToward(world);
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
