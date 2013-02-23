@@ -85,7 +85,7 @@ public class GameLoop {
 
     public Point getCurrentMouseCursorTileSheetPoint() {
         return new Point(Constants.CURSOR_X_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) % Constants.TILE_BASE_WIDTH),
-                Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH);
+                Constants.CURSOR_Y_IN_TILESHEET + (currentMouseCursor * (Constants.TILE_BASE_WIDTH / 2) / Constants.TILE_BASE_WIDTH) * Constants.TILE_BASE_WIDTH / 2);
     }
 
     public void setCurrentMouseCursor(int which) {
