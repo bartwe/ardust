@@ -43,7 +43,7 @@ public class SoundSystem {
      */
     private IntBuffer source;
 
-    private ArrayList<SoundObject> soundBank;
+    private ArrayList<SoundObject> soundObjects;
     private boolean disabled;
 
     public SoundSystem() {
@@ -53,7 +53,7 @@ public class SoundSystem {
             disabled = true;
             e.printStackTrace();
         }
-        soundBank = new ArrayList<SoundObject>();
+        soundObjects = new ArrayList<SoundObject>();
         buffer = BufferUtils.createIntBuffer(5);
         source = BufferUtils.createIntBuffer(5);
         if (!disabled) {
@@ -63,7 +63,7 @@ public class SoundSystem {
     }
 
     private void setSourceBuffer(int i) {
-        SoundObject obj = soundBank.get(i);
+        SoundObject obj = soundObjects.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
         ByteBuffer databuffer = ByteBufferBuffer.alloc(2048 * 2048);
@@ -131,9 +131,9 @@ public class SoundSystem {
     }
 
     public int registerFile(String filename, SoundType type) {
-        soundBank.add(new SoundObject(filename, type));
+        soundObjects.add(new SoundObject(filename, type));
 
-        int bankID = soundBank.size() - 1;
+        int bankID = soundObjects.size() - 1;
 
         setSourceBuffer(bankID);
 
@@ -141,7 +141,7 @@ public class SoundSystem {
     }
 
     public void updateSource(int i, String filename) {
-        soundBank.get(i).filename = filename;
+        soundObjects.get(i).filename = filename;
         setSourceBuffer(i);
     }
 

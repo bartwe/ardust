@@ -123,11 +123,10 @@ public class GameCore {
         }
 
         if (input.isKeyDown(Keyboard.KEY_M, true)) {
-            int musicID = parent.getMusicSourceID();
             if (musicOn)
-                parent.getSoundSys().stop(musicID);
+                parent.soundBank.stopSound(parent.soundBank.mainMusic);
             else
-                parent.getSoundSys().play(musicID);
+                parent.soundBank.playSound(parent.soundBank.mainMusic);
 
             musicOn = !musicOn;
         }
