@@ -68,7 +68,6 @@ public class Entity {
         values.set(Constants.V_ENTITY_MODE, mode.ordinal());
         values.set(Constants.V_ENTITY_HEALTH, health);
         values.set(Constants.V_ENTITY_PLAYER, playerId);
-
         values.set(Constants.V_ENTITY_ARMOR, armor.ordinal());
         values.set(Constants.V_ENTITY_SWORD, weapon.ordinal());
         return values.write(buffer, all);

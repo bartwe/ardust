@@ -6,7 +6,7 @@ import ardust.shared.Constants;
 import ardust.shared.Point2;
 
 public class Dwarves {
-    public static void handle(Entity entity, DwarfRequestPacket packet, ServerWorld world, PositionalMap positionalMap) {
+    public static void handle(Entity entity, DwarfRequestPacket packet, ServerWorld world, PositionalMap positionalMap, Player player) {
         if (entity.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
 
@@ -39,12 +39,30 @@ public class Dwarves {
 
                 break;
             case CraftArmor:
-//                entity.
+
+                if (player.getIron() >= 5)
+                {
+                    player.addIron(-5);
+                    entity.armor = Entity.Armor.IRON;
+                }
+
                 break;
             case CraftSword:
 
+                if (player.getIron() >= 5)
+                {
+                    player.addIron(-5);
+                    entity.weapon = Entity.Weapon.IRON_SWORD;
+                }
+
                 break;
             case CraftGoldSword:
+
+                if (player.getGold() >= 5 && entity.weapon == Entity.Weapon.IRON_SWORD)
+                {
+                    player.addGold(-5);
+                    entity.weapon = Entity.Weapon.GOLD_SWORD;
+                }
 
                 break;
 
