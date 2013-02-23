@@ -53,7 +53,7 @@ public class Character {
                 break;
         }
         if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
-            GameLoop.soundBank.playSound(SoundBank.pickaxeSound);
+            GameLoop.soundBank.playSound(SoundBank.pickaxeSound, true);
         }
     }
 
@@ -68,7 +68,7 @@ public class Character {
                 break;
         }
         if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
-            GameLoop.soundBank.playSound(SoundBank.fightSound);
+            GameLoop.soundBank.playSound(SoundBank.fightSound, true);
         }
     }
 

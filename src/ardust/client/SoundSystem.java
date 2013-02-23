@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SoundSystem {
 
@@ -147,12 +148,20 @@ public class SoundSystem {
         setSourceBuffer(i);
     }
 
-    public void play(int i) {
+    Random random = new Random();
+
+    public void play(int i, boolean randomPitch) {
         if (disabled)
             return;
 
+        float pitch = 0.9f + 0.2f * random.nextFloat();
+        if (!randomPitch)
+            pitch = 1;
+
+        AL10.alSourcef(source.get(i), AL10.AL_PITCH, pitch);
         AL10.alSourcePlay(source.get(i));
     }
+
     public void stop(int i) {
         if (disabled)
             return;

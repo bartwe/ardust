@@ -25,8 +25,8 @@ public class SoundBank {
         menuMusic = system.registerFile("resources/audio/music/menu.ogg", SoundSystem.SoundType.Music);
     }
 
-    public void playSound(int which) {
-        system.play(which);
+    public void playSound(int which, boolean randomPitch) {
+        system.play(which, randomPitch);
     }
 
     public void stopSound(int which) {

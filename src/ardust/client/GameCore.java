@@ -130,7 +130,7 @@ public class GameCore {
             if (musicOn)
                 parent.soundBank.stopSound(parent.soundBank.mainMusic);
             else
-                parent.soundBank.playSound(parent.soundBank.mainMusic);
+                parent.soundBank.playSound(parent.soundBank.mainMusic, false);
 
             musicOn = !musicOn;
         }
