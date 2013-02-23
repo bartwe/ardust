@@ -15,18 +15,18 @@ public class Entities {
     public ArrayList<Integer> inserted = new ArrayList<Integer>();
     public ArrayList<Integer> deleted = new ArrayList<Integer>();
 
-    public boolean write(ByteBuffer buffer, boolean all) {
+    public boolean write(ByteBuffer buffer, boolean checkpoint) {
         int mode = 0;
         int modePosition = buffer.position();
         buffer.put((byte) 0);
-        if (!deleted.isEmpty() && !all) {
+        if (!deleted.isEmpty() && !checkpoint) {
             mode |= 1;
             buffer.putShort((short) deleted.size());
             for (Integer id : deleted)
                 buffer.putInt(id);
             deleted.clear();
         }
-        if (!inserted.isEmpty() && !all) {
+        if (!inserted.isEmpty() && !checkpoint) {
             mode |= 2;
             buffer.putShort((short) inserted.size());
             for (Integer id : inserted)
@@ -39,7 +39,7 @@ public class Entities {
         for (Entity entity : entities.values()) {
             int idPosition = buffer.position();
             buffer.putInt(entity.id);
-            if (entity.write(buffer, all))
+            if (entity.write(buffer, checkpoint))
                 size++;
             else
                 buffer.position(idPosition);
@@ -57,39 +57,63 @@ public class Entities {
 
     public void read(ByteBuffer buffer, boolean checkpoint) {
         int mode = buffer.get();
+
         if ((mode & 0x1) != 0) { // deleted
+            if (checkpoint)
+                throw new RuntimeException();
             int count = buffer.getShort();
             while (count > 0) {
                 Integer id = buffer.getInt();
-                entities.remove(id);
-                count--;
-                if (!checkpoint)
+                if (entities.containsKey(id)) {
+                    entities.remove(id);
                     deleted.add(id);
+                }
+                count--;
             }
         }
         if ((mode & 0x2) != 0) { // inserts
+            if (checkpoint)
+                throw new RuntimeException();
             int count = buffer.getShort();
             while (count > 0) {
                 Integer id = buffer.getInt();
-                entities.put(id, new Entity(id));
-                count--;
-                if (!checkpoint)
+                if (!entities.containsKey(id)) {
+                    entities.put(id, new Entity(id));
                     inserted.add(id);
+                }
+                count--;
             }
         }
         if ((mode & 0x4) != 0) {
             int count = buffer.getShort();
-            while (count > 0) {
-                Integer id = buffer.getInt();
-                if (checkpoint)
-                    if (!entities.containsKey(id))
-                        entities.put(id, new Entity(id));
-                Entity entity = entities.get(id);
-                if (entity != null)
+            if (checkpoint) {
+                HashMap<Integer, Entity> newEntities = new HashMap<Integer, Entity>();
+                while (count > 0) {
+                    Integer id = buffer.getInt();
+                    Entity entity = entities.get(id);
+                    if (entity == null) {
+                        entity = new Entity(id);
+                        inserted.add(id);
+                    }
+                    newEntities.put(id, entity);
                     entity.read(buffer);
-                else
-                    Entity.dropRead(buffer);
-                count--;
+                    count--;
+                }
+                for (Integer id : entities.keySet()) {
+                    if (!newEntities.containsKey(id))
+                        deleted.add(id);
+                }
+                entities = newEntities;
+            } else {
+                while (count > 0) {
+                    Integer id = buffer.getInt();
+                    Entity entity = entities.get(id);
+                    if (entity != null)
+                        entity.read(buffer);
+                    else
+                        Entity.dropRead(buffer); //updates to entities not yet received
+                    count--;
+                }
             }
         }
     }

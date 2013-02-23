@@ -5,30 +5,41 @@ import java.nio.ByteBuffer;
 public class Values {
     long[] revision;
     int[] entries;
+    boolean[] initialized;
     long currentTick;
 
     public Values(int size) {
         revision = new long[size];
         entries = new int[size];
+        initialized = new boolean[size];
     }
 
     public void set(int index, int value) {
-        if (entries[index] != value) {
+        if ((entries[index] != value) || !initialized[index]) {
             revision[index] = currentTick;
             entries[index] = value;
+            initialized[index] = true;
         }
     }
 
     public int get(int index) {
+        if (!initialized[index])
+            throw new RuntimeException("Not initialized.");
         return entries[index];
     }
 
     public boolean write(ByteBuffer buffer, boolean all) {
         int count = 0;
-        if (all)
-            count = entries.length;
-        else {
+        if (all) {
             for (int i = 0; i < entries.length; i++) {
+                if (!initialized[i])
+                    throw new RuntimeException("Not initialized.");
+            }
+            count = entries.length;
+        } else {
+            for (int i = 0; i < entries.length; i++) {
+                if (!initialized[i])
+                    throw new RuntimeException("Not initialized.");
                 if (revision[i] == currentTick)
                     count++;
             }
@@ -57,12 +68,15 @@ public class Values {
     public void read(ByteBuffer buffer) {
         int count = buffer.get();
         if (count == entries.length) {
-            for (int i = 0; i < entries.length; i++)
+            for (int i = 0; i < entries.length; i++) {
                 entries[i] = buffer.getInt();
+                initialized[i] = true;
+            }
         } else {
             while (count > 0) {
                 int index = buffer.get();
                 entries[index] = buffer.getInt();
+                initialized[index] = true;
                 count--;
             }
         }
@@ -71,11 +85,11 @@ public class Values {
     public static void dropRead(ByteBuffer buffer, int size) {
         int count = buffer.get();
         if (count == size) {
-            buffer.position(buffer.position() + 4*count);
+            buffer.position(buffer.position() + 4 * count);
             for (int i = 0; i < size; i++)
                 buffer.getInt();
         } else {
-            buffer.position(buffer.position() + 5*count);
+            buffer.position(buffer.position() + 5 * count);
         }
     }
 }

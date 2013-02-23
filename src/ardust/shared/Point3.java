@@ -50,4 +50,9 @@ public class Point3 {
         result = 31 * result + z;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "{" + x + ", " + y + ", " + z + "}";
+    }
 }
