@@ -39,7 +39,7 @@ public class Dwarves {
 
                 break;
             case CraftArmor:
-                entity.
+//                entity.
                 break;
             case CraftSword:
 
