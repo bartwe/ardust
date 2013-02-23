@@ -31,6 +31,7 @@ public class GameCore {
         WALK,
         HALT,
         MINE,
+        BUILD,
         ATTEMPTING_SWORD_PURCHASE,
         ATTEMPTING_ARMOR_PURCHASE,
         ATTEMPTING_GOLD_SWORD_PURCHASE,
@@ -189,6 +190,8 @@ public class GameCore {
                             break;
                         case FIGHT:
                             selectedDwarf.fightTo(currentActionMenu.location);
+                        case BUILD:
+                            selectedDwarf.build(currentActionMenu.location);
                             break;
                         case ATTEMPTING_ARMOR_PURCHASE:
                             network.send(new DwarfRequestPacket(selectedDwarf.id(), DwarfRequest.CraftArmor, Orientation.NORTH));

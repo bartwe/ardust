@@ -50,6 +50,11 @@ public class Point2 {
         return "{" + x + ", " + y + "}";
     }
 
+    public int manhattanDistance(int otherX, int otherY)
+    {
+        return Math.abs(otherX - x) + Math.abs(otherY - y);
+    }
+
     public void move(Orientation orientation) {
         switch (orientation) {
             case NORTH:

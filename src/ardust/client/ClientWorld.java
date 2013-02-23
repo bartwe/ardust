@@ -16,7 +16,7 @@ public class ClientWorld {
         return world[x + y * Constants.WORLD_LENGTH];
     }
 
-    private int normalizeAxis(int axis) {
+    public int normalizeAxis(int axis) {
         //sure, modulo should do the job too
         while (axis < 0)
             axis += Constants.WORLD_LENGTH;

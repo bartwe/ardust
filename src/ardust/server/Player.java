@@ -24,7 +24,7 @@ public class Player {
         name = "Unknown-" + hashCode();
         id = 0;
         values = new Values(Constants.V_PLAYER_VALUES_SIZE);
-        values.set(Constants.V_PLAYER_STONES, 0);
+        values.set(Constants.V_PLAYER_STONES, 5);
         values.set(Constants.V_PLAYER_IRON, 2);
         values.set(Constants.V_PLAYER_GOLD, 1);
         values.set(Constants.V_PLAYER_ID, id);

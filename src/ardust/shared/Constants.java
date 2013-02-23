@@ -61,6 +61,7 @@ public class Constants {
     public static final int GOLD = 3;
     public static final int IRON = 4;
     public static final int ANVIL = 8;
+    public static final byte STONE_WALL = 73;
     public static final int WALK_LOOP_LIMIT = 5;
     public static final int MINE_FAIL_LIMIT = 30;
 
@@ -83,6 +84,8 @@ public class Constants {
                 return 7000;
             case IRON:
                 return 3000;
+            case STONE_WALL:
+                return 10000;
             default:
                 return 0;
         }

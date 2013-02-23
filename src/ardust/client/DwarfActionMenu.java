@@ -55,6 +55,7 @@ public class DwarfActionMenu {
                     return GameCore.UserInputState.FIGHT;
             }
         }
+        if ((mode != Mode.Crafting) && buttons.get(USE).contains(localX, localY)) return GameCore.UserInputState.BUILD;
 
         return GameCore.UserInputState.NONE;
     }
@@ -80,6 +81,19 @@ public class DwarfActionMenu {
         }
 
         p.draw(drawPoint.x, drawPoint.y, tx, ty, 96, 112, false);
+
+        if (mode == Mode.Crafting)
+        {
+             p.draw(drawPoint.x + 46, drawPoint.y - 10, 96, 56, 16, 16, false);
+             SpriteNumber.drawNumber(5, drawPoint.x + 36, drawPoint.y - 8, p);
+             p.draw(drawPoint.x - 16, drawPoint.y  + 50, 96, 56, 16, 16, false);
+             SpriteNumber.drawNumber(5, drawPoint.x  - 26, drawPoint.y  + 52, p);
+             p.draw(drawPoint.x + 108, drawPoint.y + 50, 112, 56, 16, 16, false);
+             SpriteNumber.drawNumber(5, drawPoint.x + 98, drawPoint.y + 52, p);
+             p.draw(drawPoint.x + 48, drawPoint.y + 114, 112, 40, 16, 16, false);
+             SpriteNumber.drawNumber(20, drawPoint.x + 38, drawPoint.y + 116, p);
+        }
+
         p.flush();
     }
 }

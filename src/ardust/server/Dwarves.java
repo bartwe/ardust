@@ -66,6 +66,14 @@ public class Dwarves {
                 }
 
                 break;
+            case Build:
+                nextPosition = getPositionAfterMovement(entity);
+                if (player.getStone() >= 1 && world.read(nextPosition.x, nextPosition.y) == 0) {
+                     player.addStone(-1);
+                    world.write(nextPosition.x, nextPosition.y,Constants.STONE_WALL);
+                }
+
+                break;
 
             case Attack:
 
