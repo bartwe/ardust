@@ -184,7 +184,7 @@ public class Server {
             return;
         if (player.id != entity.playerId.intValue())
             return;
-        Dwarves.handle(entity, packet, world, positionalMap);
+        Dwarves.handle(entity, packet, world, positionalMap, player);
     }
 
     private void handleWindowChange(Player player, WindowPacket packet) {

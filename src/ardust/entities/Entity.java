@@ -43,7 +43,8 @@ public class Entity {
     public Orientation orientation = Orientation.SOUTH;
     public Mode mode = Mode.IDLE;
     public int health = 3;
-    public boolean armor, sword, goldSword;
+    public Armor armor = Armor.NONE;
+    public Weapon weapon = Weapon.NONE;
     Values values;
 
     public Entity(Integer id) {
@@ -67,7 +68,6 @@ public class Entity {
         values.set(Constants.V_ENTITY_MODE, mode.ordinal());
         values.set(Constants.V_ENTITY_HEALTH, health);
         values.set(Constants.V_ENTITY_PLAYER, playerId);
-
         values.set(Constants.V_ENTITY_ARMOR, armor.ordinal());
         values.set(Constants.V_ENTITY_SWORD, weapon.ordinal());
         return values.write(buffer, all);
