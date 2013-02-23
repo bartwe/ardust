@@ -3,7 +3,11 @@ package ardust.server;
 import ardust.entities.Entities;
 import ardust.entities.Entity;
 import ardust.packets.Packet;
+import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
+import ardust.shared.Values;
+
+import java.util.HashMap;
 
 public class Player {
     String name;
@@ -11,10 +15,13 @@ public class Player {
     private int x;
     private int y;
     private int z;
+    Values values;
+    public HashMap<Integer, Entity> dwarfs = new HashMap<Integer, Entity>();
 
     public Player(NetworkConnection networkConnection) {
         connection = networkConnection;
         name = "Unknown-" + hashCode();
+        values = new Values(Constants.V_PLAYER_VALUES_SIZE);
     }
 
     public boolean isValid() {
@@ -66,14 +73,35 @@ public class Player {
                 world.writeDirect(xx + x, yy + y, z, tile);
             }
 
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + -2, z));
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + 2, z));
-        world.writeDirect(x, y, z, (byte) 8);
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + 2, z));
-        entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + -2, z));
+
+
+        addDwarf(entities, x + 2, y + -2, z);
+        addDwarf(entities, x + 2, y + 2, z);
+        world.writeDirect(x, y, z, (byte) 8); // anvil
+        addDwarf(entities, x + -2, y + 2, z);
+        addDwarf(entities, x + -2, y + -2, z);
+    }
+
+    public void addDwarf(Entities entities, int x, int y, int z) {
+        Entity entity = new Entity(Entity.Kind.DWARF, x, y, z);
+        entities.addEntity(entity);
+        dwarfs.put(entity.id, entity);
     }
 
     public void disconnect() {
         connection.stop();
     }
+
+    public void addStone(int q) {
+        values.set(Constants.V_PLAYER_STONES, values.get(Constants.V_PLAYER_STONES) + q);
+    }
+
+    public void addIron(int q) {
+        values.set(Constants.V_PLAYER_IRON, values.get(Constants.V_PLAYER_IRON) + q);
+    }
+
+    public void addGold(int q) {
+        values.set(Constants.V_PLAYER_GOLD, values.get(Constants.V_PLAYER_GOLD) + q);
+    }
+
 }

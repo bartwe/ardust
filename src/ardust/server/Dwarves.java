@@ -58,7 +58,7 @@ public class Dwarves {
         throw new RuntimeException();
     }
 
-    public static void tick(int deltaT, Entity dwarf, ServerWorld world) {
+    public static void tick(int deltaT, Player player, Entity dwarf, ServerWorld world) {
         if (dwarf.kind != Entity.Kind.DWARF)
             throw new RuntimeException();
 
@@ -96,26 +96,20 @@ public class Dwarves {
                 world.writeDirect(position.x, position.y, position.z, (byte) 0);
                 switch (which) {
                     case Constants.STONE:
-                        dwarf.mode = Entity.Mode.RESOURCE_STONE;
-                        dwarf.countdown = 100;
+                        player.addStone(1);
                         break;
                     case Constants.IRON:
-                        dwarf.mode = Entity.Mode.RESOURCE_IRON;
-                        dwarf.countdown = 100;
+                        player.addIron(1);
                         break;
                     case Constants.GOLD:
-                        dwarf.mode = Entity.Mode.RESOURCE_GOLD;
-                        dwarf.countdown = 100;
+                        player.addGold(1);
                         break;
                     default:
-                        dwarf.mode = Entity.Mode.IDLE;
                         break;
                 }
+                dwarf.mode = Entity.Mode.IDLE;
                 break;
 
-            case RESOURCE_STONE:
-            case RESOURCE_IRON:
-            case RESOURCE_GOLD:
             case COOLDOWN:
                 dwarf.mode = Entity.Mode.IDLE;
                 break;

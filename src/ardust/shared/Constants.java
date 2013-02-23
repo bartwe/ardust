@@ -62,6 +62,13 @@ public class Constants {
     public static final int ANVIL = 8;
     public static final int WALK_LOOP_LIMIT = 5;
 
+
+    public static final int V_PLAYER_STONES = 0;
+    public static final int V_PLAYER_IRON = 1;
+    public static final int V_PLAYER_GOLD = 2;
+    public static final int V_PLAYER_VALUES_SIZE = 3;
+    public static final int BAD_AXIS = -1000000;
+
     public static int isWorldPieceMineable(byte index) {
         switch (index) {
             case 0:

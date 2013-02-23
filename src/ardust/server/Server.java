@@ -113,8 +113,15 @@ public class Server {
     private void evaluateDwarves(int deltaT) {
         entities.getDwarves(entitiesTemp);
         for (Entity dwarf : entitiesTemp)
-            Dwarves.tick(deltaT, dwarf, world);
+            Dwarves.tick(deltaT, findPlayerForDwarf(dwarf), dwarf, world);
         entitiesTemp.clear();
+    }
+
+    private Player findPlayerForDwarf(Entity dwarf) {
+        for (Player player: players)
+            if (player.dwarfs.containsKey(dwarf.id))
+                return player;
+        return null;
     }
 
     private void sendUpdates() {
@@ -205,6 +212,9 @@ public class Server {
             tempBuffer.flip();
             player.sendPacket(new EntitiesPacket(tempBuffer, true, true));
         }
+
+        sendWorldRegion(player, Constants.BAD_AXIS, Constants.BAD_AXIS, Constants.BAD_AXIS, x, y, z);
+
     }
 
     private void sendWorldRegion(Player player, int oldX, int oldY, int oldZ, int x, int y, int z) {
