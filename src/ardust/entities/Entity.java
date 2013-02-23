@@ -43,7 +43,8 @@ public class Entity {
     public Orientation orientation = Orientation.SOUTH;
     public Mode mode = Mode.IDLE;
     public int health = 3;
-    public boolean armor, sword, goldSword;
+    public Armor armor = Armor.NONE;
+    public Weapon weapon = Weapon.NONE;
     Values values;
 
     public Entity(Integer id) {
