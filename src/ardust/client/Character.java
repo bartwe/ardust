@@ -45,16 +45,13 @@ public class Character {
                 sprite.animate(32, 4, Constants.DWARF_ANIMATION_SPEED / 2);
                 break;
         }
-        if (sprite.currentFrame != currentFrame && sprite.currentFrame % 3 == 0)
-        {
-           GameLoop.soundBank.playSound(SoundBank.pickaxeSound);
+        if (sprite.currentFrame != currentFrame && sprite.currentFrame % 3 == 0) {
+            GameLoop.soundBank.playSound(SoundBank.pickaxeSound);
         }
     }
 
-    public void halt()
-    {
-        if (entity.mode == Entity.Mode.WALKING)
-        {
+    public void halt() {
+        if (entity.mode == Entity.Mode.WALKING) {
             isHalting = true;
         }
     }
@@ -109,12 +106,10 @@ public class Character {
                 showStationarySprite();
         }
 
-        if (modeProgress >= 1 && entity.mode == Entity.Mode.WALKING)
-        {
-            if (!isHalting)
-            {
+        if (modeProgress >= 1 && entity.mode == Entity.Mode.WALKING) {
+            if (!isHalting) {
                 network.send(new DwarfRequestPacket(id(), DwarfRequest.Walk, entity.orientation));
-            }  else {
+            } else {
                 isHalting = false;
                 entity.mode = Entity.Mode.IDLE;
             }
@@ -147,8 +142,8 @@ public class Character {
     public void draw(Painter p, Point viewportLocation, boolean selectedDwarf) {
         Point localPoint = getLocalDrawPoint(viewportLocation);
         boolean flipAnimation = (entity.orientation == Orientation.EAST);
-        //if (selectedDwarf)
-       //    p.draw(localPoint.x, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 43, 10, false);//sorry
+        if (selectedDwarf)
+            p.draw(localPoint.x + Constants.DWARF_HEART_CENTER_OFFSET, localPoint.y - (Constants.TILE_DRAW_HEIGHT - Constants.TILE_BASE_HEIGHT), 96, 40, 9, 9, false);
         sprite.draw(p, localPoint.x, localPoint.y - Constants.TILE_BASE_HEIGHT - Constants.DWARF_OFFSET_ON_TILE, flipAnimation);
     }
 

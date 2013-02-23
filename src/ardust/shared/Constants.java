@@ -41,7 +41,8 @@ public class Constants {
     public static final int V_ENTITY_KIND = 3;
     public static final int V_ENTITY_ORIENTATION = 4;
     public static final int V_ENTITY_MODE = 5;
-    public static final int V_ENTITY_VALUES_SIZE = 6;
+    public static final int V_ENTITY_HEALTH = 6;
+    public static final int V_ENTITY_VALUES_SIZE = 7;
 
     public static final int CURSOR_TILE_NORMAL = 4;
     public static final int CURSOR_TILE_PROBLEM = 5;
@@ -53,37 +54,42 @@ public class Constants {
 
     public static final int WALKING_COUNTDOWN = 500;
 
-    public static int isWorldPieceMineable(byte index)
-    {
-        switch (index)
-        {
+    public static final int DWARF_HEART_CENTER_OFFSET = 11;
+
+    public static int isWorldPieceMineable(byte index) {
+        switch (index) {
             case 0:
-            case 2: return 500;
-            case 1: return 1500;
-            case 3: return 7000;
-            case 4: return 3000;
-            default: return 0;
+            case 2:
+                return 500;
+            case 1:
+                return 1500;
+            case 3:
+                return 7000;
+            case 4:
+                return 3000;
+            default:
+                return 0;
         }
     }
 
-    public static int getBlockModIndex(byte index)
-    {
-        switch (index)
-        {
-            case 3: return 13;//gold
-            case 4: return 14;//iron;
-            default: return -1;
+    public static int getBlockModIndex(byte index) {
+        switch (index) {
+            case 3:
+                return 13;//gold
+            case 4:
+                return 14;//iron;
+            default:
+                return -1;
         }
     }
 
-    public static int convertIndexToBaseBlockIndex(byte index)
-    {
-        switch (index)
-        {
+    public static int convertIndexToBaseBlockIndex(byte index) {
+        switch (index) {
             case 3: //gold
             case 4: //iron
                 return 1;
-            default: return index;
+            default:
+                return index;
         }
     }
 

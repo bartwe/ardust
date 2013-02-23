@@ -7,19 +7,16 @@ public class SoundBank {
 
     public static SoundSystem system;
 
-    public SoundBank(SoundSystem system)
-    {
-     this.system = system;
+    public SoundBank(SoundSystem system) {
+        this.system = system;
         registerSoundEffects();
     }
 
-    public void registerSoundEffects()
-    {
-        pickaxeSound = system.registerFile("/resources/audio/effects/pick.ogg",SoundSystem.SoundType.Effect);
+    public void registerSoundEffects() {
+        pickaxeSound = system.registerFile("/resources/audio/effects/pick.ogg", SoundSystem.SoundType.Effect);
     }
 
-    public static void playSound(int which)
-    {
+    public static void playSound(int which) {
         system.play(which);
     }
 

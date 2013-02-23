@@ -15,7 +15,7 @@ public class Input {
     private Point[] mostRecentClicks;
 
     public Input() {
-        mouseButtons = new boolean[2]; // we only use the two
+        mouseButtons = new boolean[3]; // we only use the two
         mostRecentClicks = new Point[mouseButtons.length];
         for (int i = 0; i < mostRecentClicks.length; i++)
             mostRecentClicks[i] = new Point();

@@ -27,6 +27,7 @@ public class Entity {
     public Kind kind = Kind.DWARF;
     public Orientation orientation = Orientation.SOUTH;
     public Mode mode = Mode.IDLE;
+    public int health = 3;
     Values values;
 
     public Entity(Integer id) {
@@ -47,6 +48,7 @@ public class Entity {
         values.set(Constants.V_ENTITY_KIND, kind.ordinal());
         values.set(Constants.V_ENTITY_ORIENTATION, orientation.ordinal());
         values.set(Constants.V_ENTITY_MODE, mode.ordinal());
+        values.set(Constants.V_ENTITY_HEALTH, health);
 
         return values.write(buffer, all);
     }
@@ -57,6 +59,7 @@ public class Entity {
         kind = Kind.values()[values.get(Constants.V_ENTITY_KIND)];
         orientation = Orientation.values()[values.get(Constants.V_ENTITY_ORIENTATION)];
         mode = Mode.values()[values.get(Constants.V_ENTITY_MODE)];
+        health = values.get(Constants.V_ENTITY_HEALTH);
     }
 
     public static void dropRead(ByteBuffer buffer) {

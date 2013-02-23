@@ -5,12 +5,11 @@ public class SpriteNumber {
     private static final int textureY = 40;
     private static final int digitWidth = 8;
     private static final int digitHeight = 12;
+
     //draws the number... but screenX is the RIGHT side of the number... didn't want to waste time doing it other way
-    public static void drawNumber(int number, int screenX, int screenY, Painter p)
-    {
-         int widthOffset = 0;
-         while (true)
-         {
+    public static void drawNumber(int number, int screenX, int screenY, Painter p) {
+        int widthOffset = 0;
+        while (true) {
             int currentDigit = number % 10;
             number /= 10;
 
@@ -20,6 +19,6 @@ public class SpriteNumber {
             widthOffset += digitWidth;
 
             if (number <= 0) return;
-         }
+        }
     }
 }

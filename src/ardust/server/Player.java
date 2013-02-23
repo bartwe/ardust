@@ -68,7 +68,7 @@ public class Player {
 
         entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + -2, z));
         entities.addEntity(new Entity(Entity.Kind.DWARF, x + 2, y + 2, z));
-        world.writeDirect(x, y, z, (byte)8);
+        world.writeDirect(x, y, z, (byte) 8);
         entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + 2, z));
         entities.addEntity(new Entity(Entity.Kind.DWARF, x + -2, y + -2, z));
     }

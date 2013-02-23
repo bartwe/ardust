@@ -1,5 +1,12 @@
 package ardust.client;
 
+import com.jcraft.oggdecoder.OggData;
+import com.jcraft.oggdecoder.OggDecoder;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,13 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.LWJGLException;
-
-import com.jcraft.oggdecoder.*;
 
 public class SoundSystem {
 
@@ -33,25 +33,33 @@ public class SoundSystem {
         }
     }
 
-    /** Buffers hold sound data. */
+    /**
+     * Buffers hold sound data.
+     */
     private IntBuffer buffer;
 
-    /** Sources are points emitting sound. */
+    /**
+     * Sources are points emitting sound.
+     */
     private IntBuffer source;
 
     private ArrayList<SoundObject> soundBank;
+    private boolean disabled;
 
     public SoundSystem() {
         try {
             AL.create();
         } catch (LWJGLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            disabled = true;
+            e.printStackTrace();
         }
         soundBank = new ArrayList<SoundObject>();
         buffer = BufferUtils.createIntBuffer(5);
         source = BufferUtils.createIntBuffer(5);
-        AL10.alGenBuffers(buffer);
-        AL10.alGenSources(source);
+        if (!disabled) {
+            AL10.alGenBuffers(buffer);
+            AL10.alGenSources(source);
+        }
     }
 
     public int registerFile(String filename, SoundType type) {
@@ -65,6 +73,9 @@ public class SoundSystem {
     }
 
     public void play(int i) {
+        if (disabled)
+            return;
+
         SoundObject obj = soundBank.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
@@ -93,7 +104,7 @@ public class SoundSystem {
         // Load PCM data into buffer
         AL10.alBufferData(
                 bufferID,
-                oggData.channels>1?
+                oggData.channels > 1 ?
                         AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16,
                 oggData.data,
                 oggData.rate);
@@ -108,8 +119,7 @@ public class SoundSystem {
 
         if (obj.type == SoundType.Music) {
             AL10.alSourcei(sourceID, AL10.AL_LOOPING, AL10.AL_TRUE);
-        }
-        else {
+        } else {
             AL10.alSourcei(sourceID, AL10.AL_LOOPING, AL10.AL_FALSE);
         }
 
@@ -117,6 +127,9 @@ public class SoundSystem {
     }
 
     public void killAL() {
+        if (disabled)
+            return;
+
         AL10.alDeleteBuffers(buffer);
         AL10.alDeleteSources(source);
         AL.destroy();

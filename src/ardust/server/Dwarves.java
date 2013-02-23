@@ -20,8 +20,7 @@ public class Dwarves {
             case Walk:
 
                 Point3 nextPosition = getPositionAfterMovement(entity);
-                if (world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z) == 0)
-                {
+                if (world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z) == 0) {
                     entity.mode = Entity.Mode.WALKING;
                     entity.countdown = Constants.WALKING_COUNTDOWN;
                 }
@@ -32,8 +31,7 @@ public class Dwarves {
 
                 nextPosition = getPositionAfterMovement(entity);
                 int mineable = Constants.isWorldPieceMineable(world.readDirect(nextPosition.x, nextPosition.y, nextPosition.z));
-                if (mineable > 0)
-                {
+                if (mineable > 0) {
                     entity.mode = Entity.Mode.MINING;
                     entity.countdown = mineable;
                 }
@@ -46,14 +44,16 @@ public class Dwarves {
         }
     }
 
-    public static Point3  getPositionAfterMovement(Entity entity)
-    {
-        switch (entity.orientation)
-        {
-            case NORTH: return new Point3(entity.position.x, entity.position.y - 1, entity.position.z);
-            case EAST: return new Point3(entity.position.x + 1, entity.position.y, entity.position.z);
-            case SOUTH: return new Point3(entity.position.x, entity.position.y + 1, entity.position.z);
-            case WEST: return new Point3(entity.position.x - 1, entity.position.y, entity.position.z);
+    public static Point3 getPositionAfterMovement(Entity entity) {
+        switch (entity.orientation) {
+            case NORTH:
+                return new Point3(entity.position.x, entity.position.y - 1, entity.position.z);
+            case EAST:
+                return new Point3(entity.position.x + 1, entity.position.y, entity.position.z);
+            case SOUTH:
+                return new Point3(entity.position.x, entity.position.y + 1, entity.position.z);
+            case WEST:
+                return new Point3(entity.position.x - 1, entity.position.y, entity.position.z);
         }
         throw new RuntimeException();
     }
@@ -91,9 +91,8 @@ public class Dwarves {
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
             case MINING:
-
                 Point3 position = getPositionAfterMovement(dwarf);
-                world.writeDirect(position.x, position.y, position.z, (byte)0);
+                world.writeDirect(position.x, position.y, position.z, (byte) 0);
                 dwarf.mode = Entity.Mode.IDLE;
                 break;
             case COOLDOWN:
