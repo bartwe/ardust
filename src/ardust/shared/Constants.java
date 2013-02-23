@@ -53,15 +53,19 @@ public class Constants {
 
     public static final int WALKING_COUNTDOWN = 500;
 
+    public static final int STONE = 1;
+    public static final int GOLD = 3;
+    public static final int IRON = 4;
+
     public static int isWorldPieceMineable(byte index)
     {
         switch (index)
         {
             case 0:
             case 2: return 500;
-            case 1: return 1500;
-            case 3: return 7000;
-            case 4: return 3000;
+            case STONE: return 1500;
+            case GOLD: return 7000;
+            case IRON: return 3000;
             default: return 0;
         }
     }
@@ -70,8 +74,8 @@ public class Constants {
     {
         switch (index)
         {
-            case 3: return 13;//gold
-            case 4: return 14;//iron;
+            case GOLD: return 13;
+            case IRON: return 14;
             default: return -1;
         }
     }
@@ -80,8 +84,8 @@ public class Constants {
     {
         switch (index)
         {
-            case 3: //gold
-            case 4: //iron
+            case GOLD:
+            case IRON:
                 return 1;
             default: return index;
         }
