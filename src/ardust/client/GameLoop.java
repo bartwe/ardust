@@ -335,6 +335,18 @@ public class GameLoop {
         }
     }
 
+    public void centerViewportAroundMouse()
+    {
+        Point p = new Point(0,0);
+        World.localCoordToGlobalTile(Mouse.getX(), Mouse.getY(), getViewportLocation(), p) ;
+        centerViewportToTile(p.x, p.y);
+    }
+
+    public void centerViewportToTile(int tileX, int tileY)
+    {
+          //Todo
+    }
+
     public enum GameState {
         MENU_STATE,
         CLIENT_STATE,

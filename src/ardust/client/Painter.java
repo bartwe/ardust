@@ -34,7 +34,10 @@ public class Painter {
     }
 
     void setScale(int scale) {
+        if (scale > Constants.MAX_PIXEL_SCALE) scale = Constants.MAX_PIXEL_SCALE;
+        else if (scale < Constants.MIN_PIXEL_SCALE) scale = Constants.MIN_PIXEL_SCALE;
         this.scale = scale;
+        Constants.PIXEL_SCALE = scale;
     }
 
     IntBuffer createIntBuffer(int size) {
