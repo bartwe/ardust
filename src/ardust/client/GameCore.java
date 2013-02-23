@@ -19,8 +19,12 @@ public class GameCore {
     private final GameLoop parent;
     int zLayer;
     DwarfActionMenu currentActionMenu;
-    int stone, iron, gold;
+
     Values values = new Values(Constants.V_PLAYER_VALUES_SIZE);
+    int stone;
+    int iron;
+    int gold;
+    private int playerId;
 
 
     public enum UserInputState {
@@ -103,6 +107,7 @@ public class GameCore {
                 stone = values.get(Constants.V_PLAYER_STONES);
                 iron = values.get(Constants.V_PLAYER_IRON);
                 gold = values.get(Constants.V_PLAYER_GOLD);
+                playerId = values.get(Constants.V_PLAYER_ID);
             } else
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }
@@ -119,7 +124,7 @@ public class GameCore {
 
         //Panning around on the map
         if (input.isKeyDown(Keyboard.KEY_TAB, true)) {
-            selectedDwarf = world.nextCharacter(selectedDwarf);
+            selectedDwarf = world.nextCharacter(playerId, selectedDwarf);
             currentActionMenu = null;
         }
 
