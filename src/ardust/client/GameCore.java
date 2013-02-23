@@ -17,8 +17,8 @@ public class GameCore {
     private final GameLoop parent;
     int zLayer;
     DwarfActionMenu currentActionMenu;
-    int soundID;
     int stone, iron, gold;
+    Values values = new Values(Constants.V_PLAYER_VALUES_SIZE);
 
 
     public enum UserInputState {
@@ -94,6 +94,13 @@ public class GameCore {
             } else if (packet instanceof EntitiesPacket) {
                 EntitiesPacket ep = (EntitiesPacket) packet;
                 world.updateEntities(ep.data, ep.checkpoint);
+            } else if (packet instanceof PlayerUpdatePacket) {
+                PlayerUpdatePacket pup = (PlayerUpdatePacket) packet;
+                values.read(pup.data);
+
+                stone = values.get(Constants.V_PLAYER_STONES);
+                iron = values.get(Constants.V_PLAYER_IRON);
+                gold = values.get(Constants.V_PLAYER_GOLD);
             } else
                 throw new RuntimeException("Unknown packet: " + packet.packetId());
         }

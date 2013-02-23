@@ -11,6 +11,7 @@ abstract public class Packet {
     public static final byte ID_DEBUG_CHANGE_TILE_PACKET = 5;
     public static final byte ID_ENTITIES_PACKET = 6;
     public static final byte ID_DWARF_REQUEST_PACKET = 7;
+    public static final byte ID_PLAYER_UPDATE_PACKET = 8;
 
     public static Packet read(ByteBuffer buffer) {
         byte packetId = buffer.get();
@@ -28,6 +29,8 @@ abstract public class Packet {
             return new EntitiesPacket(buffer);
         if (packetId == ID_DWARF_REQUEST_PACKET)
             return new DwarfRequestPacket(buffer);
+        if (packetId == ID_PLAYER_UPDATE_PACKET)
+            return new PlayerUpdatePacket(buffer);
         throw new RuntimeException("Unknown packet id: " + packetId);
     }
 

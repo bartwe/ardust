@@ -135,7 +135,7 @@ public class World {
     }
 
     public boolean isTileOccupied(int x, int y, int z) {
-        return (clientWorld.readDirect(x, y, z) != 0);
+        return !Constants.isWalkable(clientWorld.readDirect(x, y, z)) || (getCharacterAtTile(x, y, z) != null);
     }
 
     public Character getCharacterAtTile(int x, int y, int z) {

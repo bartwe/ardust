@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.shared.ByteBufferBuffer;
 import ardust.shared.Loader;
 import com.jcraft.oggdecoder.OggData;
 import com.jcraft.oggdecoder.OggDecoder;
@@ -78,7 +79,7 @@ public class SoundSystem {
         SoundObject obj = soundBank.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
-        ByteBuffer databuffer = ByteBuffer.allocate(1024*1024);
+        ByteBuffer databuffer = ByteBufferBuffer.alloc(1024 * 1024);
         try {
             InputStream f = Loader.getRequiredResourceAsStream(obj.filename);
             int offset = 0;

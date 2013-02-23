@@ -3,10 +3,13 @@ package ardust.server;
 import ardust.entities.Entities;
 import ardust.entities.Entity;
 import ardust.packets.Packet;
+import ardust.packets.PlayerUpdatePacket;
+import ardust.shared.ByteBufferBuffer;
 import ardust.shared.Constants;
 import ardust.shared.NetworkConnection;
 import ardust.shared.Values;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class Player {
@@ -22,6 +25,9 @@ public class Player {
         connection = networkConnection;
         name = "Unknown-" + hashCode();
         values = new Values(Constants.V_PLAYER_VALUES_SIZE);
+        values.set(Constants.V_PLAYER_STONES, 0);
+        values.set(Constants.V_PLAYER_IRON, 2);
+        values.set(Constants.V_PLAYER_GOLD, 1);
     }
 
     public boolean isValid() {
@@ -104,4 +110,14 @@ public class Player {
         values.set(Constants.V_PLAYER_GOLD, values.get(Constants.V_PLAYER_GOLD) + q);
     }
 
+
+    ByteBuffer buffer = ByteBufferBuffer.alloc(16000);
+
+    public void sendUpdates() {
+        buffer.clear();
+        if (!values.write(buffer, false))
+            return;
+        buffer.flip();
+        sendPacket(new PlayerUpdatePacket(buffer, true));
+    }
 }

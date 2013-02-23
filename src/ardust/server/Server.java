@@ -146,6 +146,7 @@ public class Server {
 
         //TODO: sends updates outside of the players world range, perf thingy
         for (Player player : players) {
+            player.sendUpdates();
             for (Packet packet : packets)
                 player.sendPacket(packet);
         }
