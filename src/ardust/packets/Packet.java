@@ -28,7 +28,7 @@ abstract public class Packet {
             return new EntitiesPacket(buffer);
         if (packetId == ID_DWARF_REQUEST_PACKET)
             return new DwarfRequestPacket(buffer);
-        throw new RuntimeException("Unknown packet id: "+packetId);
+        throw new RuntimeException("Unknown packet id: " + packetId);
     }
 
     public abstract void write(ByteBuffer buffer);

@@ -91,7 +91,7 @@ public class Server {
         long currentT = System.currentTimeMillis();
         if (prevT == 0)
             prevT = currentT;
-        int deltaT = (int)(currentT - prevT);
+        int deltaT = (int) (currentT - prevT);
         prevT += deltaT;
 
         fetchClientCommands();

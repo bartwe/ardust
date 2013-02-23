@@ -245,7 +245,7 @@ public class GameLoop {
                 long currentT = Sys.getTime();
                 if (prevT == 0)
                     prevT = currentT;
-                int deltaT = (int)(((currentT - prevT)*1000) / Sys.getTimerResolution());
+                int deltaT = (int) (((currentT - prevT) * 1000) / Sys.getTimerResolution());
                 prevT += (deltaT * Sys.getTimerResolution()) / 1000;
 
 

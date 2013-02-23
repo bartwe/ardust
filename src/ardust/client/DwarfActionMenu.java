@@ -4,7 +4,6 @@ package ardust.client;
 import ardust.shared.Constants;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class DwarfActionMenu {
     private final int TEXTURE_X = 0;
@@ -14,16 +13,14 @@ public class DwarfActionMenu {
 
     Character dwarf;
 
-    public DwarfActionMenu(Character dwarf)
-    {
-       this.dwarf = dwarf;
+    public DwarfActionMenu(Character dwarf) {
+        this.dwarf = dwarf;
     }
 
-    public GameCore.UserInputState isButtonHere(int x, int y, Point viewportLocation )
-    {
+    public GameCore.UserInputState isButtonHere(int x, int y, Point viewportLocation) {
         int localX = x - getDrawPoint(viewportLocation).x;
         int localY = y - getDrawPoint(viewportLocation).y;
-        int colorMapX = localX +  COLORMAP_X;
+        int colorMapX = localX + COLORMAP_X;
         int colorMapY = localY + COLORMAP_Y;
 
         Color c = Painter.getColorAt(colorMapX, colorMapY);
@@ -35,14 +32,12 @@ public class DwarfActionMenu {
         return GameCore.UserInputState.NO_DWARF_SELECTED;
     }
 
-    public Point getDrawPoint(Point viewportLocation)
-    {
+    public Point getDrawPoint(Point viewportLocation) {
         Point localCharacterPoint = dwarf.getLocalDrawPoint(viewportLocation);
         return new Point(localCharacterPoint.x - 48, localCharacterPoint.y - Constants.TILE_DRAW_HEIGHT);
     }
 
-    public void draw(Painter p, Point viewportLocation)
-    {
+    public void draw(Painter p, Point viewportLocation) {
         Point drawPoint = getDrawPoint(viewportLocation);
 
         p.draw(drawPoint.x, drawPoint.y, 0, 240, 96, 80, false);

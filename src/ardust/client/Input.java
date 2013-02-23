@@ -35,7 +35,7 @@ public class Input {
         }
         while (Mouse.next()) {
             int key = Mouse.getEventButton();
-            if ((key == -1)||(key >= mouseButtons.length))
+            if ((key == -1) || (key >= mouseButtons.length))
                 continue;
             boolean state = Mouse.getEventButtonState();
             if (state)

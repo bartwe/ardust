@@ -6,6 +6,7 @@ public class Tile {
     public Tile(byte value) {
         this.value = value;
     }
+
     public byte value() {
         return value;
     }

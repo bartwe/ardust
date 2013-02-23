@@ -30,9 +30,9 @@ public class EntitiesPacket extends Packet {
     @Override
     public void write(ByteBuffer buffer) {
         buffer.put(packetId());
-        buffer.put((byte)(checkpoint?1:0));
-        buffer.putShort((short)data.remaining());
-        buffer.put(data.array(), data.arrayOffset()+ data.position(), data.remaining());
+        buffer.put((byte) (checkpoint ? 1 : 0));
+        buffer.putShort((short) data.remaining());
+        buffer.put(data.array(), data.arrayOffset() + data.position(), data.remaining());
     }
 
     @Override

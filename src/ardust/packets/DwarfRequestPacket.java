@@ -26,8 +26,8 @@ public class DwarfRequestPacket extends Packet {
     public void write(ByteBuffer buffer) {
         buffer.put(packetId());
         buffer.putInt(id);
-        buffer.put((byte)request.ordinal());
-        buffer.put((byte)orientation.ordinal());
+        buffer.put((byte) request.ordinal());
+        buffer.put((byte) orientation.ordinal());
     }
 
     @Override
