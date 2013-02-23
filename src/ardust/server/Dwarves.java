@@ -55,8 +55,9 @@ public class Dwarves {
                 return new Point3(entity.position.x, entity.position.y + 1, entity.position.z);
             case WEST:
                 return new Point3(entity.position.x - 1, entity.position.y, entity.position.z);
+            default:
+                return new Point3(entity.position.x, entity.position.y, entity.position.z);
         }
-        throw new RuntimeException();
     }
 
     static Point3 tempPosition = new Point3();
@@ -88,18 +89,20 @@ public class Dwarves {
                 Point3 position = getPositionAfterMovement(dwarf);
                 byte which = world.read(position.x, position.y, position.z);
                 world.write(position.x, position.y, position.z, (byte) 0);
-                switch (which) {
-                    case Constants.STONE:
-                        player.addStone(1);
-                        break;
-                    case Constants.IRON:
-                        player.addIron(1);
-                        break;
-                    case Constants.GOLD:
-                        player.addGold(1);
-                        break;
-                    default:
-                        break;
+                if (player != null) {
+                    switch (which) {
+                        case Constants.STONE:
+                            player.addStone(1);
+                            break;
+                        case Constants.IRON:
+                            player.addIron(1);
+                            break;
+                        case Constants.GOLD:
+                            player.addGold(1);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 dwarf.mode = Entity.Mode.IDLE;
                 break;

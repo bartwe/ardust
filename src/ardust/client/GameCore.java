@@ -151,7 +151,7 @@ public class GameCore {
                             selectedDwarf.halt();
                             break;
                         case MINE:
-                            // todo
+                            selectedDwarf.mineTo(currentActionMenu.location);
                             break;
                         case USE:
                             selectedDwarf.use(currentActionMenu.location);
