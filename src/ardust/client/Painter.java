@@ -66,6 +66,7 @@ public class Painter {
         ByteBuffer textureBuffer = convertImageData(image);
 
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, textureBuffer);
+
     }
 
     private ByteBuffer convertImageData(BufferedImage bufferedImage) {
@@ -113,6 +114,8 @@ public class Painter {
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glColor4f(1f, 1f, 1f, 1f);
     }
+
+
 
     void draw(int x, int y, int textureX, int textureY, int width, int height, boolean flip) {
 

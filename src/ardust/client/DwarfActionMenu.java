@@ -39,7 +39,7 @@ public class DwarfActionMenu {
             return craftingMenu ? GameCore.UserInputState.ATTEMPTING_SWORD_PURCHASE : GameCore.UserInputState.HALT;
         if (buttons.get(MINE).contains(localX, localY))
             return craftingMenu ? GameCore.UserInputState.ATTEMPTING_GOLD_SWORD_PURCHASE : GameCore.UserInputState.MINE;
-        if (!craftingMenu && buttons.get(USE).contains(localX, localY)) return GameCore.UserInputState.USE;
+        if (!craftingMenu && buttons.get(USE).contains(localX, localY)) return GameCore.UserInputState.BUILD;
 
         return GameCore.UserInputState.NONE;
     }
@@ -56,6 +56,20 @@ public class DwarfActionMenu {
         Point drawPoint = getDrawPoint(viewportLocation);
 
         p.draw(drawPoint.x, drawPoint.y, (craftingMenu ? 96 : 0), 240, 96, 112, false);
+
+        if (craftingMenu)
+        {
+             p.draw(drawPoint.x + 46, drawPoint.y - 10, 96, 56, 16, 16, false);
+             SpriteNumber.drawNumber(5, drawPoint.x + 36, drawPoint.y - 8, p);
+             p.draw(drawPoint.x - 16, drawPoint.y  + 50, 96, 56, 16, 16, false);
+             SpriteNumber.drawNumber(5, drawPoint.x  - 26, drawPoint.y  + 52, p);
+             p.draw(drawPoint.x + 108, drawPoint.y + 50, 112, 56, 16, 16, false);
+             SpriteNumber.drawNumber(5, drawPoint.x + 98, drawPoint.y + 52, p);
+             p.draw(drawPoint.x + 48, drawPoint.y + 114, 112, 40, 16, 16, false);
+             SpriteNumber.drawNumber(20, drawPoint.x + 38, drawPoint.y + 116, p);
+        }
+
+
         p.flush();
     }
 

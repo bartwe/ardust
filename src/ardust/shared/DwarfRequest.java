@@ -6,7 +6,8 @@ public enum DwarfRequest {
     Attack,
     CraftSword,
     CraftArmor,
-    CraftGoldSword
+    CraftGoldSword,
+    Build
 //    Stop interruption isn't supported, repeating stuff is clientside, stop it there
     // etc
 }

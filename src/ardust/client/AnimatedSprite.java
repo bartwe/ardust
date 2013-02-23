@@ -10,9 +10,12 @@ public class AnimatedSprite {
 
     }
 
-    public void animate(int startingFrame, int framesInAnimation, int ticksPerFrame) {
+    public boolean animate(int startingFrame, int framesInAnimation, int ticksPerFrame) {
+        int tmp = accumulator;
         accumulator = (accumulator + 1) % (ticksPerFrame * framesInAnimation);
-        currentFrame = startingFrame + accumulator / ticksPerFrame;
+
+        currentFrame = startingFrame + (accumulator / ticksPerFrame);
+        return accumulator < tmp;
     }
 
     public void draw(Painter p, int x, int y, boolean flip) {

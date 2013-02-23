@@ -53,7 +53,7 @@ public class ServerWorld {
 
             for (int y = 0; y < Constants.WORLD_LENGTH; y++)
                 for (int x = 0; x < Constants.WORLD_LENGTH; x++)
-                    write(x, y, (byte) (2 + random.nextInt(3)));
+                    write(x, y, (byte) (1 + random.nextInt(4)));
         clearPendingUpdates();
     }
 

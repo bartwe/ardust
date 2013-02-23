@@ -2,6 +2,7 @@ package ardust.client;
 
 import ardust.entities.Entity;
 import ardust.packets.DwarfRequestPacket;
+import ardust.packets.WorldUpdatesPacket;
 import ardust.shared.*;
 
 import java.awt.*;
@@ -26,6 +27,7 @@ public class Character {
     private int pathingFailStrike;
     private int miningFailStrike;
 
+
     public Character(Entity entity) {
         this.entity = entity;
     }
@@ -42,7 +44,7 @@ public class Character {
         }
     }
 
-    public void animateMining() {
+    public void animateMining( World world, Point2 targetLocation) {
         int currentFrame = sprite.currentFrame;
         switch (entity.orientation) {
             case NORTH:
@@ -54,6 +56,14 @@ public class Character {
         }
         if (sprite.currentFrame != currentFrame && sprite.currentFrame % 8 % 3 == 0) {
             GameLoop.soundBank.playSound(SoundBank.pickaxeSound, true);
+
+            if (random.nextDouble() < .3)
+            {
+                Point2 miningLocation = new Point2(location.x, location.y);
+                miningLocation.move(entity.orientation);
+                   world.temporaryAnimatedSprites.add(new SolitaryAnimatedSprite(16, 4, 5,miningLocation.x * Constants.TILE_BASE_WIDTH  + random.nextInt(24) - 12,
+                           miningLocation.y * Constants.TILE_BASE_HEIGHT - 32 + random.nextInt(24) - 12));
+            }
         }
     }
 
@@ -104,7 +114,7 @@ public class Character {
                 targetLocation.move(entity.orientation);
                 break;
             case MINING:
-                animateMining();
+                animateMining(world, targetLocation);
                 break;
             case ATTACK:
                 animateFighting();
@@ -141,12 +151,18 @@ public class Character {
                     }
                 }
                 break;
-            case USE:
-                if (!pathTowards(world, network, true)) {
+            case BUILD:
 
-                    // if reached, use
+                if (!pathTowards(world, network, false)) {
+
+                    if (pathingTarget.manhattanDistance(location.x, location.y) == 1 && !world.isTileOccupied(pathingTarget.x, pathingTarget.y, entity))
+                    {
+                        orientTowards(pathingTarget);
+                        network.send(new DwarfRequestPacket(id(), DwarfRequest.Build, entity.orientation));
+                    }
                     aiMode = CharacterAIMode.IDLE;
                 }
+
                 break;
             case IDLE:
                 break;
@@ -154,6 +170,15 @@ public class Character {
     }
 
     Point2 tempPoint = new Point2();
+
+    public void orientTowards(Point2 target)
+    {
+        if (target.x < location.x) entity.orientation = Orientation.WEST;
+        else if (target.x > location.x) entity.orientation = Orientation.EAST;
+        else if (target.y < location.y) entity.orientation = Orientation.NORTH;
+        else if (target.y > location.y) entity.orientation = Orientation.SOUTH;
+        else entity.orientation = Orientation.NONE;
+    }
 
     private Orientation orientationToward(World world, boolean goAround) {
         Orientation ew;
@@ -220,6 +245,13 @@ public class Character {
 
         tempPoint.set(targetLocation);
         tempPoint.move(orientation);
+
+        if (tempPoint.equals(pathingTarget) && aiMode == CharacterAIMode.BUILD)
+        {
+
+            return false;
+        }
+
         if (world.isTileOccupied(tempPoint, entity)) {
             pathingFailStrike -= 1;
             if (pathingFailStrike <= 0) {
@@ -292,8 +324,8 @@ public class Character {
         clearFailStrikes();
     }
 
-    public void use(Point2 target) {
-        aiMode = CharacterAIMode.USE;
+    public void build(Point2 target) {
+        aiMode = CharacterAIMode.BUILD;
         pathingTarget.set(target);
         clearFailStrikes();
     }

@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class World {
@@ -17,6 +18,7 @@ public class World {
     ClientWorld clientWorld;
     Entities entities;
     Characters characters;
+    ArrayList<SolitaryAnimatedSprite> temporaryAnimatedSprites = new ArrayList<SolitaryAnimatedSprite>();
 
 
     public World() {
@@ -31,6 +33,13 @@ public class World {
 
     public void tick(int deltaT, NetworkConnection network, GameCore core) {
         characters.tick(deltaT, this, network, core);
+        for (int i = temporaryAnimatedSprites.size() - 1; i >= 0; i--)
+        {
+            if (temporaryAnimatedSprites.get(i).animate())
+            {
+                temporaryAnimatedSprites.remove(i);
+            }
+        }
     }
 
     Point toDrawCoord = new Point();
@@ -83,6 +92,14 @@ public class World {
                                 tileSheetRect.x, tileSheetRect.y, tileSheetRect.width, tileSheetRect.height, false);
                     }
                 }
+
+                //Draw Animations
+                for (SolitaryAnimatedSprite sprite : temporaryAnimatedSprites)
+                {
+
+                    sprite.draw(p, viewportLocation);
+                }
+
                 //Draw Character
                 tilePoint.set(x, y);
                 Character character = charactersByPosition.get(tilePoint);
@@ -113,6 +130,12 @@ public class World {
         int x = worldLocation.x * Constants.TILE_BASE_WIDTH;
         int y = worldLocation.y * Constants.TILE_BASE_HEIGHT;
         result.setLocation(x, y);
+    }
+
+    public static void globalNonTileCoordToScreenCoord(int x, int y, Point result, Point viewportLocation)
+    {
+      result.setLocation(x - viewportLocation.x, y - viewportLocation.y);
+
     }
 
     public static void localCoordToGlobalTile(int x, int y, Point viewportLocation, Point result) {
