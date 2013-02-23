@@ -39,13 +39,13 @@ public class Dwarves {
 
                 break;
             case CraftArmor:
-                entity.armor = true;
+//                entity.
                 break;
             case CraftSword:
-                entity.sword = true;
+
                 break;
             case CraftGoldSword:
-                entity.goldSword = true;
+
                 break;
 
             default:

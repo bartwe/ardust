@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Server {
@@ -20,9 +21,9 @@ public class Server {
     ByteBuffer tempBuffer = ByteBufferBuffer.alloc(1024 * 1024);
     private Thread workerThread;
     private boolean running;
-    private ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<Player> pendingPlayers = new ArrayList<Player>();
+    private HashMap<Integer, Player> players = new HashMap<Integer, Player>();
     private long saveDeadline;
-    private ArrayList<Player> playersTemp = new ArrayList<Player>();
     long prevT;
     PositionalMap positionalMap = new PositionalMap();
 
@@ -120,15 +121,8 @@ public class Server {
     private void evaluateDwarves(int deltaT) {
         entities.getDwarves(entitiesTemp);
         for (Entity dwarf : entitiesTemp)
-            Dwarves.tick(deltaT, findPlayerForDwarf(dwarf), dwarf, world, positionalMap);
+            Dwarves.tick(deltaT, players.get(dwarf.playerId), dwarf, world, positionalMap);
         entitiesTemp.clear();
-    }
-
-    private Player findPlayerForDwarf(Entity dwarf) {
-        for (Player player : players)
-            if (player.dwarfs.containsKey(dwarf.id))
-                return player;
-        return null;
     }
 
     private void sendUpdates() {
@@ -152,7 +146,7 @@ public class Server {
         }
 
         //TODO: sends updates outside of the players world range, perf thingy
-        for (Player player : players) {
+        for (Player player : players.values()) {
             player.sendUpdates();
             for (Packet packet : packets)
                 player.sendPacket(packet);
@@ -160,6 +154,9 @@ public class Server {
     }
 
     private void executeCommands() {
+        ArrayList<Player> players = new ArrayList<Player>(pendingPlayers);
+        players.addAll(this.players.values());
+        Collections.shuffle(players, new Random());
         for (Player player : players) {
             while (player.hasPacket())
                 executeCommand(player, player.nextPacket());
@@ -178,16 +175,21 @@ public class Server {
     }
 
     private void handleDwarfRequest(Player player, DwarfRequestPacket packet) {
+        if (player.id == 0)
+            return;
         Entity entity = entities.getEntity(packet.id);
         if (entity == null)
             return; // command can be late, ignore
         if (entity.kind != Entity.Kind.DWARF)
             return;
-        // todo: ownership check
+        if (player.id != entity.playerId.intValue())
+            return;
         Dwarves.handle(entity, packet, world, positionalMap);
     }
 
     private void handleWindowChange(Player player, WindowPacket packet) {
+        if (player.id == 0)
+            return;
         int oldX = player.getX();
         int oldY = player.getY();
         int oldZ = player.getZ();
@@ -197,6 +199,13 @@ public class Server {
 
     private void handleHello(Player player, HelloPacket packet) {
         player.setName(packet.getName());
+
+        if (players.containsKey(player.id)) {
+            player.disconnect();
+            return;
+        }
+        players.put(player.id, player);
+        pendingPlayers.remove(player);
 
         int x = Constants.START_OFFSET;
         int y = Constants.START_OFFSET;
@@ -225,18 +234,22 @@ public class Server {
     private void fetchClientCommands() {
         while (networkServer.hasNewConnection()) {
             Player player = new Player(networkServer.nextNewConnection());
-            players.add(player);
+            pendingPlayers.add(player);
         }
-        ArrayList<Player> players = this.players;
-        Collections.shuffle(players, new Random());
-        this.players = playersTemp;
-        this.players.clear();
-        playersTemp = players;
+        ArrayList<Player> players = new ArrayList<Player>(this.players.values());
         for (Player player : players) {
-            if (player.isValid())
-                this.players.add(player);
-            else
+            if (!player.isValid()) {
                 player.disconnect();
+                this.players.remove(player);
+            }
+        }
+        players.clear();
+        players.addAll(pendingPlayers);
+        for (Player player : players) {
+            if (!player.isValid()) {
+                player.disconnect();
+                pendingPlayers.remove(player);
+            }
         }
     }
 }
