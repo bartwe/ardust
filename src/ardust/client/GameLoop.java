@@ -34,8 +34,11 @@ public class GameLoop {
     private GameMenu menu;
     private Server server;
     private long prevT;
+    private SoundSystem soundsys;
+    private int musicSourceID;
 
     public GameLoop() {
+        soundsys = new SoundSystem();
         menu = new GameMenu(this);
     }
 
@@ -317,6 +320,19 @@ public class GameLoop {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public SoundSystem getSoundSys() {
+        return soundsys;
+    }
+
+    public int getMusicSourceID() {
+        return musicSourceID;
+    }
+
+    public void setMusicSourceID(int id)
+    {
+        musicSourceID = id;
     }
 
     public enum GameState {
