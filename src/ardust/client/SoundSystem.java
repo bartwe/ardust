@@ -1,5 +1,6 @@
 package ardust.client;
 
+import ardust.shared.Loader;
 import com.jcraft.oggdecoder.OggData;
 import com.jcraft.oggdecoder.OggDecoder;
 import org.lwjgl.BufferUtils;
@@ -7,7 +8,10 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -74,18 +78,31 @@ public class SoundSystem {
         SoundObject obj = soundBank.get(i);
         OggDecoder oggDecoder = new OggDecoder();
 
-        File file = new File(System.getProperty("user.dir") + obj.filename);
-        byte[] data;
-
+        ByteBuffer databuffer = ByteBuffer.allocate(1024*1024);
         try {
-            RandomAccessFile f = new RandomAccessFile(file, "r");
-            data = new byte[(int) f.length()];
-            f.read(data);
+            InputStream f = Loader.getRequiredResourceAsStream(obj.filename);
+            int offset = 0;
+            int remaining = databuffer.remaining();
+            while (true) {
+                if (remaining <=0)
+                    throw new RuntimeException();
+                int len = f.read(databuffer.array(), databuffer.arrayOffset()+offset, remaining);
+                if (len < 0)
+                    break;
+                remaining -= len;
+                offset += len;
+            }
+            databuffer.position(offset);
+            databuffer.flip();
             f.close();
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
+
+        byte[] data = new byte[databuffer.remaining()];
+        databuffer.get(data);
+        databuffer = null;
 
         // Decode OGG into PCM
         InputStream inputStream = new ByteArrayInputStream(data);

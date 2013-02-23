@@ -31,10 +31,10 @@ public class GameMenu extends JPanel implements ActionListener {
         this.setBackground(Color.LIGHT_GRAY);
 
         SoundSystem soundsys = this.parent.getSoundSys();
-        parent.setMusicSourceID(soundsys.registerFile("/resources/audio/music/menu.ogg", SoundSystem.SoundType.Music));
+        parent.setMusicSourceID(soundsys.registerFile("resources/audio/music/menu.ogg", SoundSystem.SoundType.Music));
         soundsys.play(parent.getMusicSourceID());
 
-        buttonSoundID = soundsys.registerFile("/resources/audio/effects/button.ogg", SoundSystem.SoundType.Effect);
+        buttonSoundID = soundsys.registerFile("resources/audio/effects/button.ogg", SoundSystem.SoundType.Effect);
     }
 
     private JButton initializeButton(String buttonName) {

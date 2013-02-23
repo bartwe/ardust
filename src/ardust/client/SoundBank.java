@@ -13,7 +13,7 @@ public class SoundBank {
     }
 
     public void registerSoundEffects() {
-        pickaxeSound = system.registerFile("/resources/audio/effects/pick.ogg", SoundSystem.SoundType.Effect);
+        pickaxeSound = system.registerFile("resources/audio/effects/pick.ogg", SoundSystem.SoundType.Effect);
     }
 
     public static void playSound(int which) {
