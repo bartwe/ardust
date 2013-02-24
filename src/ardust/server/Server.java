@@ -140,6 +140,7 @@ public class Server {
             packets.add(updatePacket);
         }
         tempBuffer.clear();
+        world.clearPendingUpdates();
         if (entities.write(tempBuffer, false, true)) {
             // could be too large...
             tempBuffer.flip();
